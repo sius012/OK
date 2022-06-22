@@ -285,12 +285,13 @@ $subtotal = 0;
         
                 <table class="table">
                     @if($data[0]->diskon > 0)
+                    @if($data[0]->status != "return")
                     <tr>
                         <td>Subtotal</td>
                         <td align="right">{{number_format($subtotal,0,".",".")}}</td>
 
                     </tr>
-                  
+                    @endif
                     @endif
                     
                     @if($data[0]->diskon > 0)
@@ -329,11 +330,15 @@ $subtotal = 0;
 
                     </tr>
                     @else
+                    
+
+                    @if($data[0]->status != "return")
                     <tr>
                         <td>Kembalian</td>
                         <td align="right">{{number_format($data[0]->bayar -$data[0]->subtotal,0,".",".") }}</td>
 
                     </tr>
+                    @endif
                     @endif
 
                 </table>

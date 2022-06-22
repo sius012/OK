@@ -240,7 +240,7 @@
               </li>
               <li class=" nav-item">
                                         <a href="{{url('/menusuratjalan')}}" class="nav-link {{$whoactive=='menusuratjalan' ? 'active' : ''}}">
-                  <p>Surat Jalan</p>
+                  <p>Riwayat Surat Jalan</p>
                 </a>
               </li>
               <li class=" nav-item">

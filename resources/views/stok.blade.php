@@ -139,7 +139,7 @@ $m = isset($merekr) ? $merekr : "";
                 <td style="text-align: left">Rp. {{number_format($datas->harga,0,".",".")}}</td>
                   <td style="text-align: left">{{$datas->diskon_tipe == "persen" ? $datas->diskon."%" : "Rp.".number_format((int)$datas->diskon)}}</td>@endif
                 <td>{{$datas->jumlah}} {{$datas->satuan}}</td>
-                 @if(Auth::user()->roles[0]['name'] != 'kasir')<td align="left"><a href="{{url('/detailstok/'.$datas->kode_produk.'/bykatalog')}}" class="btn btn-warning"><i class="fa fa-box"></i></a></td>@endif
+                 @if(Auth::user()->roles[0]['name'] == 'manager')<td align="left"><a href="{{url('/detailstok/'.$datas->kode_produk.'/bykatalog')}}" class="btn btn-warning"><i class="fa fa-box"></i></a></td>@endif
             </tr>
             @php $no++ @endphp
         @empty

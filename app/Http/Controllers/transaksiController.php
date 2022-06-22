@@ -49,6 +49,7 @@ class transaksiController extends Controller
             $pdf->save(storage_path("pdf/$fileName"));
         $storagepath = storage_path("pdf/$fileName");
         $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+        unlink($storagepath);
         return $base64;
     }
 
