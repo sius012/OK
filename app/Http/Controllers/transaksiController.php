@@ -98,9 +98,11 @@ class transaksiController extends Controller
 
     public function tampilreturn(Request $req){
         $id=$req->id_trans;
-        $datatrans = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->get();
+        $no_nota =  DB::table("transaksi")->where("kode_trans",$id)->pluck("no_nota")->first();
+        $hasretur = DB::table("transaksi")->where("keterangan",$no_nota)->count();
+        $datatrans = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->select("transaksi.*","transaksi.status as status_trans","detail_transaksi.*","new_produks.*","mereks.*","kode_types.*")->get();
      
-        return json_encode($datatrans);
+        return json_encode(["datatrans"=>$datatrans,"hasretur"=>$hasretur]);
 
         
     }

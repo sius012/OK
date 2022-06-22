@@ -222,7 +222,7 @@ $subtotal = 0;
             <table class="table" >
 
                 <tr>
-                    <td   width = 100 style="text-align: center; font-size: 1rem;" colspan=2>{{$data[0]->status == "return" ? "RETUR" : NOTA}}</td>
+                    <td   width = 100 style="text-align: center; font-size: 1rem;" colspan=2>{{$data[0]->status == "return" ? "RETUR" : "NOTA"}}</td>
                 </tr>
                 @if($data[0]->status == 'return')
                 <tr>
@@ -282,7 +282,7 @@ $subtotal = 0;
 
                     </tbody>
                 </table>
-                @if($data[0]->status !== 'return')
+        
                 <table class="table">
                     @if($data[0]->diskon > 0)
                     <tr>
@@ -307,17 +307,21 @@ $subtotal = 0;
                     </tr>
                     @endif
                    
+
+                    @if($data[0]->status != "return")
                     <tr>
                         <td>Grand Total</td>
                         <td align="right">{{number_format(Tools::doDisc(1,$subtotal,$data[0]->diskon,$data[0]->prefix,0,".",".") - $data[0]->tlh_bayar,0,".",".") }}</td>
 
                     </tr>
 
+
                     <tr>
                         <td>Dibayar</td>
                         <td align="right">{{number_format($data[0]->bayar,0,".",".") }}</td>
 
                     </tr>
+                    @endif
                     @if($data[0]->status == "belum lunas")
                     <tr>
                         <td>Kurang Bayar</td>
@@ -334,7 +338,7 @@ $subtotal = 0;
 
                 </table>
              
-                @endif
+             
                 <hr style="margin:0;">
                 @if($data[0]->status != 'return')
               

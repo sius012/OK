@@ -49,7 +49,7 @@ class ReturController extends Controller
             $counter = DB::table('transaksi')->where("status","return")->whereDate('created_at', Carbon::today())->count();
             $no_nota = "R".date("ymd").str_pad($counter+2, 3, '0', STR_PAD_LEFT);
 
-            $id = DB::table('transaksi')->insertGetId(['no_nota'=>$no_nota, 'status'=>'return','nama_pelanggan'=>$btrans->nama_pelanggan,'telepon'=>$btrans->telepon,"alamat"=>$btrans->alamat, 'id_kasir' =>$id_kasir,'keterangan'=>$btrans->no_nota]);
+            $id = DB::table('transaksi')->insertGetId(['no_nota'=>$no_nota, 'status'=>'return','nama_pelanggan'=>$btrans->nama_pelanggan,'telepon'=>$btrans->telepon,"alamat"=>$btrans->alamat, 'id_kasir' =>$id_kasir,'keterangan'=>$btrans->no_nota,"diskon"=>$btrans->diskon,"prefix"=>$btrans->prefix]);
             
 
             $pengurangansubtotal = 0;

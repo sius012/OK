@@ -225,11 +225,14 @@ $(document).ready(function(e){
              type: "post",
              dataType: "json",
              success: function(data){
+                let dato = data["datatrans"];
+          
                  let no = 1;
-                 let row = data.map(function(r,i){
+                 let row = data['datatrans'].map(function(r,i){
+
                     return `
                         <tr ${r['status'] == 'return' ? 'style="background: lightyellow"' : ""}>
-                            <td>${r["status"] == "return" ? '' : '<button nama="'+r['nama_kodetype']+" "+r['nama_merek']+" "+r['nama_produk']+'" jmlretur=0 jml='+ r['jumlah'] +' iddtrans=' + r['id'] + '  class="btn btn-success setjml" type="button">Retur</button>'}</td>
+                            <td>${data["hasretur"] > 0 ? '' : '<button nama="'+r['nama_kodetype']+" "+r['nama_merek']+" "+r['nama_produk']+'" jmlretur=0 jml='+ r['jumlah'] +' iddtrans=' + r['id'] + '  class="btn btn-success setjml" type="button">Retur</button>'}</td>
                             <td>${r['nama_kodetype']} ${r['nama_merek']} ${r['nama_produk'] + " "}</</td>
                             <td>${parseInt(r['harga']).toLocaleString()}</</td>
                             <td>${r['potongan']}</</td>
@@ -239,20 +242,20 @@ $(document).ready(function(e){
                         </tr>
                     `;
                  });
-                 $("#np").text("Nama Pelanggan : "+data[0]['nama_pelanggan']);
-                 $("#tp").text("No. Telp : "+data[0]['telepon']);
-                 $("#almt").text("Alamat : "+data[0]['alamat']);
-                 $("#id_trans").val(data[0]['kode_trans']);
-                 if(    data[0]['status'] == 'return'){
+                 $("#np").text("Nama Pelanggan : "+dato[0]['nama_pelanggan']);
+                 $("#tp").text("No. Telp : "+dato[0]['telepon']);
+                 $("#almt").text("Alamat : "+dato[0]['alamat']);
+                 $("#id_trans").val(dato[0]['kode_trans']);
+                 if(    data["hasretur"] > 0 || dato[0]["status_trans"] == "return"){
                      $("#re-button").attr('disabled','disabled');
                      $("#buyagain-button").show();
-                     $("#buyagain-parser").attr("href","/kasir?id_retur="+data[0]['kode_trans']);
+                     $("#buyagain-parser").attr("href","/kasir?id_retur="+dato[0]['kode_trans']);
                  }else{
                     $("#buyagain-button").hide();
                  }
 
                  //cek apakah nota ini pembelian baru setelah retur
-                 if(data[0]["keterangan_retur"]!=null){
+                 if(dato[0]["keterangan_retur"]!=null){
                     $("#nominal-telah-bayar").text("Pembayaran sebelumnya : "+ data[0]["tlh_bayar"]);
                     $("#keterangan-retur").text("Keterangan Retur : "+data[0]["keterangan_retur"]);
                     $("#keterangan-retur").show();

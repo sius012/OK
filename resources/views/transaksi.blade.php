@@ -104,8 +104,9 @@ $haslampau = false;
         <div class="d-inline">
           <a id_trans="{{$datas['kode_trans']}}" class="btn btn-warning printing btn-sm m-1 w-25"><i style="" class="fa fa-print"></i></a>
           <a style="padding-left: 12px; padding-right: 12px;" id_trans="{{$datas['kode_trans']}}" class="btn btn-primary btn-sm returntrans"><i style="" class="fa fa-info"></i></a>
-          <a id_trans="{{$datas['kode_trans']}}" class="btn btn-primary printingtt btn-sm m-1 w-25"><b>T</b></a>
+        @if((Auth::user()->roles[0]['name'] == 'manager' or Auth::user()->roles[0]['name'] == 'kasir') and $datas["status"]=="lunas")  <a id_trans="{{$datas['kode_trans']}}" class="btn btn-primary printingtt btn-sm m-1 w-25"><b>T</b></a>
         </div>
+        @endif
         @elseif($datas['status']=='draf')
         <a href="{{route('hapusdraft',['id'=>$datas['kode_trans']])}}" id_trans="{{$datas['kode_trans']}}" class="btn btn-danger hapustrans btn-sm m-1 w-25"><i style="" class="fa fa-trash"></i></a>
         @endif
