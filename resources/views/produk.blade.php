@@ -4,44 +4,137 @@ $master = 'manager';
 $no = 1;
 
 $kw = isset($keyword) ? $keyword : '';
-$tp = isset($tipe) ? $tipe : '';
-$ct = isset($id_ct) ? $id_ct : '';
-$m = isset($mereknya) ? $mereknya : '';
+$tp = isset($tipekw) ? $tipekw : '';
+$ct = isset($ctkw) ? $ctkw : '';
+$m = isset($merekkw) ? $merekkw : '';
 @endphp
 @extends('layouts.layout2')
 @section('title','Produk')
 
 @section('titlepage', 'Produk')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/bootstrap-select.min.css') }}">
+@stop
 @section('js')
+
+<script src="{{ asset('js/bootstrap-select.js') }}" defer ></script>
     <script src="{{ asset('js/print.js') }}"></script>
     <script src="{{ asset('js/produk.js') }}"></script>
+    <script src="{{ asset('js/produk2.js') }}"></script>
     <script src="{{ asset('js/produk2.js') }}"></script>
     <style>
         td{
             font-weight: unset !important;
             font-size: 8pt
         }
+
+        select[readonly] {
+            background: white;
+            pointer-events: none;
+            touch-action: none;
+        }
+
+
+        .fakeselect{
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .fakeselect .scroled::-webkit-scrollbar-track{
+            display: none;
+        }
+        .fakeselect .scroled li{
+            padding: 10px;
+        }
+        .fakeselect .scroled li:hover{
+            background-color: #bdbdbd;
+        }
     </style>
     <script>
+        function selectJos(namaelemet){
+            let hasClick = false;
+            $(namaelemet).wrap('<div class="faker"></div>');
+            $(document).on('click', function(){
+               $(".fakeselect").hide();
+            });
+
+            $(namaelemet).closest(".faker").next().children("input").click(function(e){
+            
+              alert('hai');
+            });
+       
+           
+            
+            $(namaelemet).attr("readonly","readonly");
+            $(namaelemet).closest(".faker").click(function(e){
+                e.stopPropagation();
+                if(!hasClick){
+                    $(".fakeselect").remove();
+               
+         
+                
+               let isi;
+               let fakeoption = "";
+               fakeoption += "<li value=''><input class='form-control inputdrop'></li><li><ul class='scroled'>";
+            
+               $(this).children('select').children("option").each(function(e){
+                  if($(this).text() != undefined){
+                      fakeoption += "<li value="+$(this).val()+" class='fo'>"+$(this).text()+"</li>";
+                  } 
+               });
+              // $(this).replaceWith("<div>hai</div>");
+               fakeoption += "</u><li>";
+               $(this).after("<ul class='fakeselect'>"+fakeoption+"</ul>");
+                }
+              
+                $(namaelemet).parent().next().children("li").children(".scroled").children("li").click(function(){
+                    $(this).closest(".fakeselect").prev().children("select").val($(this).attr('value'));
+                });
+                
+            });
+
+            $(document).on("keyup",".inputdrop",function(e){
+                $(e.target).val($(e.target).val().toUpperCase());
+                let value = $(e.target).val();
+                $(e.target).parent().parent().children("li").children(".scroled").children(".fo").filter(function() {
+                   $(this).toggle($(this).text().toLowerCase().indexOf(value.toLowerCase()) > -1)
+                });
+           
+            });
+
+            $(document).on("click",".inputdrop",function(e){
+               e.stopPropagation();
+            });
+
+          
+          
+            
+        }
+    </script>
+    <script>
+    
+ 
         $(document).ready(function(){
            $("#modalprodukedit").modal("show");
-
+            selectJos("#tipe");
+            selectJos("#kodetype");
+            selectJos("#merek");
             $(".btclose").click(function(){
                 window.location = "/produk";
+               
             });
         });
     </script>
 @stop
+
+
 @section('content')
-
-
     <div class="card">
         <div class="card-header">
             <h2 style="font-size: 1.5rem;" class="card-title mt-2 font-weight-bold"><i class="fa fa-list mr-3"></i>Data Produk</h2>
         </div>
         <div class="card-body">
-            <form action="ProdukController@index" method="get">
+            <form action="{{url('/produk')}}" method="get">
                 @csrf
                 <input type="text" name="nama" class="form-control form-control-sm w-25" placeholder="ketik nama atau kode produk">
                 <br>
@@ -51,33 +144,33 @@ $m = isset($mereknya) ? $mereknya : '';
                     
                 <div class="form-group d-inline-flex">
                     
-                    <select name="tipe" id="tipe" class="form-control dynamic w-50 form-control-sm mr-5"  data-dependent = "state">
-                        <option value="">TIPE</option>
+                    <select  name="tipe" id="tipe" class="form-control dynamic form-control-sm mr-1 w-75"  data-dependent = "state">
+                        <option value="">Tipe</option>
                         @foreach($tipe as $tipes)
-                            <option value = "{{$tipes->id_tipe}}">{{$tipes->nama_tipe}}</option>
+                            <option @if($tp == $tipes->id_tipe) selected @endif value = "{{$tipes->id_tipe}}">{{$tipes->nama_tipe}}</option>
                         @endforeach
                     </select>
                 </div>
-                <div style="margin-left: -100px;" class="form-group d-inline-flex">
+                <div style="" class="form-group d-inline-flex">
                     <select name="kodetipe" id="kodetype" class="form-control dynamic w-75 form-control-sm" data-dependent = "state">
-                        <option value="">TIPE KODE</option>
+                        <option   value="">Tipe Kode</option>
                         @foreach($kodetype as $kt)
-                            <option value="{{$kt->id_kodetype}}">{{$kt->nama_kodetype}}</option>
+                            <option  @if($ct == $kt->id_kodetype) selected @endif value="{{$kt->id_kodetype}}">{{$kt->nama_kodetype}}</option>
                         @endforeach
                     </select>
                 </div>
-                <div style="margin-left: -43px;" class="form-group d-inline-flex">
+                <div style="" class="form-group d-inline-flex">
                     <select name="merek" id="merek" class="form-control dynamic w-75 form-control-sm" data-dependent = "state">
-                        <option value="">MEREK</option>
+                        <option    value="">Merek</option>
                         @foreach($merek as $merks)
-                            <option value="{{$merks->id_merek}}">{{$merks->nama_merek}}</option>
+                            <option @if($m == $merks->id_merek) selected @endif value="{{$merks->id_merek}}">{{$merks->nama_merek}}</option>
                         @endforeach
                     </select>
                 </div>
                 </div>
                 <button style="margin-left: -20px" class="btn btn-sm btn-primary"><i class="fa fa-search"></i></button>
-                <button type="button" class="btn btn-sm mt-1 btn-primary float-right" data-toggle="modal" data-target="#modalproduk">
-                    Tambah Produk <i class="fa fa-plus ml-2"></i>
+                <button type="button" class="btn btn-sm mt-1 btn-primary float-right" data-toggle="modal" data-target="#modalproduk"> <i class="fa fa-plus ml-2"></i>
+                    Tambah Produk 
                 </button>
             </form>
 
@@ -90,9 +183,10 @@ $m = isset($mereknya) ? $mereknya : '';
                         <th>Merek</th>
                         <th>Barcode</th>
                         <th style="width:180px;">Nama Produk</th>
-                        <th>Satuan</th>
+                
                         <th style="width:130px;">Harga</th>
                         <th>Diskon</th>
+                        <th>Stok</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -105,14 +199,11 @@ $m = isset($mereknya) ? $mereknya : '';
                             <td>{{ $produks->nama_merek }}</td>
                             <td>{{ $produks->kode_produk }}</td>
                             <td>{{ $produks->nama_produk }}</td>
-                            
-                            
-                            
-                            <td>{{ $produks->satuan }}</td>
                             <td>Rp. {{ number_format($produks->harga) }}</td>
                             <td>{{$produks->diskon_tipe == "persen" ? $produks->diskon."%" : "Rp.".number_format((int)$produks->diskon) }}</td>
+                            <td>{{$produks->jumlah}} {{$produks->satuan}}</td>
                             <td class="d-inline-flex" align="center">
-                                <a class="btn btn-primary"
+                                <a class="btn btn-warning"
                                     href={{ url('/editproduk?kodebarcode=' . $produks->kode_produk) }}><i
                                         class="fa fa-edit"></i></a>
                                 <a class="btn btn-danger ml-1 mr-1 hapusproduk"
@@ -221,11 +312,11 @@ $m = isset($mereknya) ? $mereknya : '';
                         <div class="form-row">
                             <div class="form-group col-md-6">
                             <label for="inputEmail4">Diskon</label>
-                            <input type="number" class="form-control" id="diskon" placeholder="Diskon">
+                            <input type="number" id="diskon" class="form-control" value=0 placeholder="Diskon">
                             </div>
                             <div class="form-group col-md-6">
                             <label for="inputPassword4">Tipe</label>
-                            <select name="typediskon" id="typediskon" class="custom-select">
+                            <select id="typediskon" name="typediskon" class="custom-select">
                                 <option value="rupiah">Rupiah(Rp)</option>
                                 <option value="persen">Persentase(%)</option>
                             </select>
@@ -234,7 +325,16 @@ $m = isset($mereknya) ? $mereknya : '';
                             
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Satuan</label>
-                            <input type="text" class="form-control" id="satuan-produk" aria-describedby="emailHelp">
+                            <select name="" class='custom-select' id="satuan-produk">
+                                @foreach($satuan as $satuans)
+                                <option value="{{$satuans->satuan}}">{{$satuans->satuan}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                               <label for="stok" class="form-label">STOK AWAL</label>
+                            <input type="number" value="0" required id="stok" name="" class="form-control">
                         </div>
 
                 </div>
@@ -278,15 +378,16 @@ $m = isset($mereknya) ? $mereknya : '';
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Edit Produk</h5>
-                        <button type="button" class="button btclose" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="button btclose close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
                         <form action="{{ route('editproduk', ['id' => $data->kode_produk]) }}" method="POST">
+                            <input type="hidden" value="{{$data->kode_produk}}" id="kb">
                             @csrf
                             <div class="mb-3">
                                 <label for="exampleInputEmail1" class="form-label">Nama Barang</label>
                                 <input type="text" class="form-control" aria-describedby="emailHelp" required
-                                    value="{{ $data->nama_produk }}" name="nama_produk">
+                                    value="{{ $data->nama_produk }}" id="np" name="nama_produk">
                             </div>
                             <div class="mb-3 form-group">
                         
@@ -298,6 +399,7 @@ $m = isset($mereknya) ? $mereknya : '';
                                             {{ $merks->nama_merek}}</option>
                                     @endforeach
                                 </select>
+                                <input type="hidden" name="id_merek" value="{{$data->id_merek}}">
 
                             </div>
                             <div class="mb-3">
@@ -308,6 +410,7 @@ $m = isset($mereknya) ? $mereknya : '';
                                             @if ($kats->id_tipe == $data->id_tipe) selected @endif>{{ $kats->nama_tipe }}</option>
                                     @endforeach
                                 </select>
+                                 <input type="hidden" name="id_tipe" value="{{$data->id_tipe}}">
                             </div>
                             <div class="mb-3">
                                 <label for="exampleInputEmail1" class="form-label">Tipe Kode</label>
@@ -317,35 +420,37 @@ $m = isset($mereknya) ? $mereknya : '';
                                             {{ $kt->nama_kodetype}}</option>
                                     @endforeach
                                 </select>
+                                 <input type="hidden" name="id_ct" value="{{$data->id_ct}}">
                             </div>
-                            <div class="mb-3">
+                            <div  class="mb-3">
                                 <label for="exampleInputEmail1" class="form-label">Harga</label>
-                                <input type="text" class="form-control uang" aria-describedby="emailHelp"
+                                <input type="text" class="form-control uang" id='hp' aria-describedby="emailHelp"
                                     value="{{number_format( $data->harga,0,',','.') }}" name="harga">
                             </div>
                             <div class="form-row">
                             <div class="form-group col-md-6">
                             <label for="inputEmail4">Diskon</label>
-                            <input type="number" class="form-control" id="diskon" name="diskon" placeholder="Diskon" value="{{$data->diskon}}">
+                            <input type="number" class="form-control" id="dsc" name="diskon" placeholder="Diskon" value="{{$data->diskon}}">
                             </div>
                             <div class="form-group col-md-6">
                             <label for="inputPassword4">Tipe</label>
-                            <select name="diskon_tipe" id="typediskon" class="custom-select">
-                                <option @if($data->diskon_tipe == "rupiah") selected @endif value="rupiah">Rupiah(Rp)</option>
-                                <option @if($data->diskon_tipe == "persen") selected @endif value="persen">Persentase(%)</option>
+                            <select name="diskon_tipe" id="tpe" class="custom-select">
+                                <option value="rupiah" @if($data->diskon_tipe == "rupiah") selected @endif value="rupiah">Rupiah(Rp)</option>
+                                <option value="persen" @if($data->diskon_tipe == "persen") selected @endif value="persen">Persentase(%)</option>
                             </select>
                             </div>
                         </div>
                             <div class="mb-3">
                                 <label for="exampleInputEmail1" class="form-label">Satuan</label>
-                                <input type="text" class="form-control" aria-describedby="emailHelp"
+                                <input type="text" id="stn" class="form-control" aria-describedby="emailHelp"
                                     value="{{ $data->satuan }}" name="satuan">
                             </div>
 
                     </div>
                     <div class="modal-footer">
+                         <button type="button" class="btn btn-primary"><a class='text-light' id="redirector" ><i class="fa fa-box"></i>Perbarui Stok</a></button>
                         <button type="button" class="btn btn-secondary btclose" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Perbarui</button>
+                        <button type="submit" class="btn btn-primary">Perbarui</button
                     </div>
                     </form>
                 </div>

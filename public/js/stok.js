@@ -181,6 +181,7 @@ $(document).ready(function(){
     });
 
     $("#stokprint").click(function(e){
+    
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content'),

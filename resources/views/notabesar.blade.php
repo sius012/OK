@@ -3,16 +3,41 @@ $master='kasir' @endphp
 @extends('layouts.layout2')
 
 @section('pagetitle', 'Nota Besar')
-@section('icon', 'fa fa-sticky-note mr-2 ml-3')
+@section('icon', 'fa fa-sticky-note mr-2 ml-2')
 @section('title', 'Nota Besar')
 
 @section('js')
 <script src="{{ asset('js/print.js') }}"></script>
-<script src="{{ asset('js/transaksi.js') }}"></script>
-<script src="{{ asset('js/notabesar.js') }}"></script>
-@isset($id)
 <script>
-    $(document).ready(function() {
+    function searchnota(kw){
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            data: {
+                kw : kw
+            },
+            url: "/searchnotapreorder",
+            type: "post",
+            dataType: "json",
+            success: function(data){
+                console.log(data);
+                let row = data.map(function(datas){
+                    return `
+                <li><a href="#"  id_nb = ${datas['id_transaksi']} class='${datas['jatuh_tempo'] == null && datas['status']  == "menunggu"  && datas['kunci'] == null ? "disab" :  "cc"}'>${datas['no_nota'] + "  " + "Termin: " + datas['termin']}</a></li>
+
+                    `;
+                });
+
+                $("#myUL").html(row);
+            },
+            error: function(err){
+                Swal.fire(err.responseText)
+            }
+
+        });
+    }
+    function tampilkannb($id_trans){
         $(".readonly").attr("readonly","readonly");
         $("#notabesar").hide();
         $(".kunci").hide();
@@ -23,16 +48,14 @@ $master='kasir' @endphp
                 "X-CSRF-TOKEN": $("meta[name=csrf-token]").attr('content')
             , }
             , data: {
-                id_transaksi: "{{$id}}"
+                id_transaksi: $id_trans
             }
             , url: "/getnb"
             , type: "post"
             , dataType: "json"
             , success: function(data) {
                 $("#baseinputnb input, label").show();
-                if(data["nb"][0]["termin"] == 2){
-                    $("#suratjalan").show();
-                }
+         
 
                 if(data['nb'][0]['termin'] == 2){
                     $(".kunci").show();
@@ -46,17 +69,25 @@ $master='kasir' @endphp
                 $("#tt").text(data["nb"][0]["termin"] == 3 ? "PELUNASAN" : "Termin: " + data["nb"][0]["termin"]);
                 $("#baseinputnb .col").show();
                
-                
+                var dateObj = new Date();
+                var month = dateObj.getUTCMonth() + 1; //months from 1-12
+                var day = dateObj.getUTCDate();
+                var year = dateObj.getUTCFullYear();
+
+                newdate = year + "-" + month + "-" + day;
+
                 $("#ttd").val(data['nb'][0]['ttd']);
                 $("#up").val(data['nb'][0]['up']);
                 $("#us").val(data['nb'][0]['us']);
                 $("#brp").val(data['nb'][0]['brp']);
                 $("#gm").val(data['nb'][0]['gm']);
                 $("#total").val(parseInt(data['nb'][0]['total']).toLocaleString());
-                $("#nn").text("No Nota: " + data["nb"][0]["no_nota"]);
-                $("#tgl").val(data["nb"][0]["created_at"]);
+                $("#total2").val(parseInt(data['nb'][0]['total']));
+                $("#nn").html("No Nota: " + "<a class='nnt' href=#>"+data["nb"][0]["no_nota"]+"</a>");
+                $("#tgl").val('{{date("Y-m-d")}}');
                 $("#jt").val(data["nb"][0]["jatuh_tempo"]);
                 $("#termin").val(data['nb'][0]['termin']);
+                 $("#jt").attr("disabled",'disabled');
 
                 let row = data["opsi"].map(function(e, i) {
                     return `
@@ -75,7 +106,8 @@ $master='kasir' @endphp
                 $("#preorderform").attr("action", "/bayarpreorder");
                 $("#id_trans").val(data["nb"][0]["id_transaksi"]);
                 $(".td").show();
-                $(".td").children("input").val(parseInt(data["td"]).toLocaleString());
+                $("#td2").val(parseInt(data["td"]));
+                $(".td").children("#td").val(parseInt(data["td"]).toLocaleString());
                 $("#addopsi").hide();
                // $("#suratjalan").attr("disabled","disabled");
                 if (data["nb"][0]["status"] == "dibayar") {
@@ -88,22 +120,55 @@ $master='kasir' @endphp
                     $("#buttonsubmit").addClass("btn-success");
                     $("#printbutton").removeAttr("disabled");
                     $("#suratjalan").removeAttr("disabled");
-                    $("#kunci").attr("readonly",'readonly');
+                   
+                    if(data["nb"][0]["termin"] == 2){
+                        $("#suratjalan").show();
+                    }
+                  
+ 
 
                 } else {
+                    $("#us").removeAttr("disabled");
+                    $("#us").removeAttr("disabled");
                     $("#buttonsubmit").removeAttr("disabled");
                     $("#buttonsubmit").removeClass("btn-success");
                     $("#buttonsubmit").addClass("btn-primary");
                     $("#buttonsubmit").text("Bayar");
                     $("#printbutton").attr("disabled", "disabled");
+                    $("#kunci").removeAttr("readonly");
+                    $("#jt").removeAttr('readonly');
+                    
+                   $("#jt").removeAttr('readonly');
+                }
+
+                if(data['nb'][0]['kunci'] == null){
+                    $("#tbsj").text("Kirim");
+                    $("#jt").removeAttr("disabled");
+                }else{
+                    
+                    $("#tbsj").text("Cetak");
                 }
                 $(".readonly").attr('readonly', 'readonly');
             }
             , error: function(err) {
+              
                 Swal.fire("error", "", "info");
             }
         });
 
+
+
+    }
+</script>
+<script src="{{ asset('js/transaksi.js') }}"></script>
+<script src="{{ asset('js/notabesar.js') }}"></script>
+@isset($id)
+<script>
+    $(document).ready(function() {
+        $("#resetbutton").attr('href','/transaksipreorder');
+        $("#notabesar").css("pointer-event",'none');
+        var idt = "{{$id}}";
+        tampilkannb(idt);
 
     });
 
@@ -120,7 +185,7 @@ $master='kasir' @endphp
 <div class="container-fluid ">
     <div class="col">
         <div class="form-group">
-            <input type="text" id="searcher-nota" class="form-control" placeholder="Cari Nomor Nota">
+            <input type="text" id="searcher-nota" class="form-control" placeholder="Cari Nomer Nota">
             <ul id="myUL">
             </ul>
         </div>
@@ -149,7 +214,7 @@ $master='kasir' @endphp
                 </select>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Tanggal </label>
-                    <input type="date" class="form-control form-control-" id="tgl" value="{{date('Y-m-d')}}">
+                    <input type="date" class="form-control form-control-" required id="tgl" value="{{date('Y-m-d')}}">
                 </div>
                 <br>
                 <div class="row" id="baseinputnb">
@@ -180,15 +245,7 @@ $master='kasir' @endphp
                             <label for="exampleInputPassword1">Guna Membayar</label>
                             <input type="text" class="form-control readonly" id="gm" required>
                         </div>
-                        <div class="form-group jt">
-                            <label for="exampleInputPassword1">Jatuh Tempo</label>
-                            <input type="date" class="form-control readonly" id="jt" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="kunci" for="exampleInputPassword1">Kunci</label>
-                            <input type="text" class="form-control kunci" id="kunci">
-                        </div>
-
+    
 
 
                     </div>
@@ -212,10 +269,10 @@ $master='kasir' @endphp
             </div>
             <div class="row ml-3 mb-3">
                 <button type="submit" class="btn btn-primary" id="buttonsubmit">Kirim</button>
-                <button type="button" class="btn btn-primary ml-2" href="/notabesar" id="resetbutton"><i class="fa fa-back"></i>Kembali</button>
+                <a type="button" class="btn btn-primary ml-2" href="/notabesar" id="resetbutton"><i class="fa fa-back"></i>Kembali</a>
                
-                <button type="button" class="btn btn-primary ml-2" id="printbutton"><i class="fa fa-print mr-2"></i>Print</button>
-                <button type="button" id="suratjalan" data-toggle="modalgi" data-target="#exampleModal" class="btn btn-primary float-right ml-2">Surat Jalan</button>
+                <button type="button" class="btn btn-warning ml-2" id="printbutton"><i class="fa fa-print mr-2"></i>Print</button>
+                <button type="button" id="suratjalan" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary float-right ml-2">Surat Jalan</button>
             </div>
         </div>
         </form>
@@ -229,25 +286,28 @@ $master='kasir' @endphp
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Surat Jalan</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
+        <form action="" id="sjsubmit">
         <div class="form-group">
-          <label>Keterangan : </label>
-          <textarea class="form-control"></textarea>
+          <label>Jatuh Tempo : </label>
+          <input id="jt" type="date" class="form-control">
         </div>
         <div class="form-group">
-          <label>Keterangan lainnya : </label>
-          <textarea class="form-control"></textarea>
+          <label>Kunci : </label>
+          <input id="kunci" type="text" class="form-control">
         </div>
+        
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-        <button type="button" class="btn btn-primary">Simpan</button>
+        <button type="submit" class="btn btn-primary" id="tbsj">Simpan</button>
       </div>
+</form>
     </div>
   </div>
 </div>

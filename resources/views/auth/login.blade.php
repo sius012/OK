@@ -102,7 +102,6 @@
         <div class="col login d-flex align-items-center justify-content-center mt-3">
             <button type="submit">Log In</button>
         </div>
-        <hr class="bg-light mb-4" style="width: 298px;">
     </div>
     </form>
 </body>

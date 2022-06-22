@@ -7,16 +7,43 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     
-    <style>
+   <style>
+        @font-face {
+
+font-family: tes;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLA.ttf')}}");
+}
+
+@font-face {
+
+font-family: tesb;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
+}
         * {
             margin: 0px;
+            font-family: tes !important;
+            font-size: 10pt;
+            line-height: 70% ;
+        }
+     
 
-            font-size: 12pt;
-            line-height: 120%;
+        
+        body {
+          
+            
+            
+        }
+        
+        td{
+            height: 0px;
+            padding: 1px;
         }
 
-        body{
-            max-height: 5000px;
+        td h4,h5{
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper {
@@ -33,16 +60,19 @@
         .container-wrapper .header .brand-title {
             margin-bottom: 0;
             text-transform: uppercase;
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper table .address .brand-address {
             margin-top: 0;
 
             font-size: 8pt;
+            line-height: 100%;
         }
 
         .container-wrapper table .date-times {
-            font-size: 8pt;
+            font-size: 10pt;
 
             margin-left: 230px;
             width: 200px;
@@ -50,16 +80,22 @@
 
         .container-wrapper .big-title {
             text-align: center;
-            margin-bottom: 30px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper .big-title .title {
-            margin: 0;
+              margin-bottom: 3px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
+            font-size: 12pt;
         }
 
         .container-wrapper .big-title .hr {
             margin: 0;
-       
+
             width: 200px;
             display: inline-flex;
             align-items: center;
@@ -97,15 +133,18 @@
             width: 750px;
         }
 
-        #bigtitle{
+        #bigtitle {
             height: 20px;
 
         }
-        h4{
-            
-            font-size: 12pt;
+
+        h4 {
+
+            font-size: 10pt;
             margin: 0px;
+            padding: 0px !important;
         }
+
 
 
     </style>
@@ -113,12 +152,12 @@
 
 <body>
     <div class="container-wrapper">
-    <table style="margin-top: 20px; width: 1000px">
+    <table style="margin-top: 3px; width: 750px">
             <tr>
                 <td>
                     <div class="address" style="width:200px">
                         <img style="height:20px;" src="{{ public_path('assets/logo.svg') }}" alt="">
-                        <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax 085712423453 / (024) 3554929  <br> Semarang </p>
+                        <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax 085712423453 / (024) 3554929, Semarang </p>
                     </div>
                 </td>
                 <td></td>
@@ -130,7 +169,7 @@
             <tr>
                 <td align="center" id="bigtitle" colspan="3">
                     <div class="big-title">
-                        <h2 class="title">
+                        <h2 class="title" style="text-decoration: underline;">
                             {{ "SURAT JALAN" }}
                         </h2>
                         <h5 class="no-nota">NO.{{ $data->no_nota }}</h5>
@@ -139,29 +178,25 @@
 
             </tr>
             <tr>
-                <td valign="top">
-                    <h4>Telah terima dari</h4>
+                <td valign="top" width="200px">
+                    <h4>Kepada </h4>
                 </td>
-                <td> {{ $data->ttd }}</td>
-                <td></td>
+                <td colspan=2 valign="top"> {{ $data->ttd }}</td>
+           
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Untuk Proyek</h4>
                 </td>
-                <td> {{ $data->up }}</td>
-                <td></td>
+                <td colspan=2 valign="top"> {{ $data->up }}</td>
+              
             </tr>
-            <tr>
-                <td valign="top">
-                    <h4>Guna Membayar</h4>
-                </td>
-                <td> {{ $data->gm }}</td>
-                <td></td>
-            </tr>
+           
+           
             <tr><td></td></tr>
             @foreach($opsi as $opsis)
-                if($opsis->judul != "Waktu" || $opsis->judul != "waktu"){
+                @if($opsis->judul != "Waktu")
+                 
                     <tr>
 
                     <td valign="top">
@@ -171,7 +206,7 @@
 
 
                     </tr>
-                }
+                @endif
                
             @endforeach
             <tr>
@@ -183,19 +218,11 @@
 
 
              </tr>
-             <tr>
-
-            <td valign="top">
-                <h4>Jatuh Tempo</h4>
-            </td>
-            <td colspan="2">{{date("d-M-Y", strtotime($data->jatuh_tempo))}}</td>
-
-
-            </tr>
+           
              <tr>
 
                 <td valign="top">
-                    <h4>Kunci</h4>
+                    <h4>NB</h4>
                 </td>
                 <td colspan="2">{{$data->kunci}}</td>
 
@@ -203,7 +230,7 @@
              </tr>
           
             <tr align="center" >
-                <td colspan="3" style="padding-top:50px; padding-bottom:30px">
+                <td colspan="3" style="padding-top:25px; padding-bottom:30px">
                     <h4 class="ttd-header">Mengetahui,</h4>
 
                 </td>
@@ -219,6 +246,23 @@
                 <td align="center" style="padding-left:150px">
                     <div class="wrappers">
                         <h4 class="sales">Sales,</h4>
+
+                    </div>
+                </td>
+            </tr><br><br>
+             <tr >
+                <td align="center" >
+                    <br><br><br>
+                    <div class="wrappers">
+                        <h4 class="customer">{{"(".str_repeat('.', 25).")"}}</h4>
+
+                    </div>
+                </td>
+                <td></td>
+                <td align="center" style="padding-left:150px">
+                    <div class="wrappers">
+                    <br><br><br>
+                        <h4 class="customer">{{"(".str_repeat('.', 25).")"}}</h4>
 
                     </div>
                 </td>

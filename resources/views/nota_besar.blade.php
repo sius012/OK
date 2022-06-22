@@ -8,31 +8,43 @@
     <title>Document</title>
 
     <style>
+        @font-face {
+
+font-family: tes;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLA.ttf')}}");
+}
+
+@font-face {
+
+font-family: tesb;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
+}
         * {
             margin: 0px;
-
-            font-size: 12pt;
-            line-height: ;
+            font-family: tes !important;
+            font-size: 10pt;
+            line-height: 70% ''
         }
-        @media print {
-            @page {
-                size: landscape
-            }
-        }
+     
 
+        
         body {
-            max-height: 10px;
+          
             
             
         }
-
+        
         td{
             height: 0px;
             padding: 1px;
+            word-wrap: break-word;
         }
 
-        td h4{
-          
+        td h4,h5{
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper {
@@ -49,12 +61,15 @@
         .container-wrapper .header .brand-title {
             margin-bottom: 0;
             text-transform: uppercase;
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper table .address .brand-address {
             margin-top: 0;
 
-            font-size: 10pt;
+            font-size: 8pt;
+            line-height: 100%;
         }
 
         .container-wrapper table .date-times {
@@ -66,11 +81,17 @@
 
         .container-wrapper .big-title {
             text-align: center;
-            margin-bottom: 30px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper .big-title .title {
-            margin: 0;
+              margin-bottom: 3px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
+            font-size: 12pt;
         }
 
         .container-wrapper .big-title .hr {
@@ -111,6 +132,7 @@
 
         .container-wrapper table {
             width: 750px;
+          
         }
 
         #bigtitle {
@@ -120,7 +142,7 @@
 
         h4 {
 
-            font-size: 12pt;
+            font-size: 10pt;
             margin: 0px;
             padding: 0px !important;
         }
@@ -132,25 +154,25 @@
 
 <body>
     <div class="container-wrapper">
-        <table style="margin-top: 20px; width: 1100px">
+        <table style="margin-top: 0px;">
             <tr>
                 <td>
-                    <div class="address" style="width:150px">
+                    <div class="address" style="width:120px">
                         <img style="height:25px;" src="{{ public_path('assets/logo.svg') }}" alt="">
-                        <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax 085712423453 / (024) 3554929  <br>
+                        <p class="brand-address">Jl. Agus Salim D no.10  Telp/Fax 085712423453 / (024) 3554929  
                             Semarang </p>
                     </div>
                 </td>
-                <td style="width:350px"></td>
-                <td align="right" style="width:50px" valign="top">
-                    <h4 class="date-times">Semarang,
-                        {{ date("d-M-Y", strtotime($data->updated_at))}}</h4>
+       
+                <td colspan=2 align="right" style="width:10px" valign="top">
+                    <h4 class="">Semarang,
+                        {{ date("d-M-Y", strtotime($data->created_at))}}</h4>
                 </td>
             </tr>
             <tr>
                 <td align="center" id="bigtitle" colspan="3">
                     <div class="big-title">
-                        <h2 class="title">
+                        <h2 class="title" style="text-decoration: underline;">
                             {{ $data->termin != 3 ? "TANDA TERIMA" : "NOTA" }}
                         </h2>
                         <h5 class="no-nota">NO.{{ $data->no_nota }}</h5>
@@ -159,18 +181,18 @@
 
             </tr>
             <tr>
-                <td style="width:100px" valign="top">
+                <td style="width:200px" valign="top">
                     <h4>Telah terima dari</h4>
                 </td>
-                <td> {{ $data->ttd }}</td>
-                <td></td>
+                <td colspan="2"> {{ $data->ttd }}</td>
+              
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Untuk Proyek</h4>
                 </td>
-                <td> {{ $data->up }}</td>
-                <td></td>
+                <td colspan="2"> {{ $data->up }}</td>
+              
             </tr>
             @if($td != 0)
                 <tr>
@@ -178,38 +200,36 @@
                     <td valign="top">
                         <h4>Pembayaran Sebelumnya</h4>
                     </td>
-                    <td>Rp. {{ number_format($td,0,',','.') }}</td>
-                    <td></td>
-
+                    <td colspan="2">Rp. {{ number_format($td,0,',','.') }}</td>
+                 
                 </tr>
             @endif
             <tr>
                 <td style="" valign="top">
                     <h4>Uang Sejumlah</h4>
                 </td>
-                <td style="padding-bottom: 10px;"> Rp. {{ number_format($data->us,0,',','.') }}</td>
-                <td></td>
+                <td colspan="2" style="padding-bottom: 10px;"> Rp. {{ number_format($data->us,0,',','.') }}</td>
+    
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Berupa</h4>
                 </td>
-                <td> {{ $data->brp }}</td>
-                <td></td>
-            </tr>
+                <td colspan="2"> {{ $data->brp }}</td>
+            
             <tr>
                 <td valign="top">
                     <h4>Guna Membayar</h4>
                 </td>
-                <td> {{ $data->gm }}</td>
-                <td></td>
+                <td colspan="2"> {{ $data->gm }}</td>
+             
             </tr>
             <tr>
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Total</h4>
                 </td>
-                <td style="padding-bottom: 5px;"> Rp. {{ number_format($data->total,0,',','.') }}</td>
-                <td></td>
+                <td colspan="2" style="padding-bottom: 5px;"> Rp. {{ number_format($data->total,0,',','.') }}</td>
+        
             </tr>
             <tr>
                 <td></td>
@@ -229,7 +249,7 @@
                 <tr>
 
                     <td valign="top">
-                        <h4>Kunci</h4>
+                        <h4>NB</h4>
                     </td>
                     <td colspan="2"> {{ $data->kunci }}</td>
                    
@@ -237,14 +257,14 @@
                 </tr>
 
             @endif
-
-            @if($data->termin != 3)
-            <tr align="center">
+                <tr align="center">
                 <td colspan="3" style="padding-top:25px; padding-bottom:30px">
                     <h4 class="ttd-header">Mengetahui,</h4>
 
                 </td>
             </tr>
+            @if($data->termin != 3)
+        
             <tr>
                 <td align="center">
                     <div class="wrappers">
@@ -256,6 +276,22 @@
                 <td align="center" style="padding-left:150px">
                     <div class="wrappers">
                         <h4 class="sales">Sales,</h4>
+
+                    </div>
+                </td>
+            </tr>  <tr >
+                <td align="center" >
+                    <br><br><br>
+                    <div class="wrappers">
+                        <h4 class="customer">{{"(".str_repeat('.', 25).")"}}</h4>
+
+                    </div>
+                </td>
+                <td></td>
+                <td align="center" style="padding-left:150px">
+                    <div class="wrappers">
+                    <br><br><br>
+                        <h4 class="customer">{{"(".str_repeat('.', 25).")"}}</h4>
 
                     </div>
                 </td>

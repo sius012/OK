@@ -60,6 +60,7 @@ $hastoday = false;
                 type: "post",
                 dataType: "json",
                 success: function(data){
+                   
                     let row = data.map(function(datos,i){
                         return `
                             <tr>
@@ -70,15 +71,17 @@ $hastoday = false;
                             </tr>
                         `;
                     });
+                    console.log(id)
                     $("#nn").text("No. nota: "+data[0]['no_nota']);
                     $("#tgl").text("Tanggal: "+data[0]['created_at']);
-                    $("#ttd").text("Nama Pemesan: "+data[0]['ttd']);
+                    $("#ttd").text("Nama Pemesan: "+data[0]['nama_pelanggan']);
                     $("#tlp").text("No Telp: "+data[0]['telepon']);
-                    $("#dp").text("DP: Rp."+parseInt(data[0]['us']).toLocaleString());
-                    $("#btncetak").attr("id_pre",data[0]['id_preorder']);
+                    $("#dp").text("DP: Rp."+parseInt(data[0]['bayar']).toLocaleString());
+                    $("#btncetak").attr("id_pre",data[0]['kode_trans']);
                     $("#contproduk").html(row);
-
+                    $("#preorder-parser").attr("href","/kasir?preorder_id="+data[0]['kode_trans']);
                     $("#examplemodal").modal("show");
+                    $(".btngo").attr("id_pre",data[0]["kode_trans"]);
                 },error: function(err){
                     alert(err.responseText);
                 }
@@ -86,13 +89,19 @@ $hastoday = false;
             })
         });
 
+        $(".btngo").click(function(e){
+            e.preventDefault();
+            window.location = "/selesaikanpreorder/"+$(this).attr("id_pre");
+        });
+
         function printpreorder(id_trans){
+     
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
             },
             data: {
-                id: id_trans,
+                id_pre: id_trans,
             },
             type: 'post',
             dataType: "json",
@@ -107,7 +116,7 @@ $hastoday = false;
     }
 
     $(".btncetak").click(function(){
-        printpreorder($(this).attr("id_pre"));
+     printpreorder($(this).attr("id_pre"));
     });
 
 
@@ -115,7 +124,10 @@ $hastoday = false;
     $(".close").click(function(){
        // alert("hai");
         $("#exampleModal").modal("hide");
-    })
+    });
+
+
+    
     });
 
    
@@ -164,7 +176,7 @@ $hastoday = false;
                 <div>Tanggal Transaksi</div>
             </th>
             <th rowspan="2" style="width:120px;">
-                <div class="mt-3"><a id_trans="{{$datas->id}}" class="btn btn-primary px-3 btninfo"><i style="" class="fa fa-info"></i></a></div>
+                <div class="mt-3"><a id_trans="{{$datas->kode_trans}}" class="btn btn-primary px-3 btninfo"><i style="" class="fa fa-info"></i></a></div>
             </th>
         </tr>
       
@@ -173,13 +185,13 @@ $hastoday = false;
                 <div>{{$datas->no_nota}}</div>
             </td>
             <td>
-                <div>{{$datas->ttd}}</div>
+                <div>{{$datas->nama_pelanggan}}</div>
             </td>
             <td>
                 <div>{{$datas->telepon}}</div>
             </td>
             <td class=" align-items-center justify-content-center">
-                <div>Rp. {{number_format($datas->us)}}</div>
+                <div>Rp. {{number_format($datas->bayar)}}</div>
             </td>
             <td>
                 <div>{{date('d M Y' ,strtotime($datas->created_at))}}</div>
@@ -235,7 +247,8 @@ $hastoday = false;
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary btnclose" data-dismiss="modal">Tutup</button>
-        <button id_pre=""id="btncetak" class="btn btn-info btncetak ml-2"><i style="" class="fa fa-print"></i></button>
+        <button id_pre=""id="btncetak" class="btn btn-primary btncetak ml-2"><i style="" class="fa fa-print"></i></button>
+        <a href="/selesaikanpreorder/" id="preorder-parser"><button id_pre=""id="btngo" class="btn btn-secondary btngo ml-2"><i style="" class="fa fa-arrow"></i>Lunasi</button></a>
       </div>
     </div>
   </div>

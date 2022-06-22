@@ -132,7 +132,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Paket</h5>
+                <h5 class="modal-title">Edit Paket</h5>
                 <button type="button" class="closedBtn close" >
                     <span aria-hidden="true">&times;</span>
                 </button> 
@@ -162,7 +162,7 @@
                         <input type="text" class="form-control bg-light" name="jumlah[]" value="{{$data2['jumlah'][$i]}}" placeholder="Jumlah" required>
                     </div>
                     <div class="col">
-                    @if($i == 0)<Label>Harga</Label>@endif
+                    @if($i == 0)<Label>Harga Promo</Label>@endif
                         <input type="text" class="form-control bg-light" placeholder="Harga" value="{{$data2['harga'][$i]}}" name="harga[]" required>
                     </div>
                 </div>

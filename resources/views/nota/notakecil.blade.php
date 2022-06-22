@@ -29,9 +29,11 @@ $subtotal = 0;
         * {
             font-family: monospace;
             text-transform: uppercase;
-            font-weight: bold;
+            font-weight: bold !important;
             letter-spacing: -0.5px;
             font-stretch: 10%;
+           
+        
         }
 
         html {
@@ -41,7 +43,8 @@ $subtotal = 0;
 
         body {
             margin: 0px;
-
+            margin-top: 10px;
+              margin-left:  10px;
 
         }
 
@@ -157,15 +160,18 @@ $subtotal = 0;
             margin-left: -45px;
         }
 
-        table {
+        .table {
             font-size: 10pt;
-            width: 63mm;
+            width: 70mm;
             align-items: center;
+            table-layout: fixed;
+
         }
 
         td,
         th {
             font-size: 10pt;
+            word-wrap: break-word;
         }
 
         .centering {
@@ -186,12 +192,12 @@ $subtotal = 0;
 
         .alamat {
             font-size: 8pt;
-            margin-left: -30px;
+            margin-left: -80px;
 
             font-weight: lighter;
 
             text-align: center;
-            width: 200px;
+            width: 300px;
             margin-bottom:4px;
         }
 
@@ -213,31 +219,37 @@ $subtotal = 0;
 
         <hr style="margin:0;">
         <div>
-            <table>
+            <table class="table" >
 
                 <tr>
-                    <td style="text-align: center; font-size: 1rem;" colspan=2>NOTA</td>
+                    <td   width = 100 style="text-align: center; font-size: 1rem;" colspan=2>{{$data[0]->status == "return" ? "RETUR" : NOTA}}</td>
                 </tr>
                 @if($data[0]->status == 'return')
                 <tr>
-                    <td style="text-align: center;" colspan=2>Invoice: {{ $data[0]->keterangan  }}</td>
+                    <td style="width: 100px !important"   colspan=2>Invoice: {{ $data[0]->keterangan  }}</td>
                 </tr>
                 @endif
                 <tr>
+                    <td>{{$data[0]->no_nota}}</td>
+                    <td style="width: 100px !important" align="left" width="300"></td>
+
+                </tr>
+                <tr>
                     <td>{{$data[0]->metode}}</td>
-                    <td align="right">{{date("d-m-Y" ,strtotime($data[0]->created_at))}}</td>
+                    <td style="width: 100px !important" align="left" width="300"></td>
 
                 </tr>
                 <tr>
                    <td>YTH. {{$data[0]->nama_pelanggan}}</td>
-                   <td align="right">KSR. {{$data[0]->name}}</td>
+                   <td style="width: 100px !important; font-size: 8.5pt" width ='10000' align="right" width="300">{{date("d-m-Y h:i:s")}}</td>
+                  
                 </tr>
                 <tr>
                    <td>{{$data[0]->telepon}}</td>
-                   <td align="right"></td>
+                    <td style="width: 100px !important" width ='100' align="right">KSR. {{$data[0]->name}}</td>
                 </tr>
                 <tr>
-                   <td align="left" colspan="2">{{$data[0]->alamat}}</td>
+                   <td  style="width: 100px !important"width ='100' align="left" colspan="2">{{$data[0]->alamat}}</td>
                 </tr>
 
             </table>
@@ -245,22 +257,22 @@ $subtotal = 0;
         <hr sytle="margin:0;">
         <div class="row">
             <div class="col d-flex align-items-center justify-content-center">
-                <table class="table">
+                <table class="table2 ">
 
 
-                    <tbody>
+                  
                         @foreach($data2 as $dats)
                         <tr>
 
-                            <td colspan="2">{{$dats->nama_kodetype}} {{$dats->nama_merek}} {{$dats->nama_produk}}</td>
+                            <td colspan="3" style="width:50mm">{{$dats->nama_kodetype}} {{$dats->nama_merek}} {{$dats->nama_produk}}</td>
 
 
                         </tr>
 
                         <tr>
-                            <td style="width: 130px"> {{$dats->jumlah}} {{$dats->satuan}} {{" x"}} {{number_format($dats->harga,"0",".",".")}}</td>
-                            <td align="left">-{{$dats->prefix !== 'rupiah' ? $dats->potongan."%" : number_format($dats->potongan,"0",",",".")}}</td>
-                            <td style="width: 70x" align="right">{{number_format(Tools::doDisc($dats->jumlah,$dats->harga_produk,$dats->potongan,$dats->prefix),0,".",".")}}</td>
+                            <td style="width: 125px"> {{$dats->jumlah}} {{$dats->satuan}} {{" x"}} {{number_format($dats->harga,"0",".",".")}}</td>
+                            <td  align="left">@if($dats->potongan > 0 )-{{$dats->prefix !== 'rupiah' ? $dats->potongan."%" : number_format($dats->potongan,"0",",",".")}}@endif</td>
+                            <td style="width: 70px" align="right">{{number_format(Tools::doDisc($dats->jumlah,$dats->harga_produk,$dats->potongan,$dats->prefix),0,".",".")}}</td>
                             @php $no++; 
                             
                             $subtotal += Tools::doDisc($dats->jumlah,$dats->harga_produk,$dats->potongan,$dats->prefix);
@@ -271,21 +283,33 @@ $subtotal = 0;
                     </tbody>
                 </table>
                 @if($data[0]->status !== 'return')
-                <table>
-
+                <table class="table">
+                    @if($data[0]->diskon > 0)
                     <tr>
                         <td>Subtotal</td>
                         <td align="right">{{number_format($subtotal,0,".",".")}}</td>
 
                     </tr>
+                  
+                    @endif
+                    
+                    @if($data[0]->diskon > 0)
                     <tr>
                         <td>DISC</td>
-                        <td align="right">{{number_format($data[0]->diskon, 0,".",".")}}</td>
+                        <td align="right"> {{$data[0]->prefix == "rupiah" ? number_format($data[0]->diskon, 0,".",".") : $data[0]->diskon."%"}}</td>
 
                     </tr>
+                    @endif
+                    @if($data[0]->keterangan_retur != null)
                     <tr>
-                        <td></td>
-                        <td align="right">{{number_format($subtotal - $data[0]->diskon, 0,".",".") }}</td>
+                        <td>PEMBAYARAN SEBELUMNYA</td>
+                        <td align="right" valign="top">{{number_format($data[0]->tlh_bayar,0,".",".")}}</td>
+                    </tr>
+                    @endif
+                   
+                    <tr>
+                        <td>Grand Total</td>
+                        <td align="right">{{number_format(Tools::doDisc(1,$subtotal,$data[0]->diskon,$data[0]->prefix,0,".",".") - $data[0]->tlh_bayar,0,".",".") }}</td>
 
                     </tr>
 
@@ -297,13 +321,13 @@ $subtotal = 0;
                     @if($data[0]->status == "belum lunas")
                     <tr>
                         <td>Kurang Bayar</td>
-                        <td align="right">{{number_format(  ($subtotal - $data[0]->diskon) - $data[0]->bayar,0,".",".") }}</td>
+                        <td align="right">{{number_format(Tools::doDisc(1,$data[0]->subtotal,$data[0]->diskon,$data[0]->prefix) - $data[0]->bayar,0,'.','.') }}</td>
 
                     </tr>
                     @else
                     <tr>
                         <td>Kembalian</td>
-                        <td align="right">{{number_format( $data[0]->bayar - ($subtotal - $data[0]->diskon),0,".",".") }}</td>
+                        <td align="right">{{number_format($data[0]->bayar -$data[0]->subtotal,0,".",".") }}</td>
 
                     </tr>
                     @endif
@@ -316,10 +340,14 @@ $subtotal = 0;
               
                 <p style="margin:3px;">* Barang yang sudah dibeli <br> tidak dapat ditukar<br><br>
                 @endif
+
+                
                
                 
 
                     Terimakasih</p>
+
+                   
             </div>
         </div>
 

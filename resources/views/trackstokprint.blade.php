@@ -1,5 +1,6 @@
 @php 
     $no = 1;
+    
 @endphp
 @php
         $date = \Carbon\Carbon::parse(date('d-M-Y'))->locale('id');
@@ -234,6 +235,7 @@
     
             @php  
             $jumlah=0;
+            
             $total=0;
             
             $no = 1@endphp
@@ -246,7 +248,7 @@
                        <td>{{date("d-M-Y",strtotime($da->created_at))}}</td>
                        <td>{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
-                        @if(Auth::user()->roles[0]['name']="manager") <td >{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
+                        @if(Auth::user()->roles[0]['name']=="manager") <td >{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
                         <td>{{$da->jumlah}}</td>
 
                     </tr>
@@ -259,11 +261,25 @@
                     
                     @endforeach
                     <tr>
-                    @if(Auth::user()->roles[0]['name']="manager") <td colspan="4">Total</td> @else <td colspan="6">Total</td>@endif
-                        @if(Auth::user()->roles[0]['name']="manager")<td>Rp. {{number_format($total,0,",",".")}}</td>@endif
+                    @if(Auth::user()->roles[0]['name']=="manager") <td colspan="4">Total</td> @else <td colspan="4">Total</td>@endif
+                        @if(Auth::user()->roles[0]['name']=="manager")<td>Rp. {{number_format($total,0,",",".")}}</td>@endif
                         <td>{{$jumlah}}</td>
 
                     </tr>
+                    @if(Auth::user()->roles[0]['name']=='manager')
+                    @isset($k1potongan)
+                    <tr>
+                        <td colspan=4>Potongan</td>
+                        <td>Rp. {{number_format($k1potongan,0,".",".")}}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan=4>Total Pemasukan</td>
+                        <td>Rp. {{number_format($total - $k1potongan,0,".",".")}}</td>
+                        <td></td>
+                    </tr>
+                    @endisset
+                    @endif
                 
             </table>
         @endisset

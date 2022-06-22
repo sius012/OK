@@ -82,7 +82,7 @@ $master='home'; @endphp
                                 <span class="description-text">Pemasukan Nota Kecil</span>
 
                                 <h5 class="description-header">
-                                    Rp.{{ number_format($daily['hari']['pemasukan nota kecil']) }}
+                                    Rp.{{ number_format($daily['minggu']['pemasukan nota kecil']) }}
                                 </h5>
 
                             </div>
@@ -93,7 +93,7 @@ $master='home'; @endphp
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan nota besar</span>
                                 <h5 class="description-header">Rp.
-                                    {{ number_format($daily['hari']['pemasukan nota besar']) }}
+                                    {{ number_format($daily['minggu']['pemasukan nota besar']) }}
                                 </h5>
 
                             </div>
@@ -104,7 +104,7 @@ $master='home'; @endphp
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan preorder</span>
                                 <h5 class="description-header">Rp.
-                                    {{ number_format($daily['hari']['pemasukan preorder']) }}
+                                    {{ number_format($daily['minggu']['pemasukan preorder']) }}
                                 </h5>
 
                             </div>
@@ -131,7 +131,7 @@ $master='home'; @endphp
                                 <span class="description-text">Pemasukan Nota Kecil</span>
 
                                 <h5 class="description-header">
-                                    Rp.{{ number_format($daily['hari']['pemasukan nota kecil']) }}
+                                    Rp.{{ number_format($daily['bulanan']['pemasukan nota kecil']) }}
                                 </h5>
 
                             </div>
@@ -142,7 +142,7 @@ $master='home'; @endphp
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan nota besar</span>
                                 <h5 class="description-header">Rp.
-                                    {{ number_format($daily['hari']['pemasukan nota besar']) }}
+                                    {{ number_format($daily['bulanan']['pemasukan nota besar']) }}
                                 </h5>
 
                             </div>
@@ -153,7 +153,7 @@ $master='home'; @endphp
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan preorder</span>
                                 <h5 class="description-header">Rp.
-                                    {{ number_format($daily['hari']['pemasukan preorder']) }}
+                                    {{ number_format($daily['bulanan']['pemasukan preorder']) }}
                                 </h5>
 
                             </div>

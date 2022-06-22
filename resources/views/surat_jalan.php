@@ -6,16 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+ <style>
+        @font-face {
 
-    <style>
+font-family: tes;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLA.ttf')}}");
+}
+
+@font-face {
+
+font-family: tesb;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
+}
         * {
-            margin: 0px;
-
+            margin: 100px;
+            font-family: tes !important;
             font-size: 10pt;
+            line-height: 70% ;
+        }
+     
+
+        
+        body {
+          
+            
+            
+        }
+        
+        td{
+            height: 0px;
+            padding: 1px;
         }
 
-        body{
-            max-height: 5000px;
+        td h4,h5{
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper {
@@ -32,16 +59,19 @@
         .container-wrapper .header .brand-title {
             margin-bottom: 0;
             text-transform: uppercase;
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper table .address .brand-address {
             margin-top: 0;
 
             font-size: 8pt;
+            line-height: 100%;
         }
 
         .container-wrapper table .date-times {
-            font-size: 8pt;
+            font-size: 10pt;
 
             margin-left: 230px;
             width: 200px;
@@ -49,16 +79,22 @@
 
         .container-wrapper .big-title {
             text-align: center;
-            margin-bottom: 30px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper .big-title .title {
-            margin: 0;
+              margin-bottom: 3px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
+            font-size: 12pt;
         }
 
         .container-wrapper .big-title .hr {
             margin: 0;
-       
+
             width: 200px;
             display: inline-flex;
             align-items: center;
@@ -96,15 +132,18 @@
             width: 750px;
         }
 
-        #bigtitle{
+        #bigtitle {
             height: 20px;
 
         }
-        h4{
-            
-            font-size: 9pt;
-            
+
+        h4 {
+
+            font-size: 10pt;
+            margin: 0px;
+            padding: 0px !important;
         }
+
 
 
     </style>

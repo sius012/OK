@@ -12,23 +12,28 @@ use PDF;
 class StokController extends Controller
 {
     public function index(Request $req){
-     
+        $tiper = "";
+        $ctr = "";
+        $merekr = "";
 
-        $kategori = DB::table('tipes')->get();
-        $kodetype = DB::table('kode_types')->get();
-        $merek = DB::table('mereks')->get();
+        $kategori = DB::table('tipes')->orderBy('nama_tipe','asc')->get();
+        $kodetype = DB::table('kode_types')->orderBy('nama_kodetype','asc')->get();
+        $merek = DB::table('mereks')->orderBy('nama_merek','asc')->get();
         $produk = DB::table('stok')->join('new_produks','new_produks.kode_produk','=','stok.kode_produk')
         ->join('mereks','new_produks.id_merek','mereks.id_merek')
         ->join('tipes','new_produks.id_tipe','tipes.id_tipe')
         ->join('kode_types','new_produks.id_ct','kode_types.id_kodetype');
         if($req->filled("tipe")){
             $produk->where('new_produks.id_tipe',$req->tipe);
+            $tiper = $req->tipe;
         }
         if($req->filled("kodetipe")){
             $produk->where('new_produks.id_ct',$req->kodetipe);
+                $ctr = $req->kodetipe;
         }
         if($req->filled("merek")){
             $produk->where('new_produks.id_merek',$req->merek);
+                $merekr = $req->merek;
         }
         if($req->filled("jumlahstok")){
             if($req->jumlahstok == "ps"){
@@ -40,7 +45,11 @@ class StokController extends Controller
             }
         }
 
-        return view("stok", ["tipe" => $kategori,"produk"=>$produk->take(20)->get(), "data" => $produk->get(), "merek" => $merek, "kodetype" => $kodetype]);
+        return view("stok", [
+            "tiper" => $tiper,
+            "ctr" => $ctr,
+            "merekr" => $merekr,
+            "tipe" => $kategori,"produk"=>$produk->get(), "data" => $produk->get(), "merek" => $merek, "kodetype" => $kodetype]);
     }
 
 
@@ -135,7 +144,7 @@ class StokController extends Controller
         $data = $this->loaddatastok('ambilsaja');
         $jumlah = 0;
         foreach($data as $datas){
-            DB::table('stok')->insert(['kode_produk'=>$datas->kode_produk,'jumlah'=>10]);
+            DB::table('stok')->insert(['kode_produk'=>$datas->kode_produk,'jumlah'=>0]);
             $jumlah += 1;
         }
 

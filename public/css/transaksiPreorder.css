@@ -41,7 +41,7 @@
 
 .card table {
     margin: 15px;
-    text-align: center;
+    
     margin: 0px;
     border: none;
     margin-bottom: 13px;
@@ -55,6 +55,7 @@
 
     padding-bottom: 0;
     text-align: center;
+
 }
 
 .card .table thead tr th {
@@ -101,6 +102,10 @@ table td{
 table{
     width: 100%;
     
+}
+
+th div{
+    text-align: center;
 }
 
 

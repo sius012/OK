@@ -36,47 +36,53 @@
 
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    @if(Auth::user()->roles[0]['name'] == 'kasir' or Auth::user()->roles[0]['name'] == 'manager')
     <script>
-        $(document).ready(function() {
-            $(document).on('click', '.btnlink', function(e) {
+        $(document).ready(function(){
+         
+            
+            $(document).on('click', '.btnlink', function(e){
                 e.preventDefault();
-                window.location = "/prosesbayar/" + $(this).attr('id_nb');
+                window.location = "/prosesbayar/"+$(this).attr('id_nb');
             });
-            $.ajax({
-                headers: {
-                    "X-CSRF-TOKEN": $("meta[name=csrf-token]").attr('content')
-                , }
-                , url: "/checkdata"
-                , type: "post"
-                , dataType: "json"
-                , success: function(data) {
-                    $(".badger").html(data.length);
-                    let row = data.map(function(datas) {
-                        return `<a href="#" id_nb='${datas['id_transaksi']}' class="dropdown-item p-3 btnlink">
+            $.ajax(
+                {
+                    headers: {
+                        "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content'),
+                    },
+                    url: "/checkdata",
+                    type: "post",
+                    dataType: "json",
+                    success: function(data){
+                        
+                         $(".badger").html(data.length);
+                        let row=data.map(function(datas){
+                            return `<a href="#" id_nb='${datas['id_transaksi']}' class="dropdown-item p-3 btnlink">
                         <i class="fas fa-info mr-2"></i>No Nota ${datas['no_nota']} sudah mendekati jatuh tempo
                     </a>`;
-                    });
-
-                    $(".cont-notif").html(row);
-                    $(".titler").html(row.length + " Notifikasi");
-
+                        });
+                        
+                        $(".cont-notif").html(row);
+                        if(data.length > 0){
+                            $(".titler").html(row.length + " Notifikasi");
+                        }else{
+                            $(".badger").hide();
+                            $(".titler").hide();
+                        }
+                      
+                        
+                       
+                    },error: function(err){
+                       
+                      //  alert(err.responseText);
+                    }
                 }
-                , error: function(err) {
-                    //  alert(err.responseText);
-                }
-            });
+            );
         });
-
     </script>
+    @endif
     @yield('css')
     @yield('js')
-    <style type="text/css">
-        @font-face {
-            font-family: 'Quicksand';
-            src: url('{{ public_path('../../storage/fonts/Quicksand-Regular.ttf') }}');
-        }
-
-    </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper m-0">
@@ -110,22 +116,20 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="far fa-bell"></i>
-                        <span class="badge badge-warning navbar-badge badger">15</span>
+                    <i class="far fa-bell"></i>
+              @if(Auth::user()->roles[0]['name'] != 'admin gudang')      <span class="badge badge-danger navbar-badge badger">0</span>@endif
                     </a>
                     <div class="dropdown-menu dropdown-menu dropdown-menu-right row ">
-                        <span class="dropdown-item dropdown-header titler">15 Notifications</span>
-                        <div class="dropdown-divider"></div>
-                        <div class="cont-notif"></div>
-                        <div class="dropdown-divider"></div>
+                    <span class="dropdown-item dropdown-header titler">15 Notifications</span>
+                    <div class="dropdown-divider"></div><div class="cont-notif"></div>
+                    <div class="dropdown-divider"></div>
                     </div>
                 </li>
 
                 <li>
 
-                    <a class="dropdown-item m-0 p-0 mt-2" href="{{ route('logout') }}" onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                        <p> <i class="fa fa-sign-out text-dark"></i> <b>Logout<b></p>
+                    <a class="dropdown-item m-0 p-0 mt-2" href="{{ route('logout') }}" data-toggle='modal' data-target='#logoutmdl'>
+                        <p class="bg-danger m-2 px-3 py-1 elevation-1 text-align-center rounded-pill">  <i class="fa fa-sign-out text-dark "></i> <b class="">Logout<b></p>
                     </a>
 
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -147,42 +151,42 @@
     </a> -->
 
             <!-- Sidebar -->
-            <div class="sidebar  p-0 overflow-x-hidden" style="overflow-x: hidden !important;">
-                <a href="index3.html" class="brand-link m-0 d-flex align-items-center justify-content-center" style="border-bottom:2px solid white;padding: 15px; background-color: #06335C;">
+            <div class="sidebar  p-0 overflow-x-hidden" style="overflow-x: hidden !important;" >
+                <a href="{{url('/accountsetting')}}" class="brand-link m-0 d-flex align-items-center justify-content-center" style="border-bottom:2px solid white;padding: 15px; background-color: #06335C;">
                     <img style="margin-right: -40px;" src="{{asset('assets/preloader.svg')}}" alt="AdminLTE Logo" class="brand-image m-0">
-                    <span style="color: #FAE511; margin-left: 10px;">Omah Kunci</span>
+                    <span style="color: #FAE511;" class="brand-text font-weight-bold">Omah Kunci</span>
                 </a>
                 <!-- Sidebar user panel (optional) -->
-                <div class="mt-3 pb-3 mb-3 d-block pl-0  ">
+                <div class="mt-3 pb-3 mb-3 d-block pl-0  " >
                     <div class="image">
-                        <a href="{{ url('/profile') }}">
-                            <img style="height: 90px;" src="{{asset('assets/pp/'.auth()->user()->pp)}}" class="img-circle mb-2" alt="User Image">
+                        <a href="{{url('/accountsetting')}}">
+                            <img style="height: 90px;" width="90" src="{{asset('assets/pp/'.auth()->user()->pp)}}" class=" elevation-2 img-circle mb-2" alt="User Image">
                         </a>
                     </div>
                     <div class="">
                         <p class="d-block text-light">{{Auth::user()->name}}</p>
                     </div>
-                    @php
-                    $role = "Guest";
-                    switch(Auth::user()->roles[0]['name']){
-                    case "manager":
-                    $role = "Manager";
-                    break;
-                    case "admin gudang":
-                    $role = "Admin Gudang";
-                    break;
-                    case "kasir":
-                    $role="Kasir";
-                    break;
-                    default:
-                    $role="Guest";
-                    break;
-                    }
-
-
+                    @php  
+                        $role = "Guest";
+                        switch(Auth::user()->roles[0]['name']){
+                            case "manager":
+                                $role = "Manager";
+                                break;
+                            case "admin gudang":
+                                $role = "Admin Gudang";
+                                break;
+                            case "kasir":
+                                $role="Kasir";
+                                break;
+                            default:
+                                $role="Guest";
+                                break;
+                        }
+                    
+                    
                     @endphp
 
-
+                    
                     <p class="text-light mb-0 mt-0">{{$role }}</p>
                 </div>
 
@@ -203,6 +207,19 @@
                     <ul class="nav nav-pills nav-sidebar flex-column ml-2" data-widget="treeview" role="menu" data-accordion="false" style="overflow-x: none !important">
                         <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+               @if(Auth::user()->roles[0]['name'] == 'manager')   
+               <li class=" nav-item">
+                                        <a href="{{url('/dashboard')}}" class="nav-link {{$whoactive=='dashboard' ? 'active' : ''}}"" >
+                  <p>Dashboard</p>
+                </a>
+              </li>
+
+               @endif
+                <li class="nav-item">
+                                    <a href="{{url('/stok')}}" class="nav-link {{$whoactive =='katalog' ? 'active' : ''}}">
+                                        <p>Katalog</p>
+                                    </a>
+                                </li>
                         @if(auth()->user()->roles[0]['name'] == 'kasir' or auth()->user()->roles[0]['name'] == 'manager' )
                         <li class="nav-item menu-open">
                             <a style="background-color: rgba(108, 117, 125, 0.253); " href="#" class="nav-link {{$master=='kasir' ? 'actives' : ''}}">
@@ -217,27 +234,32 @@
                 </a>
               </li>
               <li class=" nav-item">
-                                        <a href="{{url('/transaksi')}}" class="nav-link {{$whoactive=='riwayattransaksi' ? 'active' : ''}}"" >
+                                        <a href="{{url('/transaksi')}}" class="nav-link {{$whoactive=='riwayattransaksi' ? 'active' : ''}}">
                   <p>Riwayat Transaksi</p>
                 </a>
               </li>
               <li class=" nav-item">
-                                            <a href="{{url('/preorderpage')}}" class="nav-link {{$whoactive=='preorderpage' ? 'active' : ''}}"" >
+                                        <a href="{{url('/menusuratjalan')}}" class="nav-link {{$whoactive=='menusuratjalan' ? 'active' : ''}}">
+                  <p>Surat Jalan</p>
+                </a>
+              </li>
+              <li class=" nav-item">
+                                        <a href="{{url('/preorderpage')}}" class="nav-link {{$whoactive=='preorderpage' ? 'active' : ''}}"" >
                   <p>Riwayat Preorder</p>
                 </a>
               </li>
-              
-                                <li class=" nav-item">
-                                                <a href="{{url('/notabesar')}}" class="nav-link {{$whoactive=='notabesar' ? 'active' : ''}}"">
+
+                                <li class="nav-item">
+                                    <a href="{{url('/notabesar')}}" class="nav-link {{$whoactive=='notabesar' ? 'active' : ''}}"">
                   <p>Nota Besar</p>
                 </a>
               </li>
               <li class=" nav-item">
-                                                    <a href="{{url('/transaksipreorder')}}" class="nav-link {{$whoactive=='riwayatnotabesar' ? 'active' : ''}}">
-                                                        <p>Riwayat Nota Besar</p>
-                                                    </a>
+                                        <a href="{{url('/transaksipreorder')}}" class="nav-link {{$whoactive=='riwayatnotabesar' ? 'active' : ''}}">
+                                            <p>Riwayat Nota Besar</p>
+                                        </a>
                                 </li>
-
+                            
                             </ul>
                         </li>
                         @endif
@@ -252,11 +274,7 @@
                             </a>
                             <ul class="nav nav-treeview">
 
-                                <li class="nav-item">
-                                    <a href="{{url('/stok')}}" class="nav-link {{$whoactive =='katalog' ? 'active' : ''}}">
-                                        <p>Katalog</p>
-                                    </a>
-                                </li>
+                               
                                 <li class="nav-item">
                                     <a href="{{url('detailstok')}}" class="nav-link {{$whoactive =='stokharian' ? 'active' : ''}}">
                                         <p>Stok Harian</p>
@@ -292,9 +310,16 @@
                                         <p>Kelola Akun</p>
                                     </a>
                                 </li>
+                               
                             </ul>
                         </li>
                         @endif
+                        <li class="nav-item">
+                                    <a href="{{ url('accountsetting') }}" class="nav-link  {{$whoactive =='pakun' ? 'active' : ''}}">
+
+                                        <p>Pengaturan Akun</p>
+                                    </a>
+                                </li>
 
 
 
@@ -313,11 +338,20 @@
             <div class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-2">
-                        <div class="col-sm-6">
-                            <h1 class="m-0 font-weight-bold mb-2">
-                                <i class="@yield('icon')"></i>
-                                @yield('pagetitle')
-                            </h1>
+                        <div class="col">
+                            <div class="row">
+                                <div class="col">
+                                <h1 class="m-0 font-weight-bold mb-2">
+                                    <i class="@yield('icon')"></i>
+                                    @yield('pagetitle')
+                                </h1>
+                                </div>
+                                <div class="col">
+                                <div class="float-right">
+                                    @yield('tanggal')
+                                    </div>
+                                    </div>
+                            </div>
                         </div><!-- /.row -->
                     </div><!-- /.container-fluid -->
                 </div>
@@ -342,6 +376,24 @@
         <!-- ./wrapper -->
 
         <!-- jQuery -->
+
+        <div class="modal fade bd-example-modal-sm" id="logoutmdl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    
+    <div class="modal-content p-3">
+      <p class="text-center">Anda yakin mau keluar ?</p>
+      <div class="row">
+          <div class="col-6 d-flex align-items-center justify-content-center">
+            <button data-dismiss="modal " class="btn btn-secondary btn-closer" >Tidak</button>
+          </div>
+          <div class="col-6 d-flex align-items-center justify-content-center">
+            <button class="btn btn-danger"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Ya</button>
+          </div>
+      </div>
+     
+    </div>
+  </div>
+</div>
 
         <script src="{{asset('plugins/jquery/jquery.min.js')}}"></script>
         <!-- jQuery UI 1.11.4 -->
@@ -368,8 +420,8 @@
         <!-- Tempusdomiasset Bootstrap 4 -->
         <script src="{{asset('plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
         <!-- Summernoteasset> -->
-        <script src="{{asset('plugins/summernote/summernote-bs4.min.js')}}"></script>
-        <!-- overlayScrassetbars -->
+<script src="{{asset('plugins/summernote/summernote-bs4.min.js')}}"></script>
+<!-- overlayScrassetbars -->
         <script src="{{asset('plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
         <!-- AdminLTE Aasset-->
         <script src="{{asset('dist/js/adminlte.js')}}"></script>

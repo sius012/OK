@@ -11,43 +11,43 @@ $(document).ready(function(){
     $("#gm").val('Pintu Garasi');
     var pg = `
         <label for='ukuranpg readonly'>Ukuran : </label>
-        <input required class="form-control readonly" id="ukuranpg">
+        <input required class="form-control readonly mb-3" id="ukuranpg">
         <label for='daunpintupg'>Daun Pintu : </label>
-        <input required class="form-control readonly" id="daunpintupg">
+        <input required class="form-control readonly mb-3" id="daunpintupg">
         <label for='arahtikungpg'>Arah Tikung : </label>
-        <input required class="form-control readonly" id="arahtikungpg">
+        <input required class="form-control readonly mb-3" id="arahtikungpg">
         <label for='pilarpg'>Pilar : </label>
-        <input required class="form-control readonly" id="pilarpg">
+        <input required class="form-control readonly mb-3" id="pilarpg">
         <label for='warnatipepg'>Warna/Tipe : </label>
-        <input required class="form-control readonly" id="warnatipepg">
+        <input required class="form-control readonly mb-3" id="warnatipepg">
         <label for='waktupg'>Waktu : </label>
         <textarea type="text-area" required class="form-control readonly" id="waktupg" value="">2 Bulan dari Penerimaan DP 50% dan persetujuan warna, tipe, ukuran lebar dan tinggi lapangan</textarea>
     `;
 
     var pgadp = `
     <label for='ukurankusenpgadp'>Ukuran : </label>
-    <input required class="form-control readonly" id="ukurankusenpgadp">
+    <input required class="form-control readonly mb-3" id="ukurankusenpgadp">
     <label for='warnatipepgadp'>Warna/Tipe : </label>
-    <input required class="form-control readonly" id="warnatipepgadp">
+    <input required class="form-control readonly mb-3" id="warnatipepgadp">
     <label for='waktupgadp'>Waktu : </label>
     <textarea type="text-area" required class="form-control readonly" id="waktupgadp" value="">2 Bulan dari Penerimaan DP 50% dan persetujuan warna, tipe, ukuran lebar dan tinggi lapangan</textarea>
 `;
 
 var ag = `
 <label for='ukuranag'>Ukuran Diperuntukan : </label>
-<input required class="form-control readonly" id="ukuranag">
+<input required class="form-control readonly mb-3" id="ukuranag">
 
 `;
 var upvc = `
 <label for='itembarangupvc'>Item Barang : </label>
-<input required class="form-control readonly" id="itembarangupvc">
+<input required class="form-control readonly mb-3" id="itembarangupvc">
 <label for='warnatipeupvc'>Warna/Tipe : </label>
-<input required class="form-control readonly" id="warnatipeupvc">
+<input required class="form-control readonly mb-3" id="warnatipeupvc">
 `;
 
 var omge = `
-<label for='ukuranomge'>Ukuran(Ekstimasi) : </label>
-<input required class="form-control readonly" id="ukuranomge">
+<label for='ukuranomge'>Ukuran(Estimasi) : </label>
+<input required class="form-control readonly mb-3" id="ukuranomge">
 
 `;
 
@@ -102,7 +102,7 @@ $("#trigger").click(function(e){
     });
 
     $("ul").on("click", "li .cc", function(e){
-
+        $("#notabesar").hide();
         tampilkannb($(e.target).attr('id_nb'));
     });
 
@@ -147,7 +147,7 @@ $("#trigger").click(function(e){
         var judulupvc = ["Item Barang", "Warna/Tipe"];
         var ospiupvc = [$("#itembarangupvc").val(), $("#warnatipeupvc").val()];
 
-        var judulomge = ["Ukuran(Ekstimasi)"];
+        var judulomge = ["Ukuran(Estimasi)"];
         var ospiomge = [$("#ukuranomge").val()];
 
         var currentjudul = judulpg;
@@ -222,7 +222,7 @@ $("#trigger").click(function(e){
                 }
               
                 Swal.fire({
-                    title: url == "/bayarpreorder" ? "Pembayaran selesai" : "Transaksi Berhasi Ditambahkan" 
+                    title: url == "/bayarpreorder" ? "Pembayaran selesai" : "Transaksi Berhasil Ditambahkan" 
                 });
              //   $("#preorderform input").val("");
                 $("#preorderform").attr("disabled", "disabled");
@@ -269,6 +269,7 @@ $("#trigger").click(function(e){
                 printJS({printable: response['filename'], type: 'pdf', base64: true, style: '@page { size: Letter landscape; }'});
             },error: function(err){
                 Swal.fire('terjadi kesalahan','','info');
+                alert(err.responseText);
             }
         });
     });

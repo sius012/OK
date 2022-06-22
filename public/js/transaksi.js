@@ -11,6 +11,22 @@ $(document).ready(function(e){
 
     });
 
+    $(".hps-draf").click(function(){
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            url: "/hapusdraf",
+
+            type: "post",
+            success: function(response){
+                window.location = "/transaksi";
+            },error: function(err){
+                alert(err.responseText);
+            }
+        });
+    });
+
     $(".printing").click(function(){
         $.ajax({
             headers: {
@@ -29,9 +45,37 @@ $(document).ready(function(e){
         });
     });
 
+
+    $(".printingtt").click(function(){
+     
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            url: "/printtandaterima",
+            data: {
+                id: $(this).attr('id_trans')
+            },
+            type: "post",
+            success: function(response){
+                printJS({printable: response, type: 'pdf', base64: true});
+            },error: function(err){
+                alert(err.responseText);
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+
     $(".content-wrapper").on("click", ".datatrans", function(event){
         $("#exampleModal").modal('show');
-    
+       
         $.ajax({
             headers:  {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -104,7 +148,7 @@ $(document).ready(function(e){
 
 
     function bayarcicilan(termin, data){
-        alert(data['kode_transaksi']);
+     
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN' : $("meta[name='csrf-token']").attr('content')
@@ -164,8 +208,12 @@ $(document).ready(function(e){
      });
 
      $(".returntrans").click(function(e){
+        $("#keterangan-retur").hide();
+        $("#nominal-telah-bayar").hide();
          e.preventDefault();
          $("#returnform").modal("show");
+     
+
          $.ajax({
              headers: {
                 "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content'),
@@ -181,12 +229,13 @@ $(document).ready(function(e){
                  let row = data.map(function(r,i){
                     return `
                         <tr ${r['status'] == 'return' ? 'style="background: lightyellow"' : ""}>
-                            <td ><input ${r['status'] == 'return' ? 'disabled' : ""} name="kode[]" style="margin-top: -6px;" class="form-control" type="checkbox" value="${r['kode_produk']}"></td>
-                            <td>${r['nama_produk'] + " "}${r['nama_merek']}</</td>
+                            <td>${r["status"] == "return" ? '' : '<button nama="'+r['nama_kodetype']+" "+r['nama_merek']+" "+r['nama_produk']+'" jmlretur=0 jml='+ r['jumlah'] +' iddtrans=' + r['id'] + '  class="btn btn-success setjml" type="button">Retur</button>'}</td>
+                            <td>${r['nama_kodetype']} ${r['nama_merek']} ${r['nama_produk'] + " "}</</td>
                             <td>${parseInt(r['harga']).toLocaleString()}</</td>
                             <td>${r['potongan']}</</td>
                             <td>${r['jumlah']}</td>
                             <td>${r['status']}</td>
+                            <td><p class="returnindi" idindi=${r["id"]}></p></td>
                         </tr>
                     `;
                  });
@@ -196,6 +245,18 @@ $(document).ready(function(e){
                  $("#id_trans").val(data[0]['kode_trans']);
                  if(    data[0]['status'] == 'return'){
                      $("#re-button").attr('disabled','disabled');
+                     $("#buyagain-button").show();
+                     $("#buyagain-parser").attr("href","/kasir?id_retur="+data[0]['kode_trans']);
+                 }else{
+                    $("#buyagain-button").hide();
+                 }
+
+                 //cek apakah nota ini pembelian baru setelah retur
+                 if(data[0]["keterangan_retur"]!=null){
+                    $("#nominal-telah-bayar").text("Pembayaran sebelumnya : "+ data[0]["tlh_bayar"]);
+                    $("#keterangan-retur").text("Keterangan Retur : "+data[0]["keterangan_retur"]);
+                    $("#keterangan-retur").show();
+                    $("#nominal-telah-bayar").show();
                  }
                  $("#returncont").html(row);
 
@@ -217,9 +278,10 @@ $(document).ready(function(e){
         let total=parseInt($("#totalbayar").val().replace(/[._]/g, ''));
         let td=parseInt($("#td").val().replace(/[._]/g, ''));
         
+        
         let id = $(this).attr('id_trans');
         let nominal = parseInt($("#nominal-bayar").val().replace(/[._]/g, ''));
-        alert(nominal+td);
+      
         if(nominal+td>=total){
             $.ajax({
                 headers: {

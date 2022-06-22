@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Tools;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -38,20 +39,40 @@ class HomeController extends Controller
  
 
       $daily = [];
-      $pt = DB::table("detail_transaksi")->sum("jumlah");
+      $daily["hari"]["pemasukan nota kecil"] = 0;
+      $daily["minggu"]["pemasukan nota kecil"] = 0;
+      $daily["bulanan"]["pemasukan nota kecil"] = 0;
+      $pt = DB::table("detail_transaksi")->where('status','!=','return')->sum("jumlah");
+
+      $nk1 = DB::table("transaksi")->whereDay("created_at",Carbon::now()->day)->whereIn('status',['belum lunas','lunas'])->get();
+      $nk2 = DB::table("transaksi")->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->whereIn('status',['belum lunas','lunas'])->get();
+      $nk3 = DB::table("transaksi")->whereMonth("created_at",Carbon::now()->month)->whereIn('status',['belum lunas','lunas'])->get();
+
+      foreach($nk1 as $ns){
+        $daily["hari"]["pemasukan nota kecil"] += $ns->subtotal;
+      }
+
+      foreach($nk2 as $ns){
+        $daily["minggu"]["pemasukan nota kecil"] += $ns->subtotal;
+      }
+
+      foreach($nk3 as $ns){
+        $daily["bulanan"]["pemasukan nota kecil"] += $ns->subtotal;
+      }
 
 
-      $daily["hari"]["pemasukan nota kecil"] = DB::table("transaksi")->whereDay("created_at",Carbon::now()->day)->where('status','!=','draf')->sum("subtotal");
+
+    
       $daily["hari"]["pemasukan nota besar"] = DB::table("nota_besar")->whereDay("created_at",Carbon::now()->day)->sum("us");
       $daily["hari"]["pemasukan preorder"] = DB::table("preorder")->whereDay("created_at",Carbon::now()->day)->where('status','!=','draft')->sum("us");
 
 
-      $daily["minggu"]["pemasukan nota kecil"] = DB::table("transaksi")->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status','!=','draf')->sum("subtotal");
+     
       $daily["minggu"]["pemasukan nota besar"] = DB::table("nota_besar")->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum("us");
       $daily["minggu"]["pemasukan preorder"] =   DB::table("preorder")->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status','!=','draft')->sum("us");
 
 
-      $daily["bulanan"]["pemasukan nota kecil"] = DB::table("transaksi")->whereMonth("created_at",Carbon::now()->month)->where('status','!=','draft')->sum("subtotal");
+      
       $daily["bulanan"]["pemasukan nota besar"] =  DB::table("nota_besar")->whereMonth("created_at",Carbon::now()->month)->where('status','!=','draft')->sum("us");
       $daily["bulanan"]["pemasukan preorder"] = DB::table("preorder")->whereMonth("created_at",Carbon::now()->month)->where('status','!=','draft')->sum("us");
     

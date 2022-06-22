@@ -1,21 +1,63 @@
-@php $whoactive = 'stok';
+@php $whoactive = 'katalog';
 $master='admingudang';
+
+$tp = isset($tiper) ? $tiper : "";
+$ct = isset($ctr) ? $ctr : "";
+
+$m = isset($merekr) ? $merekr : "";
+
+
+
+
 @endphp
 @extends('layouts.layout2')
 
 @section('title', 'Katalog')
-
+@section('pagetitle', 'Katalog')
+@section('icon', 'fa fa-box')
 
 
 @section('js')
 <script src="{{ asset('js/print.js') }}"></script>
 <script src="{{ asset('js/stok.js') }}"></script>
+<script src="{{ asset('js/selectku.js') }}"></script>
+<style>
+   td{
+            font-weight: unset !important;
+            font-size: 10pt
+        }
 
+        select[readonly] {
+            background: white;
+            pointer-events: none;
+            touch-action: none;
+        }
+
+
+        .fakeselect{
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .fakeselect .scroled::-webkit-scrollbar-track{
+            display: none;
+        }
+        .fakeselect .scroled li{
+            padding: 10px;
+        }
+        .fakeselect .scroled li:hover{
+            background-color: #bdbdbd;
+        }
+</style>
+<script>
+  $(document).ready(function(){
+    selectJos("select");
+  }); 
+</script>
 @stop
     
 @section('content')
 <div class="card">
-<div class="card-header"><h3><i class='fas fa-box mr-2'></i>Kelola Stok</h3>
+
 <div class="card-body">
 <div class="wrapper">
 <form action="{{route('stok')}}" method="GET">
@@ -27,7 +69,7 @@ $master='admingudang';
                     <select name="tipe" id="tipe" class="form-control dynamic w-50 form-control-sm mr-5" data-dependent = "state">
                         <option value="">TIPE</option>
                         @foreach($tipe as $tipes)
-                            <option value = "{{$tipes->id_tipe}}">{{$tipes->nama_tipe}}</option>
+                            <option @if($tp == $tipes->id_tipe) selected @endif value = "{{$tipes->id_tipe}}">{{$tipes->nama_tipe}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -35,7 +77,7 @@ $master='admingudang';
                     <select name="kodetipe" id="kodetipe" class="form-control dynamic w-75 form-control-sm" data-dependent = "state">
                         <option value="">TIPE KODE</option>
                         @foreach($kodetype as $kt)
-                            <option value="{{$kt->id_kodetype}}">{{$kt->nama_kodetype}}</option>
+                            <option @if($ct == $kt->id_kodetype) selected @endif  value="{{$kt->id_kodetype}}">{{$kt->nama_kodetype}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -43,7 +85,7 @@ $master='admingudang';
                     <select name="merek" id="merek" class="form-control dynamic w-75 form-control-sm" data-dependent = "state">
                         <option value="">MEREK</option>
                         @foreach($merek as $merks)
-                            <option value="{{$merks->id_merek}}">{{$merks->nama_merek}}</option>
+                            <option @if($m == $merks->id_merek) selected @endif value="{{$merks->id_merek}}">{{$merks->nama_merek}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -61,8 +103,9 @@ $master='admingudang';
             </div>
 </form>
 
-<button type="button m-3" class="btn btn-primary"  id="generatestok" ><i class="fas fa-upload mr-2"></i>Produk ke Stok</button>
+ @if(Auth::user()->roles[0]['name'] != 'kasir')<button type="button m-3" class="btn btn-primary"  id="generatestok" ><i class="fas fa-upload mr-2"></i>Produk ke Stok</button>
 <a class="btn btn-primary float-right" href="#" id="stokprint"><i class="fa fa-print mr-2"></i>Print</a>
+@endif
 <div>
 
     <table class="table table-striped mt-3 table-bordered ">
@@ -72,9 +115,12 @@ $master='admingudang';
                 <th>Tipe</th>
                 <th>Tipekode</th>
                 <th>Merek</th>
-                <th style="width:100px">Kode Produk</th>
-                <th align="left" class="w-25" style="text-align: left">Nama Produk</th>
+                <th style="width:60px">Kode Produk</th>
+                <th align="left"   style="text-align: left; width: 20%">Nama Produk</th>
+                @if(Auth::user()->roles[0]['name'] != 'admin gudang')<th style="text-align: left">Harga</th>
+                <th style="text-align: left">Disc</th>@endif
                 <th>Jumlah</th>
+               @if(Auth::user()->roles[0]['name'] != 'kasir')<th>Aksi</th>@endif
             </tr>
         </thead>
         <tbody id="stokfiller">
@@ -89,10 +135,11 @@ $master='admingudang';
                 <td>{{$datas->nama_merek}}</td>
                 <td>{{$datas->kode_produk}}</td>
                 <td align="left">{{$datas->nama_produk}}</td>
-                
-                
-                
+                @if(Auth::user()->roles[0]['name'] != 'admin gudang')
+                <td style="text-align: left">Rp. {{number_format($datas->harga,0,".",".")}}</td>
+                  <td style="text-align: left">{{$datas->diskon_tipe == "persen" ? $datas->diskon."%" : "Rp.".number_format((int)$datas->diskon)}}</td>@endif
                 <td>{{$datas->jumlah}} {{$datas->satuan}}</td>
+                 @if(Auth::user()->roles[0]['name'] != 'kasir')<td align="left"><a href="{{url('/detailstok/'.$datas->kode_produk.'/bykatalog')}}" class="btn btn-warning"><i class="fa fa-box"></i></a></td>@endif
             </tr>
             @php $no++ @endphp
         @empty

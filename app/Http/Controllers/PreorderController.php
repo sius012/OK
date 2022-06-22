@@ -4,12 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\config\CetakConfig;
 use Carbon\Carbon;
 use PDF;
 
 
 class PreorderController extends Controller
 {
+    public function load(Request $req){
+        $id_preorder = $req->input("preorder_id");
+
+        $dato = DB::table("transaksi")->join("detail_transaksi","detail_transaksi.kode_trans","=","transaksi.kode_trans")->join("new_produks","new_produks.kode_produk","=","detail_transaksi.kode_produk")->join('mereks','mereks.id_merek','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','new_produks.id_ct')->where("transaksi.status","preorder")->where("transaksi.kode_trans",$id_preorder)->get();
+
+        $datapribadi = DB::table("transaksi")->where("kode_trans",$id_preorder)->where("status","preorder")->first();
+
+        return json_encode(["data"=>$dato, "datapribadi"=>$datapribadi, "id_preorder"=>$id_preorder]);
+
+    }
     public function loaddata(Request $req){
         $isEmpty = true;
         $data = null;
@@ -22,6 +33,7 @@ class PreorderController extends Controller
         return json_encode(['data' => (array)$data, 'dataopsi' => (array) $dataopsi, 'isEmpty'  => $isEmpty,'page'=>'kasir']);
     }
     public function index(Request $req,$id = null){
+     
         if($id != null){
             return view("notabesar", ["id"=>$id]);
         }else{
@@ -39,42 +51,53 @@ class PreorderController extends Controller
         
 }
 
+    public function lunasi($idpre){
+        DB::table("transaksi")->where("kode_trans",$idpre)->update(['bayar'=>DB::raw("subtotal"),"status"=>"lunas"]);
+        $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
+        $no += 1;   
+        $no_nota = date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
+        DB::table("transaksi")->where("kode_trans",$idpre)->update(["no_nota"=>$no_nota]);
+        return redirect()->back();
+    }
+
 
     public function tambahpreorder(Request $req){
         $data = $req->input('data');
 
      
     
-
+        //get data produk
+        $produk = DB::table("new_produks")->where("kode_produk",$data["kode_produk"])->first();
+        $harga = $produk->harga;
+        $diskon = $produk->diskon;
+        $prefix = $produk->diskon_tipe;
       
        
-        $id_trans = "";
+        $id_trans = $data["id_pre"];
         
-        if($req->session()->has('transaksi')){
-            $id_transaksi = $req->session()->get('transaksi')['id_pre'];
-            $id_trans = $id_transaksi;
+        if($id_trans != "null"){
+       
         }else{
-            $id = DB::table('preorder')->insertGetId(['ttd'=>'orang']);
-            $req->session()->put('transaksi', ['id_pre'=>$id]);   
+            $id = DB::table('transaksi')->insertGetId(['nama_pelanggan'=>null]);
             $id_trans = $id;
         }
     
-        $counter = DB::table('preorder_detail')->where('id_preorder', $id_trans)->where('kode_produk', $data['kode_produk'])->count();
+        $counter = DB::table('detail_transaksi')->where('kode_trans', $id_trans)->where('kode_produk', $data['kode_produk'])->count();
         if($counter < 1){
-            DB::table('preorder_detail')->insert(['id_preorder' => $id_trans, 'kode_produk' => $data['kode_produk'], "jumlah" => $data["jumlah"]]);
+            DB::table('detail_transaksi')->insert(['kode_trans' => $id_trans, 'kode_produk' => $data['kode_produk'], "jumlah" => $data["jumlah"],"potongan"=>$diskon,"harga_produk"=>$harga,"prefix"=>$prefix]);
         }else{
-            $jumlah = DB::table('preorder_detail')->where('id_preorder', $id_trans)->where('kode_produk', $data['kode_produk'])->pluck('jumlah')->first();
-            DB::table('preorder_detail')->where('id_preorder', $id_trans)->where('kode_produk', $data['kode_produk'])->update(['jumlah' => $jumlah + $data['jumlah']]);
+            $jumlah = DB::table('detail_transaksi')->where('kode_trans', $id_trans)->where('kode_produk', $data['kode_produk'])->pluck('jumlah')->first();
+            DB::table('detail_transaksi')->where('kode_trans', $id_trans)->where('kode_produk', $data['kode_produk'])->update(['jumlah' => $jumlah + $data['jumlah']]);
         }
         
-        $datadetail = DB::table('preorder_detail')->join('new_produks','preorder_detail.kode_produk','=','new_produks.kode_produk')
+        $datadetail = DB::table('detail_transaksi')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')
         ->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')
-        ->join('mereks','mereks.id_merek','=','new_produks.id_merek')->where('id_preorder',$id_trans)->get();
+        ->join('mereks','mereks.id_merek','=','new_produks.id_merek')->where('kode_trans',$id_trans)->get();
 
         
         
        
-        return(json_encode(['datadetail'=>$datadetail]));
+        return(json_encode(['datadetail'=>$datadetail, 'counter'=>$counter]));
     }
 
 
@@ -112,9 +135,9 @@ class PreorderController extends Controller
                     
 
             
-                            $id = DB::table('nota_besar')->insertGetId(array_merge($req->input('formData'),['no_nota' => $no, 'termin' => 1, "status" => "dibayar",'created_at'=>$tanggal, 'jatuh_tempo'=>$tanggal2,]));
-                            $id2 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 2, "status" => "ready",'jatuh_tempo'=>$tanggal2]);
-                            $id3 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 3,'jatuh_tempo'=>$tanggal2]);
+            $id = DB::table('nota_besar')->insertGetId(array_merge($req->input('formData'),['no_nota' => $no, 'termin' => 1, "status" => "dibayar",'created_at'=>$tanggal, 'jatuh_tempo'=>$tanggal2,]));
+            $id2 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 2, "status" => "ready",'jatuh_tempo'=>$tanggal2]);
+            $id3 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 3,'jatuh_tempo'=>$tanggal2]);
              
             
           
@@ -199,7 +222,7 @@ class PreorderController extends Controller
 
 
 
-        DB::table("nota_besar")->where("no_nota", $no_nota)->where("termin",$termin)->update(["status" => "dibayar"]);
+        DB::table("nota_besar")->where("no_nota", $no_nota)->where("termin",$termin)->update(["status" => "dibayar",'created_at'=>$req->tanggal]);
      if($termin != 3){
         DB::table("nota_besar")->where("no_nota", $no_nota)->where("termin",$termin+1)->update(["status" => "menunggu"]);
      }  
@@ -273,7 +296,7 @@ class PreorderController extends Controller
         $opsi = DB::table("nb_detail")->join("nota_besar", "nota_besar.id_transaksi", "=", "nb_detail.id_nb")->where("id_nb", $id_trans)->get();
         
         $pdf = PDF::loadview('nota_besar', ["data" => $data[0],"opsi"=>$opsi, "td" => $td < 1 ? 0 : $td = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->where("termin","<",$data[0]->termin)->sum("us")])
-        ->setPaper('a4', 'landscape');
+        ;
         $path = public_path('pdf/');
         $fileName =  date('mdy').'-'.$data[0]->id_transaksi. '.' . "nota_besar".'pdf' ;
         $pdf->save(storage_path("pdf/$fileName"));
@@ -287,7 +310,7 @@ class PreorderController extends Controller
         $id_trans = $req->id_transaksi;
         $data = DB::table("nota_besar")->where('id_transaksi', $id_trans)->get();
         $opsi = DB::table("nb_detail")->join("nota_besar", "nota_besar.id_transaksi", "=", "nb_detail.id_nb")->where("id_nb", $id_trans)->get();
-        $pdf = PDF::loadview('notabesarsj', ["data" => $data[0],"opsi"=>$opsi])->setPaper('a4', 'landscape');
+        $pdf = PDF::loadview('notabesarsj', ["data" => $data[0],"opsi"=>$opsi]);
         $path = public_path('pdf/');
         $fileName =  date('mdy').'-'.$data[0]->id_transaksi. '.' . "suratjalan".'.pdf' ;
         $pdf->save(storage_path("pdf/Surat Jalan Nota Besar/$fileName"));
@@ -302,7 +325,7 @@ class PreorderController extends Controller
         $id_trans = $id;
         $data = DB::table("nota_besar")->where('id_transaksi', $id_trans)->get();
         $opsi = DB::table("nb_detail")->join("nota_besar", "nota_besar.id_transaksi", "=", "nb_detail.id_nb")->where("id_nb", $id_trans)->get();
-        $pdf = PDF::loadview('notabesarsj', ["data" => $data[0],"opsi"=>$opsi])->setPaper('a4', 'landscape');
+        $pdf = PDF::loadview('notabesarsj', ["data" => $data[0],"opsi"=>$opsi]);
         $path = public_path('pdf/');
         $fileName =  date('mdy').'-'.$data[0]->id_transaksi. '.' . "suratjalan".'.pdf' ;
         $pdf->save(storage_path("pdf/Surat Jalan Nota Besar/$fileName"));

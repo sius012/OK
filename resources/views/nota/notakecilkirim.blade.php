@@ -9,19 +9,43 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 
-    <style>
+     <style>
+        @font-face {
+
+font-family: tes;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLA.ttf')}}");
+}
+
+@font-face {
+
+font-family: tesb;
+font-style: normal;
+src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
+}
         * {
             margin: 0px;
-
+            font-family: tes !important;
             font-size: 10pt;
+            line-height: 70% ;
         }
+     
 
+        
         body {
-            max-height: 5000px;
+          
+            
+            
+        }
+        
+        td{
+            height: 0px;
+            padding: 1px;
         }
 
-        td,th{
- 
+        td h4,h5{
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper {
@@ -38,34 +62,43 @@
         .container-wrapper .header .brand-title {
             margin-bottom: 0;
             text-transform: uppercase;
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper table .address .brand-address {
             margin-top: 0;
 
             font-size: 8pt;
+            line-height: 100%;
         }
 
         .container-wrapper table .date-times {
-            font-size: 8pt;
+            font-size: 10pt;
 
             margin-left: 230px;
-            width: 50px;
+            width: 200px;
         }
 
         .container-wrapper .big-title {
             text-align: center;
-            margin-bottom: 30px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
         }
 
         .container-wrapper .big-title .title {
-            margin: 0;
+              margin-bottom: 3px;
+          
+            font-family: tesb !important;
+            font-weight: normal;
+            font-size: 12pt;
         }
 
         .container-wrapper .big-title .hr {
             margin: 0;
 
-            width: 100px;
+            width: 200px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -99,7 +132,7 @@
         }
 
         .container-wrapper table {
-            width: 50   px;
+            width: 750px;
         }
 
         #bigtitle {
@@ -109,16 +142,19 @@
 
         h4 {
 
-            font-size: 9pt;
-
+            font-size: 10pt;
+            margin: 0px;
+            padding: 0px !important;
         }
+
+
 
     </style>
 </head>
 
 <body>
     <div class="container-wrapper">
-        <table style="margin-top: 20px; width: 500px">
+        <table style="margin-top: 20px; width: 450px">
             <tr>
                 <td>
                     <div class="address" style="width:150px">
@@ -239,12 +275,16 @@
             @endif
 
             <tr align="center">
-                <td colspan="5" style="padding-top:50px; padding-bottom:30px">
+                <td colspan="5" style="padding-top:25px; padding-bottom:30px">
                     <h4 class="ttd-header">Mengetahui,</h4>
 
                 </td>
             </tr>
-            <tr>
+
+           
+        </table>
+        <table width="200" style="margin-top:0px">
+                        <tr>
                 <td align="center">
                     <div class="wrappers">
                         <h4 class="customer">Customer,</h4>
@@ -256,6 +296,23 @@
                 <td align="center" style="">
                    
                         <h4 class="sales">Sales,</h4>
+
+             
+                </td>
+            </tr>
+           <tr>
+                <td align="center">
+                   <br><br><br><br><br>
+                         <h4 class="">{{"(".str_repeat('.', 25).")"}}</h4>
+
+                  
+                </td>
+                <td></td>
+                <td>
+                <td align="center" style="">
+                        <br><br><br><br><br>
+                   
+                           <h4 class="">{{"(".str_repeat('.', 25).")"}}</h4>
 
              
                 </td>

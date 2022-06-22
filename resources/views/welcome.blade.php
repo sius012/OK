@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Laravel</title>
+    <title>Omah Kunci</title>
 
     <!-- Fonts -->
+    <link rel="icon" href="{{ asset('assets/preloader.svg') }}">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
     <link rel="stylesheet" href="{{asset('plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}">
 
@@ -75,11 +76,8 @@
                                     @auth
                                     <a class="nav-link home-btn" href="{{ url('/redirecting') }}">Beranda</a>
                                     @else
-                                    <a class="nav-link login-btn" href="{{ route('login') }}">Login</a>
+                                    <a class="nav-link login-btn" href="{{ route('login') }}">Masuk</a>
 
-                                    @if (Route::has('register'))
-                                    <a class="nav-link register-btn" href="{{ route('register') }}">Register</a>
-                                    @endif
                                     @endauth
                                 </div>
                                 @endif

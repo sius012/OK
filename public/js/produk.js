@@ -7,6 +7,42 @@ $(document).ready(function(){
        $("#cetaker").attr('kode_produk', $(this).attr('kode_produk'));
     });
 
+    $("#redirector").click(function(e){
+       
+        e.preventDefault();
+        let kb = $("#kb").val();
+        let np = $("#np").val();
+        let hp = $("#hp").val().replace(/[._]/g,'');
+        let dsc = $("#dsc").val();
+        let tpd = $("#tpe").val();
+        let stn = $("#stn").val();
+
+        let dataq = {
+            kb: kb,
+            np: np,
+            hp: hp,
+            dsc: dsc,
+            tpd: tpd,
+            stn: stn,
+        }
+
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token").attr('content')
+            },
+            data: dataq,
+            url: "/savebuffer",
+            type: "post",
+            dataType: 'json',
+            success: function(data){
+                window.location = '/detailstok/'+data['kb']+'/bypm';
+            },
+            error: function(err){
+                alert(err.responseText);
+            }
+        });
+    });
+
     $("#cetaker").click(function(e){
       
         Swal.showLoading();
@@ -45,7 +81,7 @@ $(document).ready(function(){
             if (result.isConfirmed) {
                 
             } else if (result.isDenied) {
-               window.location = $(e.target).attr('href');
+                window.location = $(e.target).attr('href') == undefined ? $(e.target).closest('.hapusproduk').attr('href') : $(e.target).attr('href');
             }
           });
     });
@@ -196,10 +232,13 @@ $(document).ready(function(){
             kodetype :  $(".kodetipe-selected").is("input") ? $(".kodetipe-selected").val() + " [custom]" :  $(".kodetipe-selected").val(),
             nomermerek : $("#nomer-merek").val(),
             diskon: $("#diskon").val(),
-            discontype : $("#typediskon").val()
+            discontype : $("#typediskon").val(),
+            stok: $("#stok").val()
         };
 
-        alert(dataform.kodetype);
+      
+
+    
       
 
         $.ajax({

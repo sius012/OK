@@ -18,8 +18,56 @@ function formatRupiah(angka, prefix) {
 }
 
 
+
+
 $(document).ready(function () {
+   
+
+
+    var hasRetur = $("#returid").val().length < 2 ? false : true;
+
+    function fr(angka, prefix) {
+        var number_string = angka.toString().replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
     
+        // tambahkan titik jika yang di input sudah menjadi angka ribuan
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+    
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        if(angka<0){
+            return prefix == undefined ? "-" +rupiah : (rupiah ? "-"+rupiah : '');
+        }else{
+            return prefix == undefined ? rupiah : (rupiah ? rupiah : '');
+        }
+       
+    }
+
+
+    $("#ta").keyup(function(){
+        $("#totality").val(fr(subtotalafterdiskon-$(this).val()));
+    });
+
+
+   
+
+
+    var id_trans = "null";
+    var id_pre = "null";
+
+    function getIdTrans(val){
+        id_trans = val;
+    }
+
+     function getIdPre(val){
+        id_pre = val;
+    }
+
     var hasfinish = false;
     if($("#jenis-transaksi").val() == "normal"){
         $(".normalt").show();
@@ -27,17 +75,38 @@ $(document).ready(function () {
         $(".normalt").hide();
     }
 
+    
+
     $("#jenis-transaksi").change(function(){
         if($(this).val()=='normal'){
            
             window.location = "/kasir?jenis=umum";
-        }else{
+        }else if($(this).val() == 'preorder'){
             
             window.location = "/kasir?jenis=preorder";
+        }else if("suratjalan"){
+            window.location = "/kasir?jenis=suratjalan";
         }
     });
     $(".alerts").hide();
     $(document).on('keypress', function (event) {
+        let keycode = (event.keyCode ? event.keyCode : event.which);
+        if(keycode == 17){
+       
+        }
+        
+    });
+
+
+    //hider
+
+
+
+
+
+
+    $(document).on('keypress', function (event) {
+       
         let keycode = (event.keyCode ? event.keyCode : event.which);
         if (keycode == '13' && $("#searcher").val() != "" && !hasfinish) {
 
@@ -46,7 +115,7 @@ $(document).ready(function () {
                 $("#hrg").val(),
                 $("#qty").val(),
                 0,
-                $("#jenisproduk").val()
+                $("#jenisproduk").val().length < 1 ? "produk" : $("#jenisproduk").val()
             );
 
 
@@ -60,17 +129,21 @@ $(document).ready(function () {
             },
         });
 
+
+            
+        
+
     });
 
     $("#tambahproduk").click(function (event) {
 
-        if(!hasfinish){
+        if(!hasfinish &&  $("#searcher").val() != ""){
             tambahItem(
                 $("#searcher").val(),
                 $("#hrg").val(),
                 $("#qty").val(),
                 0,
-                $("#jenisproduk").val()
+                $("#jenisproduk").val().length < 1 ? "produk" : $("#jenisproduk").val()
             );
         }
      
@@ -92,73 +165,76 @@ $(document).ready(function () {
         }
     }
     );
+
     //loader
-    function loader() {
+    function loader(a,b) {
+       
         $("#tabling").hide();
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             data: {
-                jenis: $("#jenis-transaksi").val()
+                jenis: $("#jenis-transaksi").val(),
+                id_trans: id_trans,
+                id_pre: id_pre
             },
 
             type: "POST",
             dataType: "JSON",
             url: "/loader",
             success: function (data) {
-                if($("#jenis-transaksi").val()=="normal"){
-
+              
+       
                 var no = 1;
-                var row = "";
                 let subtotal = 0;
+           
 
                 var row = data['datadetail'].map(function (dato, i) {
-                    subtotal += doDisc(dato['jumlah'], dato['harga'], dato['potongan'], dato['prefix']);
+                    subtotal += doDisc(dato['jumlah'], dato['harga_produk'], dato['potongan'], dato['prefix']);
                     return `
                         <tr>
                             <td>${i + 1}</td>
                             <td>${dato['kode_produk']}</td>
                             <td>${dato['nama_kodetype']+" "+dato['nama_merek']+" "+dato['nama_produk']}</td>
                             <td>${dato['jumlah']}</td>
-                            <td>Rp. ${parseInt(dato['harga']).toLocaleString()}</td>
-                            <td>Rp. ${parseInt(dato['potongan']).toLocaleString()}</td>
-                            <td> Rp. ${doDisc(dato['jumlah'], dato['harga'], dato['potongan'], dato['prefix']).toLocaleString()}</td>
+                            <td>Rp. ${fr(parseInt(dato['harga']),"")}</td>
+                            <td>${dato["prefix"] != "persen" ? fr(parseInt(dato['potongan']),"") : dato["potongan"] + "%"}</td>
+                            <td> Rp. ${fr(doDisc(dato['jumlah'], dato['harga_produk'], dato['potongan'], dato['prefix']),"")}</td>
                             <td><buttton class="btn btn-danger beforesend buang" id_detail="${dato['id']}"><i class="fa fa-trash"></i></button></td>
                         </tr>
                     `
 
                 });
+        
+                getIdTrans(data['datadetail'][0]['kode_trans']);
+                
+              
+                
 
-                $("#totality").val(subtotal.toLocaleString());
 
-
-                $('#subtotal').val(subtotal.toLocaleString());
+                $('#subtotal').val(fr(subtotal,""));
 
                 $('#tabling').html(row);
                 $("#tabling").show("slow");
-                $('#subtotal').val(subtotal.toLocaleString());
+              
                 subtotal1 = subtotal;
-                 }else{
-                     
-                 var row = data['datadetail'].map(function (dato, i) {
-                    return `
-                    <tr>
-                        <td>${i + 1}</td>
-                        <td>${dato['kode_produk']}</td>
-                        <td>${dato['nama_kodetype']+" "+dato['nama_merek']+" "+dato['nama_produk']}</td>
-                        <td>${dato['jumlah']}</td>
-                        <td><button  class="btn btn-danger beforesend buang" id_detail="${dato['id']}"><i class="fa fa-trash"></i></button></td>
-                    </tr>
-                `;});
-                $('#tabling').html(row);
-                $("#tabling").show("slow");
-                 }
+                subtotalafterdiskon = doDisc(1,subtotal, $("#diskon").val().replace(/[._]/g, ''),$("#prefix").val());
+                $("#totality").val(fr(subtotalafterdiskon,""));
+                
+                if(hasRetur==true){
+              
+                    subtotalafterdiskon -=  $("#ta").val();
+                    $("#totality").val(fr(subtotalafterdiskon ,""));
+                    
+                }
+               
+                 
 
             },
             error: function (err) {
                 // Swal.fire("terjadi kesalahan","","info");
-                alert(err.responseText);
+                alert("terjadi kesalahan");
             }
         });
     }
@@ -170,9 +246,12 @@ $(document).ready(function () {
 
 
 
-    var id_trans = "{{session()->has('transaksi') ? Session::get('transaksi')['id_transaksi']:0}}";
     var subtotal1 = 0;
     var subtotalafterdiskon = 0;
+
+    function perbaruisubtotal(angka){
+        subtotalafterdiskon = 10
+    }
 
     var metode = "cash";
 
@@ -242,7 +321,7 @@ $(document).ready(function () {
             success: function (data) {
                 if (data['currentproduk'] != undefined) {
                     $("#hrg").val($(data['currentproduk']['harga']));
-                    $("#hrg-nominal").html(":  RP. " + parseInt(data['currentproduk']['harga']).toLocaleString());
+                    $("#hrg-nominal").html(":  RP. " + fr(parseInt(data['currentproduk']['harga']),""));
                 }
 
 
@@ -297,6 +376,7 @@ $(document).ready(function () {
 
 
     function tambahItem(id, harga, jumlah, potongan,jenis) {
+       
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -308,124 +388,35 @@ $(document).ready(function () {
                     jumlah: jumlah,
                     potongan: potongan,
                     jenis_transaksi: $("#jenis-transaksi").val(),
-                    jenis: jenis
+                    jenis: jenis,
+                    id_pre: id_pre,
+                    id_trans: id_trans
                 }
             },
             type: "POST",
             dataType: "JSON",
             url: $("#jenis-transaksi").val() == 'preorder' ? "/tambahpre" : "/tambahItem",
             success: function (data, response) {
+                if($("#jenis-transaksi").val() == 'normal'){
+                       getIdTrans(data['datadetail'][0]['kode_trans'] == undefined ? "null" : data['datadetail'][0]['kode_trans'] );
+
+                loader(id_trans,id_pre);
+            }else{
                
-                if ($("#jenis-transaksi").val() == 'normal') {
-                   
-                    console.log("data is" + data['datadetail']);
-                    if (data['datadetail'] == 'barang habis') {
-                        $(".alerts p").text("Stok Tersedia : " + data['as'] + " Item");
-                        $(".alerts").show("slow");
-                    } else {
-                        $(".alerts").hide("slow");
-                        console.log(data['datadetail']);
-                        var subtotal = 0;
-                        var no = 1;
-
-                        let row = data['datadetail'].map(function (dato, i) {
-
-
-                            subtotal += doDisc(dato['jumlah'], dato['harga_produk'], dato['potongan'], dato['prefix']);
-
-                            return `
-                            <tr>
-                                <td>${i + 1}</td>
-                                <td>${dato['kode_produk']}</td>
-                                <td>${dato['nama_kodetype']+ " " +dato['nama_merek']+" "+dato['nama_produk']}</td>
-                               
-                                <td>${dato['jumlah']}</td>
-                                <td>Rp. ${parseInt(dato['harga_produk']).toLocaleString()}</td>
-                                <td>${renderDisc(dato['potongan'], dato['prefix'])}</td>
-                                <td> Rp.${doDisc(dato['jumlah'], dato['harga_produk'], dato['potongan'], dato['prefix']).toLocaleString()}</td>
-                                <td><button   class="btn btn-danger beforesend buang" id_detail="${dato['id']}"><i class="fa fa-trash"></i></button></td>
-                            </tr>
-                        `;
-
-
-                        });
-
-                        if ($("#antarkah").val() !== "antar") {
-                            $("#suratjalan").attr("disabled", "disabled");
-                            $(".antartd").hide();
-                        } else {
-                            $(".antartd").show();
-                            $(".suratjalan").removeAttr("disabled");
-                        }
-
-                        $('#tabling').html(row);
-                        $("#tabling").show("slow");
-                        $("#totality").val(subtotal.toLocaleString());
-
-
-                        $('#subtotal').val(subtotal.toLocaleString());
-                        subtotal1 = subtotal;
-                        id_trans = data['datadetail'][0]['kode_trans'];
-                        $("#kodetrans").val(data['datadetail'][0]['kode_trans']);
-                    }
-                } else {
-                 
-                    console.log("data is" + data['datadetail']);
-                    if (data['datadetail'] == 'barang habis') {
-                        $(".alerts p").text("Stok Tersedia : " + data['as'] + " Item");
-                        $(".alerts").show("slow");
-                    } else {
-
-                        $("#id_pre").val(data['datadetail'][0]['id_preorder']);
-                        $(".normalt").hide();
-                        $(".alerts").hide("slow");
-                        console.log(data['datadetail']);
-                        var subtotal = 0;
-                        var no = 1;
-
-                        let row = data['datadetail'].map(function (dato, i) {
-
-
-                            subtotal += doDisc(dato['jumlah'], dato['harga_produk'], dato['potongan'], dato['prefix']);
-
-                            return `
-                            <tr>
-                                <td>${i + 1}</td>
-                                <td>${dato['kode_produk']}</td>
-                                <td>${dato['nama_kodetype']+" "+dato['nama_merek']+" "+dato['nama_produk']}</td>
-                                <td>${dato['jumlah']}</td>
-                                <td><button  class="btn btn-danger beforensend buang" id_detail="${dato['id']}"><i class="fa fa-trash"></i></button></td>
-                            </tr>
-                        `;
-
-
-                        });
-
-                        if ($("#antarkah").val() !== "antar") {
-                            $("#suratjalan").attr("disabled", "disabled");
-                            $(".antartd").hide();
-                        } else {
-                            $(".antartd").show();
-                            $(".suratjalan").removeAttr("disabled");
-                        }
-
-                        $('#tabling').html(row);
-                        $("#tabling").show("slow");
-                        $("#totality").val(subtotal.toLocaleString());
-
-
-                        $('#subtotal').val(subtotal.toLocaleString());
-                        subtotal1 = subtotal;
-                        id_trans = data['datadetail'][0]['kode_trans'];
-                        $("#kodetrans").val(data['datadetail'][0]['kode_trans']);
-                    }
-                }
+                getIdPre(data['datadetail'][0]['kode_trans']);
+               
+                loader(id_trans,id_pre);
+            }
+          
+             
+               
 
 
 
 
             },
             error: function (err, response, errorThrown, jqXHR) {
+                alert(err.responseText);
             }
         });
 
@@ -436,7 +427,7 @@ $(document).ready(function () {
         $("#searcher").val($(event.target).attr("kode"));
         $("#myUL").hide();
         $("#hrg").val($(event.taret).attr("harga"));
-        $("#hrg-nominal").html(":  RP. " + parseInt($(event.target).attr("harga")).toLocaleString());
+        $("#hrg-nominal").html(":  RP. " + fr(parseInt($(event.target).attr("harga")),""));
         $("#jenisproduk").val($(event.target).attr("jenis") != undefined ? $(event.target).attr("jenis") : "produk");
 
     });
@@ -449,7 +440,7 @@ $(document).ready(function () {
             $("#hrg").val(),
             $("#qty").val(),
             0,
-            $("#jenisproduk").val()
+            $("#jenisproduk").val().length < 1 ? "produk" : $("jenisproduk").val()
         );
     });
 
@@ -463,22 +454,38 @@ $(document).ready(function () {
         $(event.target).closest(".bungkuser").children(".sear").attr("potongan", $(event.target).val());
     });
 
+
+    if($("#sj-checker").prop("checked") == true){
+       
+    }
+
    
 
     $("#selesai").click(function () {
        
-
-        if(!hasfinish){
         
-        if (parseInt($(".usethis").val()) < subtotalafterdiskon && $('input[name=payment]:checked').val() == "cash") {
+        
+  
+        if(!hasfinish){
+    
+        
+        if (parseInt($(".usethis").val().replace(/[._]/g, '')) < parseInt($("#totality").val().replace(/[._]/g, '')) && $("#jenis-transaksi").val() == "normal" ) {
             alert("uang kurang");
+            alert("subtotalafter diskon anda :" +subtotalafterdiskon);
         } else {
            
-            id_trans = $("#kodetrans").val();
-            if ($("#nama").val() == null || $("#nama").val() == "" || $(".usethis").val() == "" || $(".usethis").val() == null  || $(".usethisvia").val() == " " || $('#telp').val() == "" || $("#alamat").val() == "") {
+           
+            if ($("#nama").val() == null ||
+                $("#nama").val() == "" ||
+                $(".usethis").val() == "" ||
+                $(".usethis").val() == null  ||
+                $(".usethisvia").val() == " " ||
+                $('#telp').val() == "" ||
+                $("#alamat").val() == "") {
                 Swal.fire("Pastikan Semua Kolom terisi(kecuali diskon)", "", "info");
             } else {
                 $("#reset-button").hide();
+               
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -492,14 +499,26 @@ $(document).ready(function () {
                             via: $(".usethisvia").val(),
                             telp: $("#telp").val(),
                             alamat: $("#alamat").val(),
+                            prefix: $("#prefix").val(),
 
                             antarkah: $("#antarkah").val(),
+                            id_trans: id_trans,
+                            id_pre: id_pre,
+                            notab: $("#preorderid").val(),
 
+                            no_nota_retur: $("#no-nota-retur").val(),
+                            td: $("#ta").val(),
+                            keterangan_retur: $("#keterangan-retur").val(),
+
+                            jenis_transaksi: $("#jenis-transaksi").val(),
+                            fromsj: $("#sj-checker").prop("checked") == true ? 1 : 0,
+                            id_sj: $("#sj-id").val(),
                         }
                     },
                     type: "POST",
-                    url: $("#jenis-transaksi").val() == "normal" ? "/selesaitransaksi" : "/selesaipreorder",
+                    url: $("#jenis-transaksi").val() == "normal" || $("#jenis-transaksi").val() == "suratjalan"  ? "/selesaitransaksi" : "/selesaipreorder",
                     success: function (data) {
+                        $(".buang").hide();
                         hasfinish = true;
                         $("#selesai").removeClass("selesaiindi");
                         $("#selesai").addClass("printindi");
@@ -510,10 +529,13 @@ $(document).ready(function () {
                             'success'
                         );
                         if($("#jenis-transaksi").val() == "normal"){
-                            print();
-                        }else{
+                            print(id_trans);
+                        }else if($("#jenis-transaksi").val() == "suratjalan"){
+                            printsuratjalan(id_trans);
+                        }
+                        else{
                 
-                            printpreorder($("#id_pre").val());
+                            printpreorder(id_pre);
                         }
                         $("#next-button").removeAttr("disabled");
                         $(".beforesend").attr("disabled","disabled");
@@ -533,10 +555,12 @@ $(document).ready(function () {
         }
     }else{
         if($("#jenis-transaksi").val() == "normal"){
-            print();
-        }else{
+            print(id_trans);
+        }else if($("#jenis-transaksi").val() == "suratjalan"){
+            printsuratjalan(id_trans);  
+           }else{
 
-            printpreorder($("#id_pre").val());
+              printpreorder(id_pre);  
         }
     }
 
@@ -545,9 +569,31 @@ $(document).ready(function () {
     });
 
     //input diskon
+    $("#prefix").change(function () {
+        let val = $("#diskon").val().replace(/[,_]/g, '');
+        if($("#diskon").val().replace(/[,_]/g, '').length === 0){
+            val = 0;
+        }
+        subtotalafterdiskon = doDisc(1,$("#subtotal").val().replace(/[,_]/g, ''), val,$("#prefix").val()) ;
+        if(hasRetur){
+            $("#totality").val(fr(subtotalafterdiskon-$("#ta").val(),""));
+        }else{
+            $("#totality").val(fr(subtotalafterdiskon,""));
+        }
+       
+    });
     $("#diskon").keyup(function () {
-        subtotalafterdiskon = subtotal1 - $(this).val().replace(/[._]/g, '');
-        $("#totality").val(subtotalafterdiskon.toLocaleString());
+        let val = $(this).val().replace(/[._]/g, '');
+        if($(this).val().replace(/[._]/g, '').length === 0){
+            val = 0;
+        }
+        subtotalafterdiskon = doDisc(1,$("#subtotal").val().replace(/[._]/g, ''), val,$("#prefix").val()) ;
+        
+        if(hasRetur){
+            $("#totality").val(fr(subtotalafterdiskon-$("#ta").val(),""));
+        }else{
+            $("#totality").val(fr(subtotalafterdiskon,""));
+        }
     });
 
     $("#reset-button").click(function () {
@@ -571,6 +617,7 @@ $(document).ready(function () {
 
    
     function hapusdetail(id_detail) {
+        
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -579,13 +626,15 @@ $(document).ready(function () {
                 id_detail: id_detail,
                 jenis: $("#jenis-transaksi").val()
             },
-
-            type: "POST",
+            dataType : "json",
+            type: "GET",
             url: "/removedetail",
             success: function (data) {
-                loader();
+                console.log("p : "+ data);
+                loader(id_trans,id_pre);
             },
             error: function (err) {
+                
                 alert(err.responseText);
             }
 
@@ -626,6 +675,7 @@ $(document).ready(function () {
         //      }
 
         // });
+        let id_detail = $(e.target).attr("id_detail") != undefined ? $(e.target).attr("id_detail") : $(e.target).closest(".buang").attr("id_detail");
 
         Swal.fire({
             title: 'Apakah anda yakin ingin menghapus',
@@ -637,21 +687,23 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 Swal.fire('Saved!', '', 'success')
             } else if (result.isDenied) {
-                Swal.fire('Item dibatalkan', '', 'info');
-                hapusdetail($(e.target).attr("id_detail") != undefined ? $(e.target).attr("id_detail") : $(e.target).closest(".buang").attr("id_detail"));
+               
+                hapusdetail(id_detail);
+                
             }
         })
 
 
     });
 
-    function printpreorder(id_trans){
+    function printpreorder(ids){
+      
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
             },
             data: {
-                id: id_trans,
+                id_pre: ids,
             },
             type: 'post',
             dataType: "json",
@@ -664,14 +716,42 @@ $(document).ready(function () {
             }
         });
     }
+
+
+    function printsuratjalan(ids){
+      
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            data: {
+                id_pre: ids,
+            },
+            type: 'post',
+            url: "/cetaksj2",
+            success: function(response){
+                printJS({printable: response , type: 'pdf', base64: true});
+            },
+            error: function(err){
+                alert(err.responseText);
+                alert(err.responseText);
+            }
+        });
+    }
+
+
+
     
-    function print() {
+    function print(id) {
 
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
             },
             url: "/cetaknotakecil",
+            data: {
+                id_trans: id,
+            },
             type: "post",
             success: function (response) {
                 printJS({ printable: response['filename'], type: 'pdf', base64: true });

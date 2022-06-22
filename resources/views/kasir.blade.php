@@ -4,22 +4,71 @@
 @endphp
 @extends('layouts.layout2')
 
+@php
+        $date = \Carbon\Carbon::parse(date('Y-m-d h:i:s'))->setTimeZone("Asia/Jakarta");
+
+
+
+        $date->settings(['formatFunction' => 'translatedFormat']);
+
+    @endphp
+
 @section('title', 'Kasir')
 @section('icon', 'fas fa-cash-register mr-2 ml-2')
-@section('pagetitle', 'Kasir')
+@section('pagetitle', 'Kasir ')
+@section('tanggal')
+
+    <p class="times">{{$date->format('l, j F Y ;  h:i ')}}</p>
+
+
+@stop
 
 
 @section('js')
 <script src="{{ asset('js/print.js') }}"></script>
+
+<script src="{{ asset('js/mainjs/kasir.js') }}"></script>
 <script>
     
 </script>
-<script src="{{ asset('js/mainjs/kasir.js') }}"></script>
+@if($retur_id > 0)
+    <script>
+        $(document).ready(function(){
+            
+    
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN": $("meta[name=csrf-token]").attr('content')
+            },
+            data: {
+                id_retur : $("#returid").val()
+            },
+            url: "/getdetailofreturn",
+            type: "post",
+            dataType: "json",
+            success: function (data) {
+        
+                $("#no-nota-retur").val(data["no_nota_retur"]);
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+        });
+        
+
+    </script>
+@endif
+
+
+
 <script src="{{ asset('js/preorder.js') }}"></script>
 <script src="{{ asset('js/mytools/tools.js') }}"></script>
+
 <style>
     .dropdown-submenu {
         position: relative;
+        
     }
 
     .dropdown-submenu a::after {
@@ -65,7 +114,7 @@
 <link rel="stylesheet" href="{{ asset('css/kasir.css') }}">
 <script>
     $(document).ready(function () {
-      
+        
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN": $("meta[name=csrf-token]").attr('content')
@@ -73,7 +122,7 @@
             url: "/removesection",
             type: "post",
             success: function () {
-
+         
             },
             error: function (err) {
                 alert(err.responseText);
@@ -86,28 +135,16 @@
 @stop
 
     @section('content')
-    @php
-        $date = \Carbon\Carbon::parse(date('Y-m-d h:i:s'))->setTimeZone("Asia/Jakarta");
-
-
-
-        $date->settings(['formatFunction' => 'translatedFormat']);
-
-    @endphp
-
+    <input type="hidden" value="{{$preorder_id}}" id="preorderid">
+    <input type="hidden" value="{{$retur_id}}" id="returid">
+    <input type="hidden" value="" id="no-nota-retur">
+    <input type="hidden" value=0 id="subafterdiskon">
+    <input style="display:none" type="checkbox" @if($fromsj) checked @endif id="sj-checker">
+    <input type="hidden" value="{{$id_sj}}" id="sj-id">
     <section class="content">
         <input type="hidden" id="id_pre">
         <input type="hidden" id="jenisproduk">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-6">
-                </div>
-                <div class="col-6">
-                <p class="times">
-                    {{ $date->format('l, j F Y ;  h:i ') }}
-                </p>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-6">
                     <div class="row mb-3">
@@ -118,6 +155,7 @@
                             <option  @if($jenis=="preorder") selected @endif value="preorder">
                                 Transaksi Preorder
                             </option>
+                            <option @if($jenis=="suratjalan")  selected @endif value="suratjalan">Surat Jalan</option>
                         </select>
                         <select name="" id="list-return" class="form-control">
                             
@@ -141,7 +179,7 @@
                                     <tr>
                                         <td width="60%"> <input  required class="search-box form-control w-100 mr-2"
                                                 type="text" id="searcher" placeholder="Cari Barang Disini..."></td>
-                                                <td class="pl-5 pr-3">QTY: </td>
+                                                <td class="pl-5 pr-3">Qty: </td>
                                         <td class="align-content-right">   <input min="1" required class="form-control mr-3 w-75" 
                                                 id="qty" placeholder="Quantity" type="number" value=1>
                                             <input style="width: 300px" required class="qty mr-3 " id="hrg"
@@ -168,18 +206,29 @@
                         <div class="row float-right">
                     <div style="width: 450px;" class="col float-right">
                         <div class="form-group form-group ml-2 ">
-                            <input type="text" class="form-control mb-1 beforesend" id="nama" placeholder="Nama Pelanggan...">
-                            <input type="text" class="form-control mb-1 beforesend"  id="telp" placeholder="No Telp">
+                            <input type="text" class="form-control mb-1 beforesend" id="nama" placeholder="Nama Pelanggan">
+                            <input type="text" class="form-control mb-1 beforesend"  id="telp" placeholder="No. Telp">
                             <input type="text" class="form-control mb-1 beforesend" id="alamat"  placeholder="Alamat">
-                            <div class="normalt">
-                            <div class="d-inline-flex normalt" >
+                            <div class="">
+                            <div class="d-inline-flex" >
                                 <label style="padding: 6px; width: 210px; background-color: #1363ae" class="rounded text-light mr-1 text-center">Subtotal</label>
                                 <input class="form-control bg-light" id="subtotal" type="text" value=0 readonly>
                             </div>
-                            <div class="d-inline-flex normalt">
-                                <label style="padding: 6px; width: 210px; background-color: #1363ae" class="rounded text-light mr-1 text-center">Potongan</label>
-                                <input class="form-control bg-light uang beforesend" type="text" id="diskon" min="0" value=0>
+                            <div class="d-inline-flex">
+                                <label style="padding: 6px; width: 275px; background-color: #1363ae" class="rounded text-light mr-1 text-center">Disc</label>
+                                <input class="form-control bg-light uang beforesend w-75" type="text" id="diskon" min="0" value=0>
+                                <select class="form-control w-50" id="prefix">
+                                     <option value="rupiah">Rp</option>
+                                    <option value="%">%</option>
+                                   
+                                </select>
                             </div>
+                            @if($retur_id > 0)
+                            <div class="d-inline-flex " id="only-retur">
+                                <label style="padding: 6px; width: 210px; background-color: #06335C" class="rounded text-light mr-1 text-center" >Tlh Dibayar</label>
+                                <input class="form-control bg-light"  type="text" value="" id="ta">
+                            </div>
+                            @endif
                             <div class="d-inline-flex normalt">
                                 <label style="padding: 6px; width: 210px; background-color: #06335C" class="rounded text-light mr-1 text-center" >Total</label>
                                 <input class="form-control bg-light" id="totality" type="text" value=0 readonly>
@@ -202,11 +251,11 @@
                         <th>Kode</th>
                         <th>Item</th>
                         <th>Jumlah</th>
-                        <th class="normalt">Harga(/pcs)</th>
-                        <th class="normalt">Diskon(/pcs)</th>
-                        <th class="normalt">Total</th>
+                        <th>Harga(/pcs)</th>
+                        <th>Diskon(/pcs)</th>
+                        <th>Total</th>
                         <th>Aksi</th>
-                        <th class="antartd">Diantar</th>
+                       
                     </tr>
                     <tbody id="tabling">
                         <tr>
@@ -229,7 +278,7 @@
                     <div class="card-body d-inline-flex mt-0">
                         <div class="col-8">
                             <div class="form-group mr-3">
-                                <div class="normalt">
+                                <div>
                                 <label>Pengiriman : </label>
                                 <select class="form-control float-right beforesend mb-3" id="antarkah">
                                     <option value="tidak">Tidak dikirim</option>
@@ -239,11 +288,13 @@
                                 </div>
                                 <input placeholder="Nominal pembayaran" class="form-control mr-3 mb-3 beforesend usethis uang" type="text">
                                 <select class="custom-select form-control beforesend usethisvia">
-                                    <option value="Langsung">Tunai</option>
-                                    <option value="BCA">BCA</option>
-                                    <option value="Mandiri">Mandiri</option>
+                                    <option value="Tunai">Tunai</option>
                                     <option value="Transfer">Transfer</option>
+                                    <option value="Debet">Debet</option>
                                 </select>
+                                @if($retur_id > 0)
+                                <textarea  id="keterangan-retur" class= "form-control mt-3  " rows="10" placeholder="masukan keterangan retur disini.."></textarea> 
+                                @endif
                             </div>
                         </div>
 
@@ -254,7 +305,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <button class="btn reset " id="reset-button"><i class="fa fa-trash mr-3"></i>Buang</button>
+                                    <button class="btn reset " id="reset-button"><i class="fa fa-trash mr-3"></i>Hapus</button>
                                 </div>
                                 <div class="row">
                                     <button class="next text-light" id="next-button"><i class="fa fa-arrow-right mr-3"></i>Lanjut</button>

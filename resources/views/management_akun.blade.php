@@ -1,4 +1,4 @@
-@php $whoactive = "" ;
+@php $whoactive = "kelolakun" ;
 $master = "manager";
 $no=1;
 @endphp
@@ -29,7 +29,7 @@ $no=1;
             <div class="card-header">
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                    <i class="fa fa-plus mr-2"></i>Tambah Data
+                    <i class="fa fa-plus mr-2"></i>Tambah Akun
                 </button>
 
 

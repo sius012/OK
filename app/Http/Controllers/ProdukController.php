@@ -29,10 +29,11 @@ class ProdukController extends Controller
         return json_encode($produk);
     }
     public function index(Request $req){
-        $kategori = DB::table('tipes')->get();
-        $kodetype = DB::table('kode_types')->get();
-        $merek = DB::table('mereks')->get();
-        $produk = DB::table('new_produks')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype');
+        $kategori = DB::table('tipes')->orderBy("nama_tipe","asc")->get();
+        $kodetype = DB::table('kode_types')->orderBy("nama_kodetype","asc")->get();
+        $merek = DB::table('mereks')->orderBy("nama_merek","asc")->get();
+        $satuan = DB::table('new_produks')->groupBy('satuan')->get();
+        $produk = DB::table('new_produks')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->join('stok','stok.kode_produk','=','new_produks.kode_produk');
 
         if($req->filled("tipe")){
             $produk->where('new_produks.id_tipe',$req->tipe);
@@ -47,7 +48,14 @@ class ProdukController extends Controller
             $produk->where('new_produks.nama_produk',"LIKE","%".$req->nama."%")->orWhere('new_produks.kode_produk',"LIKE","%".$req->nama."%");
         }
 
-        return view("produk", ["tipe" => $kategori, "produk" => $produk->orderBy('new_produks.updated_at','desc')->get(), "merek" => $merek, "kodetype" => $kodetype]);
+        return view("produk", ["tipe" => $kategori, "produk" => $produk->orderBy('new_produks.updated_at','desc')->get(), "merek" => $merek, "kodetype" => $kodetype,
+            'satuan' => $satuan,
+            'tipekw' =>$req->tipe,
+            'ctkw' =>$req->kodetipe,
+            'merekkw' =>$req->merek,
+
+
+    ]);
     }
 
     public function search(Request $req){
@@ -78,24 +86,24 @@ class ProdukController extends Controller
         $satuan_produk = $req->input('satuan_produk');
         $id_codetype = $req->input('kodetype');
         $diskon = $req->input('diskon');
-        $td = $req->discontype;
+        $td = $req->input('discontype');
 
         if(strpos($id_tipe,'[custom]')){
             $id_tipeo = DB::table("tipes")->max("id_tipe");
             
-            $newtipe = DB::table("tipes")->insertGetId(["id_tipe" => $id_tipeo+1, "nama_tipe"=>str_replace("[custom]","",$id_tipe)]);
-            $id_tipe = $id_tipeo+1;
+            $id_tipe = DB::table("tipes")->insertGetId(["id_tipe" => $id_tipeo+1, "nama_tipe"=>str_replace("[custom]","",$id_tipe)]);
+         
             
         }
         if(strpos($id_merek,'[custom]')){
             $id_mereko = DB::table("mereks")->max("id_merek");
-            $newmerek = DB::table("mereks")->insertGetId(["id_merek" => $id_mereko+1 ,"nama_merek"=>str_replace("[custom]","",$id_merek)]);
-            $id_merek = $id_mereko+1;
+            $id_merek = DB::table("mereks")->insertGetId(["id_merek" => $id_mereko+1 ,"nama_merek"=>str_replace("[custom]","",$id_merek)]);
+    
         }
         if(strpos($id_codetype,'[custom]')){
             $id_codetypeo = DB::table("kode_types")->max("id_kodetype");
-            $newkodetype = DB::table("kode_types")->insertGetId(["id_kodetype" => $id_codetypeo+1, "nama_kodetype"=>str_replace("[custom]","",$id_codetype)]);
-            $id_codetype = $id_codetypeo+1;
+            $id_codetype = DB::table("kode_types")->insertGetId(["id_kodetype" => $id_codetypeo+1, "nama_kodetype"=>str_replace("[custom]","",$id_codetype)]);
+      
             
         }
 
@@ -104,9 +112,13 @@ class ProdukController extends Controller
         $count = DB::table("new_produks")->where("id_tipe", $id_tipe)->where("id_ct", $id_codetype)->where("id_merek",$id_merek)->count();
 
 
-        $kode_produk = $id_tipe.str_pad($id_codetype,3,0,STR_PAD_LEFT).str_pad($id_merek,3,0,STR_PAD_LEFT).str_pad($count+1,3,0,STR_PAD_LEFT);
+        $kode_produk = str_pad($id_tipe,2,0,STR_PAD_LEFT).$id_tipe.str_pad($id_codetype,3,0,STR_PAD_LEFT).str_pad($id_merek,3,0,STR_PAD_LEFT).str_pad($count+1,3,0,STR_PAD_LEFT);
+        DB::table('detail_stok')->insert(['id_ag'=>auth()->user()->id,'kode_produk'=>$kode_produk,'jumlah'=>$req->stok,'status'=>'masuk','keterangan'=>'stock awal','created_at'=>date('Y-m-d H:i:s')]);
+
         
-         DB::table('new_produks')->insert(["id_tipe" => $id_tipe,"kode_produk"=>$kode_produk,"id_ct"=>$id_codetype,"nama_produk"=>$nama_produk,"id_merek" => $id_merek, "harga" => $harga_produk, 'satuan' => $satuan_produk,"diskon"=>$diskon]);
+         DB::table('stok')->insert(['kode_produk'=> $kode_produk,'jumlah'=>$req->stok]);
+        
+         DB::table('new_produks')->insert(["id_tipe" => $id_tipe,"kode_produk"=>$kode_produk,"id_ct"=>$id_codetype,"nama_produk"=>$nama_produk,"id_merek" => $id_merek, "harga" => $harga_produk, 'satuan' => $satuan_produk,"diskon"=>$diskon,'diskon_tipe'=>$td]);
 
          $getProduk = DB::table('produk')->join('kategori', 'kategori.id_kategori', '=', 'produk.id_kategori')->get();
          return json_encode(["produk" => $getProduk,'kp'=>$kode_produk,'kode'=>$kode_produk,"merek"=>$id_merek,"tipekode"=>$id_codetype,"tipe"=>$id_tipe,"kode"=>$kode_produk,'nama_produk'=>$nama_produk]);
@@ -135,8 +147,15 @@ class ProdukController extends Controller
     }
 
     public function updatebarang(Request $req,$id){
+        
         $data = $req->input();
+
+        $data2 = $data;
+
         unset($data["_token"]);
+         unset($data["id_tipe"]);
+          unset($data["id_ct"]);
+           unset($data["id_merek"]);
         $namaproduk = $req->nama_produk;
         $data["harga"] = (int) str_replace([",","."],"",$req->harga);
         $id_tipe = $req->id_type;
@@ -145,10 +164,10 @@ class ProdukController extends Controller
 
         
 
-    //   dd($data);
+   
         DB::table('new_produks')->where('kode_produk',$id)->
                             update($data);
-                           return redirect()->route('produk');
+                           return redirect('/produk?nama=&tipe='.$data2['id_tipe'].'&kodetipe='.$data2['id_ct'].'&merek='.$data2['id_merek']);
        
         }
 
@@ -183,12 +202,13 @@ class ProdukController extends Controller
         $kategori = DB::table('tipes')->get();
         $kodetype = DB::table('kode_types')->get();
         $merek = DB::table('mereks')->get();
-        $produk = DB::table('new_produks')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->get();
+        $satuan = DB::table('new_produks')->groupBy('satuan')->get();
+        $produk = DB::table('new_produks')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->join("stok","stok.kode_produk","new_produks.kode_produk")->get();
         
         $kode = $req->input('kodebarcode');
-        $data = DB::table("new_produks")->where('kode_produk',$kode)->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->first();
-   
-        return view("produk", ["tipe" => $kategori, "produk" => $produk, "merek" => $merek, "kodetype" => $kodetype, "data"=>$data]);
+        $data = DB::table("new_produks")->where('new_produks.kode_produk',$kode)->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->join("stok","stok.kode_produk","new_produks.kode_produk")->first();
+       // dd($data);
+        return view("produk", ["tipe" => $kategori, "produk" => $produk, "merek" => $merek, "kodetype" => $kodetype, "data"=>$data,'satuan'=>$satuan]);
 
         
     }
@@ -200,7 +220,7 @@ class ProdukController extends Controller
     public function printbarcode(Request $req){
         $listdata= [];
 
-        $getter = DB::table('new_produks')->where('kode_produk', $req->kode_produk)->join("mereks","mereks.id_merek","new_produks.id_merek")->get()[0];
+        $getter = DB::table('new_produks')->where('kode_produk', $req->kode_produk)->join("kode_types","kode_types.id_kodetype","new_produks.id_ct")->join("mereks","mereks.id_merek","new_produks.id_merek")->get()[0];
         
         for($i = 0;$i< $req->jml;$i++){
             array_push($listdata,$getter);
@@ -210,11 +230,27 @@ class ProdukController extends Controller
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'."cetakbarcode". '.' . 'pdf' ;
             $pdf->save(storage_path("pdf/$fileName"));
+        $thepath = storage_path("pdf/$fileName");
         $storagepath = storage_path("pdf/$fileName");
         $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
-
-    	return response()->json(["filename" => $base64]);
+        unlink($thepath);
+    	return response()->json(["filename" => $base64]); 
         
+    }
+
+    public function savebuffer(Request $req){
+        $datas = 
+        [
+        "kb" => $req->kb,
+        "np"  => $req->np,
+        "hp"  => $req->hp,
+        "dsc"  => $req->dsc,
+        "tpd"  => $req->tpd,
+        "stn"  => $req->stn,
+        ];
+
+        $req->session()->put('buffer',$datas);
+        return json_encode($datas);
     }
 
 
