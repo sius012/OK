@@ -267,11 +267,7 @@ class KasirController extends Controller
 
 
         //cek apakah ini berasal dari surat jalan
-        if($data["fromsj"] == 1){
-            DB::table("transaksi")->where("kode_trans", $data["id_sj"])->delete();
-            DB::table("detail_transaksi")->where("kode_trans", $data["id_sj"])->delete();
-        }
-       
+
 
        if($jenistrans == "normal"){
         DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(['status'=>'terjual']);
@@ -284,6 +280,7 @@ class KasirController extends Controller
 
 
     public function selesaipreorder(Request $req){
+        $id_kasir = Auth::user()->id;   
         $data = $req->input('data');
         $telp = $data['telp'];
         $alamat = $data['alamat'];
@@ -310,8 +307,9 @@ class KasirController extends Controller
 
         
 
-        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["metode"=>$metode,"status"=>"preorder","no_nota" => $no_nota,"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,"bayar" => $data["bayar"],"alamat"=>$alamat,"subtotal"=>$newsubtotal]);
+        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["id_kasir"=>$id_kasir,"metode"=>$metode,"status"=>"preorder","no_nota" => $no_nota,"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,"bayar" => $data["bayar"],"alamat"=>$alamat,"subtotal"=>$newsubtotal]);
 
+        //stok
         
 
     }

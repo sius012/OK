@@ -38,6 +38,7 @@ $(document).ready(function(e){
             },
             type: "post",
             success: function(response){
+            
                 printJS({printable: response['filename'], type: 'pdf', base64: true});
             },error: function(err){
                 alert(err.responseText);

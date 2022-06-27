@@ -15,6 +15,13 @@ class Kasir2Controller extends Controller
         $preorderid = 0;
         $retur_id = 0;
         $sj_id = $req->filled("id_sj") ? $req->id_sj : null;
+
+
+        //cheker sj
+        $counter2 = DB::table("transaksi")->where("status","suratjalan")->where("kode_trans",$sj_id)->count();
+        if($counter2 < 1){
+              $sj_id = null;
+        }
         $fromsj = $req->filled("id_sj") ? true : false;
         if($req->filled("preorder_id")){
             $preorderstat = true;

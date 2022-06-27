@@ -53,10 +53,21 @@ class PreorderController extends Controller
 
     public function lunasi($idpre){
         DB::table("transaksi")->where("kode_trans",$idpre)->update(['bayar'=>DB::raw("subtotal"),"status"=>"lunas"]);
+        $detail =  DB::table("detail_transaksi")->where("kode_trans",$idpre)->get();
+
+        //updater
+        DB::table("detail_transaksi")->where("kode_trans",$idpre)->update(["status"=>"terjual"]);
+
         $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
         $no += 1;   
         $no_nota = date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
         DB::table("transaksi")->where("kode_trans",$idpre)->update(["no_nota"=>$no_nota]);
+
+
+        //decrement stok
+        foreach($detail as $d){
+            DB::table("stok")->where('kode_produk',$d->kode_produk)->update(["jumlah"=> DB::raw("jumlah -".$d->jumlah)]);
+        }
         return redirect()->back();
     }
 
