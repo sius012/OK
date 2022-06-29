@@ -38,6 +38,10 @@ Route::middleware(["role:kasir|manager"])->group(function(){
     Route::post("/printtandaterima", "TransaksiController@printtt");
 
 
+    Route::get("/itdash","ITController@index");
+    Route::get("/normalize","ITController@normalizetrans");
+
+
     Route::post("/hapusdraf",'TransaksiController@hapusdraft');
     Route::get("/menusuratjalan","MenuSuratJalan@index");
     Route::post("/getdetailofreturn", 'KasirController@loadreturinfo');

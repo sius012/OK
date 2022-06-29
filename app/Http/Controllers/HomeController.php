@@ -64,17 +64,16 @@ class HomeController extends Controller
 
     
       $daily["hari"]["pemasukan nota besar"] = DB::table("nota_besar")->whereDay("created_at",Carbon::now()->day)->sum("us");
-      $daily["hari"]["pemasukan preorder"] = DB::table("preorder")->whereDay("created_at",Carbon::now()->day)->where('status','!=','draft')->sum("us");
+      $daily["hari"]["pemasukan preorder"] = DB::table("transaksi")->where("status","preorder")->whereDay("created_at",Carbon::now()->day)->sum("subtotal");
 
 
      
       $daily["minggu"]["pemasukan nota besar"] = DB::table("nota_besar")->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum("us");
-      $daily["minggu"]["pemasukan preorder"] =   DB::table("preorder")->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('status','!=','draft')->sum("us");
-
+      $daily["minggu"]["pemasukan preorder"] =   DB::table("transaksi")->where("status","preorder")->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum("subtotal");
 
       
       $daily["bulanan"]["pemasukan nota besar"] =  DB::table("nota_besar")->whereMonth("created_at",Carbon::now()->month)->where('status','!=','draft')->sum("us");
-      $daily["bulanan"]["pemasukan preorder"] = DB::table("preorder")->whereMonth("created_at",Carbon::now()->month)->where('status','!=','draft')->sum("us");
+      $daily["bulanan"]["pemasukan preorder"] =DB::table("transaksi")->where("status","preorder")->whereMonth("created_at",Carbon::now()->month)->sum("subtotal");
     
       
         return view('home',['daily'=>$daily,'produk'=>$product,'user'=>$user,'pt' => $pt]);

@@ -69,7 +69,7 @@ class MenuSuratJalan extends Controller
         $id = $req->id_pre;
         $data = DB::table('transaksi')->where('kode_trans', $id)->get();
         $data2 = DB::table('detail_transaksi')->join("new_produks","new_produks.kode_produk","=","detail_transaksi.kode_produk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans', $id)->get();
-        $pdf = PDF::loadview('suratjalan2', ["data" => $data[0],"data2"=>$data2]);
+        $pdf = PDF::loadview('suratjalan2', ["data" => $data[0],"data2"=>$data2,"tampil_harga"=>$req->tampil]);
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'."MB". '.' . 'pdf' ;
             $pdf->save(storage_path("pdf/$fileName"));

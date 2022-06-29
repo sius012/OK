@@ -262,7 +262,8 @@ class KasirController extends Controller
         if($returkah){
             $td = $data["td"];
             $keterangan_retur = $data["keterangan_retur"];
-            DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["tlh_bayar"=>$td,"keterangan_retur"=>$keterangan_retur,"subtotal"=>$afterdiskon-$td]);
+            $status = $data["bayar"] - $afterdiskon + $data["td"] >= 0 ? "lunas":"belum lunas";
+            DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["tlh_bayar"=>$td,"keterangan_retur"=>$keterangan_retur,"subtotal"=>$afterdiskon-$td,"status"=>$status]);
         }
 
 
@@ -287,6 +288,9 @@ class KasirController extends Controller
         $subtotal = 0;
         $id_transaksi = $data['id_pre'];
         $metode = $data['via'];
+        $diantar = $data['antarkah'];
+        $prefix = $data["prefix"];
+        $diskon = $data["diskon"];
 
 
         //detail data transaksi
@@ -307,9 +311,10 @@ class KasirController extends Controller
 
         
 
-        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["id_kasir"=>$id_kasir,"metode"=>$metode,"status"=>"preorder","no_nota" => $no_nota,"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,"bayar" => $data["bayar"],"alamat"=>$alamat,"subtotal"=>$newsubtotal]);
+        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["id_kasir"=>$id_kasir,"metode"=>$metode,"status"=>"preorder","no_nota" => $no_nota,"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,"bayar" => $data["bayar"],"alamat"=>$alamat,"subtotal"=>$newsubtotal,"diskon"=>$diskon,"prefix"=>$prefix,"antar"=>$diantar]);
 
-        //stok
+        //update status to preorder
+        DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(["status"=>"preorder"]);
         
 
     }

@@ -36,10 +36,10 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
             
         }
         
-        td{
+        td,th{
             height: 0px;
             padding: 1px;
-      
+
         }
 
         td h4,h5,th{
@@ -161,7 +161,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                         <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax (024) 3554929 /085712423453 <br> Semarang </p>
                     </div>
                 </td>
-                <td style="width: 100px" colspan=4></td>
+                <td style="width: 100px" colspan=3></td>
                 <td align="left" valign="top" style="width: 20px" width=90>
                     <h4 class="date-times">Semarang, {{date('d-M-Y', strtotime($data->created_at))}}
                      
@@ -182,22 +182,22 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td valign="top" style="width: 150px">
                     <h4>Telah terima dari</h4>
                 </td>
-                <td valign="top" width="150" colspan=4> {{ $data->nama_pelanggan }}</td>
-                <td></td>
+                <td valign="top" width="150" colspan=3> {{ $data->nama_pelanggan }}</td>
+            
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Telepon</h4>
                 </td>
-                <td valign="top" colspan=4>  {{ $data->telepon}}</td>
+                <td valign="top" colspan=3>  {{ $data->telepon}}</td>
                 
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Alamat</h4>
                 </td>
-                <td valign="top" colspan=4> {{ $data->alamat}}</td>
-                <td></td>
+                <td valign="top" colspan=3> {{ $data->alamat}}</td>
+                
             </tr>
           
 
@@ -210,9 +210,9 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <td></td>
                     @endif
                     <td valign="top" style="width:50px" > {{$datas->jumlah}} {{$datas->satuan}}</td>
-                    <td  valign="top" style="width:350px">{{$datas->nama_kodetype}}  {{$datas->nama_merek}} {{$datas->nama_produk}} </td>
-                    
-                    
+                    <td  valign="top" style="width:250px">{{$datas->nama_kodetype}}  {{$datas->nama_merek}} {{$datas->nama_produk}} </td>
+                   @if($tampil_harga == 1) <td style="width:100px">@if($datas->potongan > 0){{$datas->prefix == "rupiah" ? "-".number_format($datas->potongan,0,".",".") : $datas->potongan."%" }}@endif</td>
+                    <td style="width:100px">{{number_format(Tools::doDisc(1,$datas->harga_produk,$datas->potongan,$datas->prefix),0,".",".")}}</td>@endif
                   
                 </tr>
             @endforeach

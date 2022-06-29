@@ -3,6 +3,7 @@
     @php $no=1 ;
     $subtotal=0;
     $potongan=0;
+    $potonganRetur=0;
     $jml=0; @endphp
 <head>
     <meta charset="UTF-8">
@@ -22,6 +23,7 @@
     @if($has==0)   <th>total</th>@endif
         </tr>
         @foreach($datas as $i => $dts)
+        @
         @for($j=0;$j<(int)$dts['jmltrans'];$j++)
             <tr>
                 <td>{{$no}}</td>
@@ -36,10 +38,12 @@
         @php $no++;
         $subtotal += Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix);
         $jml += $dts[$j]->jumlah;
+        
         @endphp
         @endfor 
         @php
-             $potongan += $dts['potongan'];
+             $potongan += $dts['potongan rupiah'];
+             $potonganRetur += $dts['potongan retur'];
         @endphp
         @endforeach
         @if($has==0) 
@@ -49,12 +53,17 @@
                 <td>{{$subtotal}}</td>
             </tr>
             <tr>
+                <td colspan=4>Total Retur</td>
+                <td colspan=2>{{$potonganRetur}}</td>
+            </tr>
+            <tr>
                 <td colspan=4>Total Diskon</td>
                 <td colspan=2>{{$potongan}}</td>
+               
             </tr>
             <tr>
                 <td colspan=4>Total Akhir</td>
-                <td colspan=2>{{$subtotal - $potongan}}</td>
+                <td colspan=2>{{$subtotal - $potongan - $potonganRetur}}</td>
             </tr>
         @endif
     </table>

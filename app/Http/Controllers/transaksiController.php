@@ -101,9 +101,9 @@ class transaksiController extends Controller
         $id=$req->id_trans;
         $no_nota =  DB::table("transaksi")->where("kode_trans",$id)->pluck("no_nota")->first();
         $hasretur = DB::table("transaksi")->where("keterangan",$no_nota)->count();
-        $datatrans = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->select("transaksi.*","transaksi.status as status_trans","detail_transaksi.*","new_produks.*","mereks.*","kode_types.*")->get();
-     
-        return json_encode(["datatrans"=>$datatrans,"hasretur"=>$hasretur]);
+        $datatrans = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->select("transaksi.*","transaksi.status as status_trans","detail_transaksi.*","new_produks.*","mereks.*","kode_types.*","transaksi.tlh_bayar")->get();
+        $jml = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->count();
+        return json_encode(["datatrans"=>$datatrans,"hasretur"=>$hasretur, "jml"=>$jml]);
 
         
     }
@@ -162,7 +162,7 @@ class transaksiController extends Controller
             $has = 1;
         }
 
-        $datas = DB::table("transaksi")->where("status","!=","draf")->whereBetween(DB::raw('substr(created_at,1,10)'),[$tglstart,$tglend])->get();
+        $datas = DB::table("transaksi")->where("status","!=","draf")->where("status","!=","preorder")->where("status","!=","suratjalan")->whereBetween(DB::raw('substr(created_at,1,10)'),[$tglstart,$tglend])->get();
 
         $data = [];
 
@@ -173,12 +173,20 @@ class transaksiController extends Controller
                                 ->join('new_produks', 'detail_transaksi.kode_produk', '=', 'new_produks.kode_produk')
                                 ->join('kode_types','kode_types.id_kodetype','new_produks.id_ct')
                                 ->join('mereks','mereks.id_merek','new_produks.id_merek')
-                                ->where('transaksi.kode_trans', $dts->kode_trans)->where('transaksi.status','!=','return');
+                                ->where('transaksi.kode_trans', $dts->kode_trans)->where('transaksi.status','!=','return')->where("transaksi.status","!=","preorder")->where("transaksi.status","!=","suratjalan");
             $data[$i] = $quer->get()->toArray();
         
             $data[$i]['jmltrans'] = $quer->count();
             $data[$i]['datas'] = $dts;
-            $data[$i]['potongan'] = $dts->prefix == "rupiah" ? $dts->diskon : ($dts->subtotal / ((100-$dts->diskon)/100))-$dts->subtotal;
+            $data[$i]['potongan rupiah'] = 0;
+            $data[$i]['potongan retur'] = $dts->tlh_bayar;
+            if($dts->prefix != "rupiah"){
+                $oriPrice = $dts->subtotal / ((100 - $dts->diskon)/100);
+                $data[$i]['potongan rupiah'] = $oriPrice - $dts->subtotal;
+                
+            }else{
+                $data[$i]['potongan rupiah'] = $dts->diskon;
+            }
         }
        
 
