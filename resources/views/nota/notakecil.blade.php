@@ -284,7 +284,7 @@ $subtotal = 0;
                 </table>
         
                 <table class="table">
-                    @if($data[0]->diskon > 0)
+        
                     @if($data[0]->status != "return")
                     <tr>
                         <td>Subtotal</td>
@@ -292,7 +292,7 @@ $subtotal = 0;
 
                     </tr>
                     @endif
-                    @endif
+                    
                     
                     @if($data[0]->diskon > 0)
                     <tr>
@@ -303,7 +303,7 @@ $subtotal = 0;
                     @endif
                     @if($data[0]->keterangan_retur != null)
                     <tr>
-                        <td>RETUR</td>
+                        <td>RETUR({{$data[0]->keterangan_retur}})</td>
                         <td align="right" valign="top">{{number_format($data[0]->tlh_bayar,0,".",".")}}</td>
                     </tr>
                     @endif
