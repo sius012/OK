@@ -21,8 +21,8 @@ function formatRupiah(angka, prefix) {
 
 
 $(document).ready(function () {
-   
-
+   //cek dan load data surat jalan
+  
 
     var hasRetur = $("#returid").val().length < 2 ? false : true;
 
@@ -63,6 +63,15 @@ $(document).ready(function () {
     function getIdTrans(val){
         id_trans = val;
     }
+
+
+    if($("#sj-id").val() != ""){
+        getIdTrans($("#sj-id").val());
+        loader(id_trans,"");
+    }
+    
+
+
 
      function getIdPre(val){
         id_pre = val;
@@ -469,7 +478,8 @@ $(document).ready(function () {
         if(!hasfinish){
     
         
-        if (parseInt($(".usethis").val().replace(/[._]/g, '')) < parseInt($("#totality").val().replace(/[._]/g, '')) && $("#jenis-transaksi").val() == "normal" ) {
+        if (($(".usethis").val() == "" || parseInt($(".usethis").val().replace(/[._]/g, '')) < parseInt($("#totality").val().replace(/[._]/g, ''))) && $("#jenis-transaksi").val() == "normal" ) {
+         
             alert("uang kurang");
             alert("subtotalafter diskon anda :" +subtotalafterdiskon);
         } else {
@@ -477,8 +487,6 @@ $(document).ready(function () {
            
             if ($("#nama").val() == null ||
                 $("#nama").val() == "" ||
-                $(".usethis").val() == "" ||
-                $(".usethis").val() == null  ||
                 $(".usethisvia").val() == " " ||
                 $('#telp').val() == "" ||
                 $("#alamat").val() == "") {

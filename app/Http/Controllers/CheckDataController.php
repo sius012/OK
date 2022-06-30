@@ -10,9 +10,12 @@ class CheckDataController extends Controller
 {
     public function index(){
         $data = DB::table('nota_besar')->where("termin",3)->get();
+  
 
         $data2 = [];
 
+        //cek jumlah surat jalan
+        $counter_sj = DB::table("transaksi")->where("status","suratjalan")->count();
 
         foreach($data as $datas){
             $now = Carbon::createFromFormat("m/d/Y", date("m/d/Y"));
@@ -22,7 +25,7 @@ class CheckDataController extends Controller
             }
         }   
 
-        return json_encode($data2);
+        return json_encode(["data2" => $data2,"counter_sj"=>$counter_sj]);
     }
 
     public function experiment(){

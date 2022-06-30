@@ -55,19 +55,28 @@
                     dataType: "json",
                     success: function(data){
                         
-                         $(".badger").html(data.length);
-                        let row=data.map(function(datas){
+                         $(".badger").html(data["data2"].length);
+                        let row=data["data2"].map(function(datas){
                             return `<a href="#" id_nb='${datas['id_transaksi']}' class="dropdown-item p-3 btnlink">
                         <i class="fas fa-info mr-2"></i>No Nota ${datas['no_nota']} sudah mendekati jatuh tempo
                     </a>`;
                         });
                         
+                      
+
                         $(".cont-notif").html(row);
-                        if(data.length > 0){
+                        if(row.length > 0){
                             $(".titler").html(row.length + " Notifikasi");
+                     
                         }else{
                             $(".badger").hide();
                             $(".titler").hide();
+                        }
+
+                        if(data["counter_sj"] > 0){
+                            $("#sj-indi").text(data["counter_sj"]);
+                        }else{
+                            $("#sj-indi").hide()
                         }
                       
                         
@@ -240,7 +249,7 @@
               </li>
               <li class=" nav-item">
                                         <a href="{{url('/menusuratjalan')}}" class="nav-link {{$whoactive=='menusuratjalan' ? 'active' : ''}}">
-                  <p>Riwayat Surat Jalan</p>
+                  <p>Riwayat Surat Jalan</p><span class="mr-2 badge badge-danger" id="sj-indi"></span></h1>
                 </a>
               </li>
               <li class=" nav-item">

@@ -35,7 +35,7 @@
     <script>
         $(document).ready(function(){
             
-    
+       
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN": $("meta[name=csrf-token]").attr('content')
@@ -91,6 +91,9 @@
 </style>
 <script>
     $(document).ready(function () {
+         if($("#jenis-transaksi").val() == "suratjalan"){
+            $(".usethis").hide();
+         }
         
         $('.dropdown-menu a.dropdown-toggle').on('click', function (e) {
               

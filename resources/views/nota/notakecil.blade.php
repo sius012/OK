@@ -343,12 +343,20 @@ $subtotal = 0;
 
                 </table>
              
-             
+
+                
                 <hr style="margin:0;">
+                
+                @if($data[0]->keterangan_retur!=null)
+              
+              <p style="margin:3px;">{{$data[0]->keterangan_retur}}</p>
+              @endif
                 @if($data[0]->status != 'return')
               
                 <p style="margin:3px;">* Barang yang sudah dibeli <br> tidak dapat ditukar<br><br>
                 @endif
+
+              
 
                 
                

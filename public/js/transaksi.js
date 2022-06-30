@@ -38,6 +38,7 @@ $(document).ready(function(e){
             },
             type: "post",
             success: function(response){
+            
                 printJS({printable: response['filename'], type: 'pdf', base64: true});
             },error: function(err){
                 alert(err.responseText);
@@ -225,11 +226,12 @@ $(document).ready(function(e){
              type: "post",
              dataType: "json",
              success: function(data){
+          
                 let dato = data["datatrans"];
           
                  let no = 1;
                  let row = data['datatrans'].map(function(r,i){
-
+           
                     return `
                         <tr ${r['status'] == 'return' ? 'style="background: lightyellow"' : ""}>
                             <td>${data["hasretur"] > 0 ? '' : '<button nama="'+r['nama_kodetype']+" "+r['nama_merek']+" "+r['nama_produk']+'" jmlretur=0 jml='+ r['jumlah'] +' iddtrans=' + r['id'] + '  class="btn btn-success setjml" type="button">Retur</button>'}</td>
@@ -256,11 +258,12 @@ $(document).ready(function(e){
 
                  //cek apakah nota ini pembelian baru setelah retur
                  if(dato[0]["keterangan_retur"]!=null){
-                    $("#nominal-telah-bayar").text("Pembayaran sebelumnya : "+ data[0]["tlh_bayar"]);
-                    $("#keterangan-retur").text("Keterangan Retur : "+data[0]["keterangan_retur"]);
+                    $("#nominal-telah-bayar").text("Pembayaran sebelumnya : "+ dato[0]["tlh_bayar"]);
+                    $("#keterangan-retur").text("Keterangan Retur : "+dato[0]["keterangan_retur"]);
                     $("#keterangan-retur").show();
                     $("#nominal-telah-bayar").show();
                  }
+              
                  $("#returncont").html(row);
 
              },error: function(err){

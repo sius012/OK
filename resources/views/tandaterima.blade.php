@@ -247,7 +247,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 </td>
             </tr>  <tr >
                 <td align="center" >
-                    <br><br><br>
+                    <br><br><br><br>
                     <div class="wrappers">
                         <h4 class="customer">{{"(".str_repeat('.', 25).")"}}</h4>
 
@@ -256,7 +256,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td></td>
                 <td align="center" style="padding-left:150px">
                     <div class="wrappers">
-                    <br><br><br>
+                    <br><br><br><br>
                         <h4 class="customer">{{"(".str_repeat('.', 25).")"}}</h4>
 
                     </div>
