@@ -34,7 +34,14 @@ class TransaksiPreorder extends Controller
         //dd($data);
         if($no_nota != null){
             $data_detail = DB::table('nota_besar')->where('no_nota',$no_nota)->get();
-            $opsi = DB::table('nb_detail')->where('id_nb', $data_detail[0]->id_transaksi)->get();
+            $counter = DB::table('nota_besar')->where('no_nota',$no_nota)->count();
+            $opsi = null;
+            if($counter < 2){
+              
+            }else{
+                $opsi = DB::table('nb_detail')->where('id_nb', $data_detail[0]->id_transaksi)->get();
+            }
+
 
             return view("transaksipreorder", ['data'=>$data,'page'=>'kasir', 'info' => $data_detail,'opsi' => $opsi]);
         }else{

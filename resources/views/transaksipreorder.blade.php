@@ -131,8 +131,10 @@ $master='kasir' @endphp
                           <th style="width: 200px"><div >Telah diterima dari</div></th>
                           <th style="width: 200px"><div >Total</div></th>
                           <th style="width: 120px"><div >Tagihan 1</div></th>
+                          @if($datas[0] != null)
                           <th style="width: 120px"><div >Tagihan 2</div></th>
                           <th style="width: 120px"><div >Tagihan 3</div></th>
+                          @endif
                           <td style="width: 110px" rowspan="2" align="center" valign="center" class=""><div class="mt-3 justify-content-center">
                               <a href="{{route('showdetail',['no_nota'=>$datas['no_nota']])}}" class="" ><i style="background-color:#1562AA; color:white; padding:10px; border-radius:100%;" class="fa fa-list"></i></a>
                           </div></td>
@@ -143,9 +145,10 @@ $master='kasir' @endphp
                           <td><div>Rp. {{number_format( $datas["total"] )}}</div></td>
                       
                           <td><div class="mt-1"><i class="fa fa-check-circle"></i></div></td>
+                          @if($datas[0] != null)
                           <td align="center" valign="center"><div>@If($datas[0][0]->status == "dibayar")<div class="mt-1"><i class="fa fa-check-circle"></i></div>@else <div><a style="font-size: 0.75rem;" class="btn btn-success text-light" href="{{route('prosesbayar',['id' => $datas[0][0]->id_transaksi])}}">Bayar</a></div>@endif</td>
                           <td><div>@If(  $datas[0][1]->status == "dibayar" and $datas[0][1]->status == "dibayar")<div class="mt-1"><i class="fa fa-check-circle"></i></div>@elseif($datas[0][1]->status == "menunggu") @else <div><a class="btn btn-success text-light" href="{{route('prosesbayar',['id' => $datas[0][1]->id_transaksi])}}">Bayar</a></div>@endif</td>
-                         
+                          @endif
                       </tr>
                   
                 </table>
@@ -183,6 +186,7 @@ $master='kasir' @endphp
                   <div class="step-counter @if($info[0]->status == 'dibayar')  text-light @endif">1</div>
                   <div class="step-name">Termin 1(DP)</div>
                 </div>
+                @if($opsi!=null)
                 <div class="stepper-item  @if($info[1]->status == 'dibayar') completed  @endif ">
                   <div class="step-counter @if($info[1]->status == 'dibayar') text-light  @endif ">2</div>
                   <div class="step-name">Termin 2</div>
@@ -191,6 +195,7 @@ $master='kasir' @endphp
                   <div class="step-counter @if($info[2]->status == 'dibayar') text-light  @endif ">3</div>
                   <div class="step-name">Termin 3(Pelunasan)</div>
                 </div>
+                @endif
             </div>
 
             <hr class="m-0 p-0">
@@ -219,11 +224,13 @@ $master='kasir' @endphp
                         <tr>
                           <th class="float-left">Total  </th><td>Rp. {{number_format($info[0]->total,0,".",".")}}</td>
                         </tr>
+                        @if($opsi!=null)
                         @foreach($opsi as $opsis)
                         <tr>
                           <th class="float-left">{{$opsis->judul}} </th><td align="left">{{$opsis->ket}}</td>
                         </tr>
                         @endforeach
+                        @endif
                       </table>
                   </div>
                 </div>
@@ -231,9 +238,15 @@ $master='kasir' @endphp
         </div>
         <div class="modal-footer">
         <button type="button" class="btn btn-secondary btnClose" data-dismiss="modal">Tutup</button>
+        @if($opsi!=null)
        @if($info[2]->status == 'ready' or $info[2]->status == 'dibayar') <button class="btn btn-primary" id="sj2" id_trans="{{$info[1]->id_transaksi}}">Surat Jalan</button>@endif
+       @endif
+
+       @if($opsi!=null)
         <button id="printbutton" type="button" id_nb=" @if($info[1]->status == 'dibayar' and @info[2]->status == 'ready') {{$info[1]->id_transaksi}} @elseif( $info[2]->status == 'dibayar') {{$info[2]->id_transaksi}} @else  {{$info[0]->id_transaksi}} @endif" class="btn btn-primary">Cetak</button>
-          
+       @else
+       <button id="printbutton" type="button" id_nb="{{$info[0]->id_transaksi}}" class="btn btn-primary">Cetak</button>
+       @endif
         </div>
       </div>
     </div>

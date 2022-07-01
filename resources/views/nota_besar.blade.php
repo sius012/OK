@@ -172,9 +172,15 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
             <tr>
                 <td align="center" id="bigtitle" colspan="3">
                     <div class="big-title">
+                        @if($jenisnota == "notabesar")
                         <h2 class="title" style="text-decoration: underline;">
                             {{ $data->termin != 3 ? "TANDA TERIMA" : "NOTA" }}
                         </h2>
+                        @else
+                        <h2 class="title" style="text-decoration: underline;">
+                            {{"JASA PASANG"}}
+                        </h2>
+                        @endif
                         <h5 class="no-nota">NO.{{ $data->no_nota }}</h5>
                     </div>
                 </td>

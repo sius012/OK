@@ -211,6 +211,7 @@ $master='kasir' @endphp
                     <option value="autog">Auto Gate & Auto Garage</option>
                     <option value="upvc">UPVC</option>
                     <option value="omge">OMGE</option>
+                    <option value="jasapasang">Jasa Pasang</option>
                 </select>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Tanggal </label>

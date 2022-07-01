@@ -173,7 +173,8 @@ class transaksiController extends Controller
                                 ->join('new_produks', 'detail_transaksi.kode_produk', '=', 'new_produks.kode_produk')
                                 ->join('kode_types','kode_types.id_kodetype','new_produks.id_ct')
                                 ->join('mereks','mereks.id_merek','new_produks.id_merek')
-                                ->where('transaksi.kode_trans', $dts->kode_trans)->where('transaksi.status','!=','return')->where("transaksi.status","!=","preorder")->where("transaksi.status","!=","suratjalan");
+                                ->where('transaksi.kode_trans', $dts->kode_trans)->where('transaksi.status','!=','return')->where("transaksi.status","!=","preorder")->where("transaksi.status","!=","suratjalan")
+                                ->select("transaksi.*","mereks.*","kode_types.*","new_produks.*","detail_transaksi.*","transaksi.created_at as tanggal_trans;");
             $data[$i] = $quer->get()->toArray();
         
             $data[$i]['jmltrans'] = $quer->count();

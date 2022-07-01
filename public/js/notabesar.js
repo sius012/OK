@@ -52,6 +52,8 @@ var omge = `
 `;
 
 
+
+
 $(document).on('click','.nnt',function(e){
     $("#searcher-nota").val($(e.target).text());
     searchnota($("#searcher-nota").val());
@@ -70,9 +72,12 @@ $("#notabesar").change(function(){
 }else if($(this).val() == 'upvc'){
     $(".opsigrup").html(upvc);
     $("#gm").val("UPVC");
-}else{
+}else if($(this).val() == 'omge'){
     $(".opsigrup").html(omge);
     $("#gm").val("OMGE");
+}else{
+    $(".opsigrup").html("");
+    $("#gm").val("");
 }
 
   

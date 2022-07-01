@@ -206,7 +206,7 @@ class KasirController extends Controller
         $metode = $data['via'];
         $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
         $no += 1;   
-        $no_nota = date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
+        $no_nota = date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
         $notab=$data["notab"];
 
         $jenistrans = $data["jenis_transaksi"];
@@ -249,7 +249,7 @@ class KasirController extends Controller
         }else if($jenistrans == "suratjalan"){
             $no = DB::table('transaksi')->where("status","!=","draf")->where("status","suratjalan")->whereDate('transaksi.created_at', Carbon::today())->count();
         $no += 1;   
-            $no_nota = "S".date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
+            $no_nota = "SJ".date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
             $status = "suratjalan";
         }
       
@@ -305,8 +305,8 @@ class KasirController extends Controller
         $newsubtotal = Tools::doDisc(1,$subtotal,$data["diskon"],$data["prefix"]);
 
 
-        $counter = DB::table("transaksi")->where("status","!=","draft")->where("status","preorder")->whereMonth('transaksi.created_at', Carbon::now()->month)->whereYear('transaksi.created_at', Carbon::now()->year)->count();
-        $no_nota = "P".date("ym").str_pad($counter+1,3,0,STR_PAD_LEFT);
+        $counter = DB::table("transaksi")->where("status","!=","draft")->where("status","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
+        $no_nota = "PO".date("ymd").str_pad($counter+1,4,0,STR_PAD_LEFT);
 
 
         

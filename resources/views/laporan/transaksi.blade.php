@@ -17,23 +17,48 @@
         <tr>
             <th>No</th>
             <th>tanggal</th>
+            <th>No Nota</th>
             <th>Nama Pelanggan</th>
+            @if($has==0)
+                <th>No telp</th>
+                <th>Alamat</th>
+            @endif  
+            
+            <th>Jumlah</th>
             <th>Produk</th>
-            <th>jumlah</th>
-    @if($has==0)   <th>total</th>@endif
+    @if($has==0)  
+    <th>Harga Satuan(Setelah Disc)</th>
+    
+    <th>Total</th>
+    <th>Pembayaran</th>
+    @endif
         </tr>
         @foreach($datas as $i => $dts)
-        @
+        
         @for($j=0;$j<(int)$dts['jmltrans'];$j++)
             <tr>
-                <td>{{$no}}</td>
-       @if($j==0)  
-                     <td rowspan="{{$dts['jmltrans']}}">{{date("d-M-Y",strtotime($dts['datas']->created_at))}}</td>
+        @if($j==0)
+                <td rowspan="{{$dts['jmltrans']}}">{{$no}}</td>
+                <td rowspan="{{$dts['jmltrans']}}">{{date("d-M-Y",strtotime($dts['datas']->created_at))}}</td>
+                <td rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->no_nota}}</td>
+                     
                      <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->nama_pelanggan}}</td>
+                     @if($has==0)
+                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->telepon}}</td>
+                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->alamat}}</td>
+                     @endif
        @endif
-                <td>{{$dts[$j]->nama_kodetype." ".$dts[$j]->nama_merek." ".$dts[$j]->nama_produk." "}}</td>
                 <td>{{$dts[$j]->jumlah}}</td>
-           @if($has==0)     <td>{{Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix)}}</td>@endif
+                <td>{{$dts[$j]->nama_kodetype." ".$dts[$j]->nama_merek." ".$dts[$j]->nama_produk." "}}</td>
+                
+                
+           @if($has==0)     
+           <td>{{Tools::doDisc(1,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix)}}</td>
+           <td>{{Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix)}}</td>
+           @if($j==0) 
+            <td rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
+            @endif
+           @endif
             </tr>
         @php $no++;
         $subtotal += Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix);
@@ -48,22 +73,22 @@
         @endforeach
         @if($has==0) 
             <tr>
-                <td colspan=4>Total</td>
+                <td colspan=6>Total</td>
                 <td >{{$jml}}</td>
-                <td>{{$subtotal}}</td>
+                <td colspan=4>{{$subtotal}}</td>
             </tr>
             <tr>
-                <td colspan=4>Total Retur</td>
-                <td colspan=2>{{$potonganRetur}}</td>
+                <td colspan=7>Total Retur</td>
+                <td colspan=4>{{$potonganRetur}}</td>
             </tr>
             <tr>
-                <td colspan=4>Total Diskon</td>
-                <td colspan=2>{{$potongan}}</td>
+                <td colspan=7>Total Diskon</td>
+                <td colspan=4>{{$potongan}}</td>
                
             </tr>
             <tr>
-                <td colspan=4>Total Akhir</td>
-                <td colspan=2>{{$subtotal - $potongan - $potonganRetur}}</td>
+                <td colspan=7>Total Akhir</td>
+                <td colspan=4>{{$subtotal - $potongan - $potonganRetur}}</td>
             </tr>
         @endif
     </table>

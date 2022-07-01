@@ -173,7 +173,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                         <h2 class="title">
                             TANDA TERIMA
                         </h2>
-                        <div class="hr">{{$data->no_nota}}</div>
+                        <div class="hr">{{"TT".$data->no_nota}}</div>
                     </div>
                 </td>
 
