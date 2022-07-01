@@ -418,7 +418,8 @@ $(document).ready(function () {
                 loader(id_trans,id_pre);
                 if(data["datadetail"] == "barang habis"){
                     $(".alerts").show();
-                    setInterval(function () {$(".alerts").hide("slow");}, 1000);
+                    setTimeout(function () {$(".alerts").hide("slow");}, 1000);
+                    $("#stok-indi").text(";"+data["as"]+ " "+ "tersedia");
                 }
             }else{
                

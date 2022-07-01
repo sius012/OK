@@ -174,7 +174,8 @@
                                         class="card-text bg-warning p-2 rounded text-center float-right position-absolute">
                                         <i style="width:23px;"
                                             class="fa fa-info mr-2 text-light bg-dark p-1 rounded-circle text-center"></i>Barang
-                                        Tidak Tersedia</p>
+                                        Tidak Tersedia  <b id="stok-indi"></b></p>
+                                    
                                 </div>
                             </div>
                             <div style="border-bottom:1px solid lightgray; x" class="card-body ">
