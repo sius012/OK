@@ -163,7 +163,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 </td>
                 <td style="width: 100px" colspan=4></td>
                 <td align="left" valign="top" style="width: 20px" width=90>
-                    <h4 class="date-times">Semarang, {{date('d-M-Y', strtotime($data->created_at))}}
+                    <h4 class="date-times">Semarang, {{date('d-M-Y')}}
                      
                 </td>
             </tr>
