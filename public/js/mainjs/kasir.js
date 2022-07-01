@@ -412,9 +412,14 @@ $(document).ready(function () {
             url: $("#jenis-transaksi").val() == 'preorder' ? "/tambahpre" : "/tambahItem",
             success: function (data, response) {
                 if($("#jenis-transaksi").val() == 'normal'){
+                if(data["datadetail"] != "barang habis"){
                        getIdTrans(data['datadetail'][0]['kode_trans'] == undefined ? "null" : data['datadetail'][0]['kode_trans'] );
-
+                }
                 loader(id_trans,id_pre);
+                if(data["datadetail"] == "barang habis"){
+                    $(".alerts").show();
+                    setInterval(function () {$(".alerts").hide("slow");}, 1000);
+                }
             }else{
                
                 getIdPre(data['datadetail'][0]['kode_trans']);

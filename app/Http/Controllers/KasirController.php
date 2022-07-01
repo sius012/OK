@@ -97,6 +97,7 @@ class KasirController extends Controller
     public function tambahTransaksiDetail(Request $req){
         $data = $req->input('data');
         $id_trans = $data['id_trans'];
+        $jenis_trans = $data["jenis_transaksi"];
       
         $id_kasir = Auth::user()->id;   
 
@@ -104,7 +105,7 @@ class KasirController extends Controller
           //checking stock
         $stock = DB::table('stok')->where('kode_produk',$data['kode_produk'])->sum('jumlah');
         $hasilpengurangan = $stock - $data['jumlah'];
-        if($hasilpengurangan < 0){
+        if($hasilpengurangan < 0 and $jenis_trans == "normal"){
             return json_encode(['datadetail'=>'barang habis','as'=>$stock]);
         }
         

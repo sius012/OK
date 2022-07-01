@@ -53,8 +53,8 @@
                 
                 
            @if($has==0)     
-           <td>{{Tools::doDisc(1,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix)}}</td>
-           <td>{{Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix)}}</td>
+           <td>{{number_format(Tools::doDisc(1,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
+           <td>{{number_format(Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
            @if($j==0) 
             <td rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
             @endif
@@ -75,20 +75,20 @@
             <tr>
                 <td colspan=6>Total</td>
                 <td >{{$jml}}</td>
-                <td colspan=4>{{$subtotal}}</td>
+                <td colspan=4>{{number_format($subtotal,0,".",".")}}</td>
             </tr>
             <tr>
                 <td colspan=7>Total Retur</td>
-                <td colspan=4>{{$potonganRetur}}</td>
+                <td colspan=4>{{number_format($potonganRetur,0,".",".")}}</td>
             </tr>
             <tr>
                 <td colspan=7>Total Diskon</td>
-                <td colspan=4>{{$potongan}}</td>
+                <td colspan=4>{{number_format($potongan,0,".",".")}}</td>
                
             </tr>
             <tr>
                 <td colspan=7>Total Akhir</td>
-                <td colspan=4>{{$subtotal - $potongan - $potonganRetur}}</td>
+                <td colspan=4>{{number_format($subtotal - $potongan - $potonganRetur,0,".",".")}}</td>
             </tr>
         @endif
     </table>
