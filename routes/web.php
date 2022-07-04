@@ -38,7 +38,9 @@ Route::middleware(["role:kasir|manager"])->group(function(){
     Route::post("/printtandaterima", "TransaksiController@printtt");
 
 
-    Route::get("/itdash","ITController@index");
+    Route::get("/itdash",function(){
+        return view("laporan.stok");
+    });
     Route::get("/normalize","ITController@normalizetrans");
 
 
@@ -106,6 +108,7 @@ Route::middleware(["role:admin gudang|manager"])->group(function(){
     Route::post('/editstok', 'StokController@editstok');
     Route::post('/hapusstok', 'StokController@hapusstok');
     Route::post('/printstoktrack', 'DetailStokController@printstoktrack');
+   
     Route::post('/tambahrs', 'DetailStokController@returnsuplier');
     Route::get('/detailstok', 'DetailStokController@index');
     Route::post('/loaddatadetailstok', 'DetailStokController@loaddatadetailstok');
@@ -113,6 +116,7 @@ Route::middleware(["role:admin gudang|manager"])->group(function(){
   
     Route::post('/loaddatastok', 'StokController@loaddatastok');
     Route::post('/printcurrentstok', 'StokController@printcurrent');
+    Route::post('/printcurrentstokgudang', 'StokController@printcurrentgudang');
     Route::post('/filterdetailstok', 'DetailStokController@loaddatadetailstok');
    
 });

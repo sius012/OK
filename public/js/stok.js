@@ -202,5 +202,27 @@ $(document).ready(function(){
         });
     });
 
+    $("#stokprintg").click(function(e){
+    
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content'),
+            },
+            url: "/printcurrentstokgudang",
+            data:{
+                'id_merek' : $("#merek").val(),
+                "id_kodetype" : $("#kodetype").val(),
+                "id_tipe" : $("#tipe").val()
+            },
+            type: "post",
+            success: function(response){
+             
+                printJS({printable: response['filename'], type: 'pdf', base64: true});
+            },error: function(err){
+                alert(err.responseText);
+            }
+        });
+    });
+
     
 });

@@ -11,6 +11,7 @@ use function GuzzleHttp\json_encode;
 use App\Http\Controllers\Tools;
 use PDF;
 
+use Illuminate\Support\Facades\Storage;
 class transaksiController extends Controller
 {
     
@@ -190,7 +191,13 @@ class transaksiController extends Controller
             }
         }
        
+    
+        $pdf = PDF::loadview('laporan.transaksi', ["datas" => $data,"has"=>$has,'start'=>$tglstart,'end'=>$tglend]);
+        $path = public_path('pdf/Laporan Nota Kecil');
+            $fileName =  date('mdy').'-'."Laporan Nota Kecil". '.' . 'pdf' ;
+            $pdf->save(storage_path("pdf/Laporan Nota Kecil/.$fileName"));
+        $storagepath = storage_path("pdf/$fileName");
+        return $pdf->download($fileName);
 
-      return Excel::download(new TransaksiExport($data,$has),  "Transaksi NK"." - Data Transaksi ".$tglstart." - ".$tglend.".xls");
     }
 }

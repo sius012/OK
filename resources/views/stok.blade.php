@@ -103,8 +103,11 @@ $m = isset($merekr) ? $merekr : "";
             </div>
 </form>
 
- @if(Auth::user()->roles[0]['name'] != 'kasir')<button type="button m-3" class="btn btn-primary"  id="generatestok" ><i class="fas fa-upload mr-2"></i>Produk ke Stok</button>
-<a class="btn btn-primary float-right" href="#" id="stokprint"><i class="fa fa-print mr-2"></i>Print</a>
+ @if(Auth::user()->roles[0]['name'] == 'manager')<button type="button m-3" class="btn btn-primary"  id="generatestok" ><i class="fas fa-upload mr-2"></i>Produk ke Stok</button>
+<a class="btn btn-primary float-right m-2" href="#" id="stokprint"><i class="fa fa-print mr-2"></i>Print</a>
+@endif
+@if(Auth::user()->roles[0]['name'] == 'manager' or  Auth::user()->roles[0]['name'] == 'admingudang')
+<a class="btn btn-secondary float-right m-2" href="#" id="stokprintg"><i class="fa fa-print mr-2"></i>Print untuk Gudang</a>
 @endif
 <div>
 

@@ -10,8 +10,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        table{
+            border-collapse: collapse;
+        }
+        td,th{
+            border: 1px solid black;
+            font-size: 8pt;
+            
+        }
+
+        th{
+            background: grey;
+            color: white;
+        }
+    </style>
 </head>
 <body>
+    <h4>
+        Laporan Transaksi Nota Kecil
+
+    </h4>
+    <h6>
+        ({{date('d-m-Y',strtotime($start))}} - {{date('d-m-Y',strtotime($end))}} )
+    </h6>
     
     <table>
         <tr>
@@ -53,10 +75,10 @@
                 
                 
            @if($has==0)     
-           <td>{{Tools::doDisc(1,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix)}}</td>
-           <td>{{Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix)}}</td>
+           <td>{{number_format(Tools::doDisc(1,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
+           <td style="background-color: {{$dts['datas']->metode != 'Tunai' ? 'red' : 'white' }}" >{{number_format(Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
            @if($j==0) 
-            <td rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
+            <td style="background-color: {{$dts['datas']->metode != 'Tunai' ? 'red' : 'white' }}" rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
             @endif
            @endif
             </tr>
@@ -73,22 +95,22 @@
         @endforeach
         @if($has==0) 
             <tr>
-                <td colspan=6>Total</td>
+                <th colspan=6>Total</td>
                 <td >{{$jml}}</td>
-                <td colspan=4>{{$subtotal}}</td>
+                <td colspan=4>{{number_format($subtotal,0,".",".")}}</td>
             </tr>
             <tr>
-                <td colspan=7>Total Retur</td>
-                <td colspan=4>{{$potonganRetur}}</td>
+                <th colspan=7>Total Retur</td>
+                <td colspan=4>{{number_format($potonganRetur,0,".",".")}}</td>
             </tr>
             <tr>
-                <td colspan=7>Total Diskon</td>
-                <td colspan=4>{{$potongan}}</td>
+                <th colspan=7>Total Diskon</td>
+                <td colspan=4>{{number_format($potongan,0,".",".")}}</td>
                
             </tr>
             <tr>
-                <td colspan=7>Total Akhir</td>
-                <td colspan=4>{{$subtotal - $potongan - $potonganRetur}}</td>
+                <th colspan=7>Total Akhir</td>
+                <td colspan=4>{{number_format($subtotal - $potongan - $potonganRetur,0,".",".")}}</td>
             </tr>
         @endif
     </table>

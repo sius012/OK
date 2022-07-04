@@ -150,4 +150,45 @@ class StokController extends Controller
 
         return json_encode(['jumlah' => $jumlah]);
     }
+
+
+    public function printcurrentgudang(Request $req){
+        $kategori = DB::table('tipes')->get();
+        $kodetype = DB::table('kode_types')->get();
+        $merek = DB::table('mereks')->get();
+        $produk = DB::table('stok')->join('new_produks','new_produks.kode_produk','=','stok.kode_produk')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->groupBy("new_produks.id_tipe");
+        if($req->filled("id_tipe")){
+            $produk->where('new_produks.id_tipe',$req->id_tipe);
+        }
+        if($req->filled("id_kodetype")){
+            $produk->where('new_produks.id_ct',$req->id_kodetype);
+        }
+        if($req->filled("id_merek")){
+            $produk->where('new_produks.id_merek',$req->id_merek);
+        }
+
+
+        $req2 = $produk->get();
+
+        $arraying = [];
+
+        foreach($req2 as $i => $produks){
+
+            $dato = DB::table('stok')->join('new_produks','new_produks.kode_produk','=','stok.kode_produk')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->where("new_produks.id_tipe",$produks->id_tipe)->get();
+            $arraying[$i] = $dato;
+            
+        }
+        
+
+
+        
+        $pdf = PDF::loadview('stokadmin', ["data" => $arraying]);
+        $path = public_path('pdf/');
+            $fileName =  date('mdy').'-'."Data Stok". '.' . 'pdf' ;
+            $pdf->save(storage_path("pdf/$fileName"));
+        $storagepath = storage_path("pdf/$fileName");
+        $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+
+    	return response()->json(["filename" => $base64]);
+    }
 }
