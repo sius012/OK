@@ -75,7 +75,6 @@ $master='kasir' @endphp
                 var year = dateObj.getUTCFullYear();
 
                 newdate = year + "-" + month + "-" + day;
-
                 $("#ttd").val(data['nb'][0]['ttd']);
                 $("#telepon").val(data['nb'][0]['telepon']);
                 $("#up").val(data['nb'][0]['up']);

@@ -139,9 +139,8 @@ class PreorderController extends Controller
             $id = $req->session()->get('id_nb');
             DB::table('nota_besar')->where('id_transaksi', $id)->update($req->input('formData'));
         }else{
-            $counter = DB::table('nota_besar')->count();
-            $counter = $counter+1;
-            $no = $inisialnota. date("ymd").str_pad($counter+1,4,0,STR_PAD_LEFT);
+            $counter = DB::table('nota_besar')->whereMonth('created_at',Carbon::now()->month )->whereYear('created_at',Carbon::now()->year)->groupBy("no_nota")->get();
+            $no = $inisialnota. date("ymd").str_pad(count($counter)+1,4,0,STR_PAD_LEFT);
             $counting = DB::table('nota_besar')->where("no_nota",$no)->count();
 
                     
@@ -149,8 +148,8 @@ class PreorderController extends Controller
             
             $id = DB::table('nota_besar')->insertGetId(array_merge($req->input('formData'),['no_nota' => $no, 'termin' => 1, "status" => "dibayar",'created_at'=>$tanggal, 'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]));
             if($jenisnb != "jasapasang"){
-                $id2 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 2, "status" => "ready",'jatuh_tempo'=>$tanggal2]);
-                $id3 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 3,'jatuh_tempo'=>$tanggal2]);
+                $id2 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 2, "status" => "ready",'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]);
+                $id3 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 3,'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]);
             }
          
              

@@ -248,6 +248,10 @@ $master='kasir' @endphp
        @endif
 
        @if($opsi!=null)
+       @if($info[1]->status == 'dibayar' and $info[2]->status=='menunggu' ) <a href="{{url('/prosesbayar/'.$info[1]->id_transaksi)}}"><button class="btn btn-primary" id="sjbayar" id_trans="{{$info[1]->id_transaksi}}">Buat Surat Jalan</button></a> @endif
+       @endif
+
+       @if($opsi!=null)
         <button id="printbutton" type="button" id_nb=" @if($info[1]->status == 'dibayar' and @info[2]->status == 'ready') {{$info[1]->id_transaksi}} @elseif( $info[2]->status == 'dibayar') {{$info[2]->id_transaksi}} @else  {{$info[0]->id_transaksi}} @endif" class="btn btn-primary">Cetak</button>
        @else
        <button id="printbutton" type="button" id_nb="{{$info[0]->id_transaksi}}" class="btn btn-primary">Cetak</button>
