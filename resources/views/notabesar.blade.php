@@ -77,6 +77,7 @@ $master='kasir' @endphp
                 newdate = year + "-" + month + "-" + day;
 
                 $("#ttd").val(data['nb'][0]['ttd']);
+                $("#telepon").val(data['nb'][0]['telepon']);
                 $("#up").val(data['nb'][0]['up']);
                 $("#us").val(data['nb'][0]['us']);
                 $("#brp").val(data['nb'][0]['brp']);
@@ -224,6 +225,10 @@ $master='kasir' @endphp
                         <div class="form-group">
                             <label for="exampleInputEmail1">Telah diterima dari</label>
                             <input type="text" class="form-control readonly" id="ttd" aria-describedby="emailHelp" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">No. Telepon</label>
+                            <input type="text" class="form-control readonly" id="telepon" aria-describedby="emailHelp" required>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputPassword1">Untuk Proyek</label>

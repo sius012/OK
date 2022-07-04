@@ -122,7 +122,7 @@
                         <th >CODE TYPE</th>
                         <th style="width:60px">MERK</th>
                         <th style="width:170px">NAMA BARANG</th>
-                        <th >TOTAL</th>
+                        <th >JUMLAH</th>
                         @if(auth()->user()->roles[0]['name']=='manager') <th >Harga</th>@endif
                     </tr>
                     @foreach($datas as $da)
@@ -130,7 +130,7 @@
                     <td>{{$da->nama_kodetype}}</td>
                         <td >{{$da->nama_merek}}</td>
                         <td>{{$da->nama_produk}}</td>
-                        <td></td>
+                        <td>{{$da->jumlah}}</td>
                         @if(auth()->user()->roles[0]['name']=='manager')<td>{{number_format($da->harga)}}</td>@endif
 
                     </tr>

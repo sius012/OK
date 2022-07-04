@@ -129,6 +129,7 @@ $master='kasir' @endphp
        
                       <tr style="font-size: 0.75rem;">
                           <th style="width: 200px"><div >Telah diterima dari</div></th>
+                          <th style="width: 200px"><div >Telepon</div></th>
                           <th style="width: 200px"><div >Total</div></th>
                           <th style="width: 120px"><div >Tagihan 1</div></th>
                           @if($datas[0] != null)
@@ -142,6 +143,7 @@ $master='kasir' @endphp
                    
                       <tr style="font-size: 0.50rem;">
                           <td><div>{{$datas["ttd"]}}</div></td>
+                          <td><div>{{$datas["telepon"]}}</div></td>
                           <td><div>Rp. {{number_format( $datas["total"] )}}</div></td>
                       
                           <td><div class="mt-1"><i class="fa fa-check-circle"></i></div></td>
@@ -208,6 +210,9 @@ $master='kasir' @endphp
                       <table class="table table-striped table-borderless">
                         <tr>
                           <th class="float-left">Telah Diterima Dari </th><td align=left>{{$info[0]->ttd}}</td>
+                        </tr>
+                        <tr>
+                          <th class="float-left">No Telp</th><td align=left>{{$info[0]->telepon}}</td>
                         </tr>
                         <tr>
                           <th class="float-left">Up </th><td>{{$info[0]->up}}</td>

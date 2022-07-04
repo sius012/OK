@@ -197,6 +197,7 @@ class transaksiController extends Controller
             $fileName =  date('mdy').'-'."Laporan Nota Kecil". '.' . 'pdf' ;
             $pdf->save(storage_path("pdf/Laporan Nota Kecil/.$fileName"));
         $storagepath = storage_path("pdf/$fileName");
+        $pdf->setPaper("a4","potrait");
         return $pdf->download($fileName);
 
     }

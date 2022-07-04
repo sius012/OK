@@ -196,7 +196,7 @@ $("#trigger").click(function(e){
             us: $("#us").val().replace(/[._]/g,''),
             brp: $("#brp").val(),
             gm: $("#gm").val(),
-            total: $("#total").val().replace(/[._]/g,'')
+            total: $("#total").val().replace(/[._]/g,''),
             
         }
 
@@ -209,6 +209,7 @@ $("#trigger").click(function(e){
                  }, 
             data: {
                 formData: formData,
+                telepon: $("#telepon").val(),
                 jenisnota: jenisnota,
                 judulopsi: currentjudul,
                 ketopsi: currentopsi,
