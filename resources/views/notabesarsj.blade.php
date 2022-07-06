@@ -155,7 +155,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
 <body>
     <div class="container-wrapper">
-        <table style="margin-top: 0px;">
+        <table style="margin-top: 20px;">
             <tr>
                 <td  colspan=2>
                     <div class="address" style="width:300px">
