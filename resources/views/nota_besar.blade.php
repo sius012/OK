@@ -276,7 +276,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
             @endif
                 <tr align="center">
-                <td colspan="3" style="padding-top:25px; padding-bottom:30px">
+                <td colspan="4" style="padding-top:25px; padding-bottom:30px">
                     <h4 class="ttd-header">Mengetahui,</h4>
 
                 </td>
