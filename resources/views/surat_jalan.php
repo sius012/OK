@@ -185,13 +185,6 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
             </tr>
             <tr>
                 <td valign="top">
-                    <h4>Telepon</h4>
-                </td>
-                <td> {{ $data->telepon }}</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td valign="top">
                     <h4>Untuk Proyek</h4>
                 </td>
                 <td> {{ $data->up }}</td>

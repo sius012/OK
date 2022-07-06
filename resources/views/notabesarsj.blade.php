@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    
-   <style>
+
+    <style>
         @font-face {
 
 font-family: tes;
@@ -25,7 +25,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
             margin: 0px;
             font-family: tes !important;
             font-size: 10pt;
-            line-height: 70% ;
+            line-height: 70% ''
         }
      
 
@@ -39,6 +39,8 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
         td{
             height: 0px;
             padding: 1px;
+            word-wrap: break-word;
+
         }
 
         td h4,h5{
@@ -131,6 +133,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
         .container-wrapper table {
             width: 750px;
+          
         }
 
         #bigtitle {
@@ -152,89 +155,99 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
 <body>
     <div class="container-wrapper">
-    <table style="margin-top: 3px; width: 750px">
+        <table style="margin-top: 0px;">
             <tr>
-                <td>
-                    <div class="address" style="width:200px">
-                        <img style="height:20px;" src="{{ public_path('assets/logo.svg') }}" alt="">
-                        <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax 085712423453 / (024) 3554929, Semarang </p>
+                <td  colspan=2>
+                    <div class="address" style="width:300px">
+                        <img style="height:25px;" src="{{ public_path('assets/logo.svg') }}" alt="">
+                        <p class="brand-address">Jl. Agus Salim D no.10  
+                            <br>Telp/Fax 085712423453 / (024)3554929  <br>
+                            Semarang </p>
                     </div>
                 </td>
-                <td></td>
-                <td align="right" style="width:300px" valign="top">
-                    <h4 class="date-times">Semarang,
-                        {{ date("d-M-Y", strtotime($data->updated_at)) }}</h4>
+       
+                <td colspan=3 align="right" style="width:10px" valign="top">
+                    <h4 class="">Semarang,
+                        {{ date("d-M-Y", strtotime($data->created_at))}}</h4>
                 </td>
             </tr>
             <tr>
-                <td align="center" id="bigtitle" colspan="3">
+                <td align="center" id="bigtitle" colspan="4">
                     <div class="big-title">
+                     
                         <h2 class="title" style="text-decoration: underline;">
-                            {{ "SURAT JALAN" }}
+                            SURAT JALAN
                         </h2>
-                        <h5 class="no-nota">NO.{{ $data->no_nota }}</h5>
+
                     </div>
                 </td>
 
             </tr>
             <tr>
-                <td valign="top" width="200px">
-                    <h4>Kepada </h4>
+                <td style="width:200px" valign="top">
+                    <h4>Telah terima dari</h4>
                 </td>
-                <td colspan=2 valign="top"> {{ $data->ttd }}</td>
-           
+                <td colspan="3"> {{ $data->ttd }}</td>
+                
+            </tr>
+            <tr>
+                <td style="width:200px" valign="top">
+                    <h4>Telepon</h4>
+                </td>
+
+                <td colspan="3"> {{ $data->telepon }}</td>
+                
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Untuk Proyek</h4>
                 </td>
-                <td colspan=2 valign="top"> {{ $data->up }}</td>
+                <td colspan="3"> {{ $data->up }}</td>
               
             </tr>
-           
-           
-            <tr><td></td></tr>
+            
             @foreach($opsi as $opsis)
-                @if($opsis->judul != "Waktu")
-                 
-                    <tr>
+                <tr>
 
                     <td valign="top">
                         <h4>{{ $opsis->judul }}</h4>
                     </td>
-                    <td colspan="2"> {{ $opsis->ket }}</td>
+                    
+                    <td colspan="3"> {{ $opsis->ket }}</td>
 
 
-                    </tr>
-                @endif
-               
+                </tr>
             @endforeach
+                
             <tr>
 
+<td valign="top">
+    <h4>Keterangan</h4>
+</td>
+
+<td colspan="3"> Barang telah dipasang dengan baik</td>
+
+
+</tr>
+                <tr>
+
                     <td valign="top">
-                        <h4>Keterangan</h4>
+                        <h4>NB</h4>
                     </td>
-                    <td colspan="2">Barang Telah dipasang dengan baik</td>
+        
+                    <td colspan="3"> {{ $data->kunci }}</td>
+                   
 
+                </tr>
 
-             </tr>
-           
-             <tr>
-
-                <td valign="top">
-                    <h4>NB</h4>
-                </td>
-                <td colspan="2">{{$data->kunci}}</td>
-
-
-             </tr>
-          
-            <tr align="center" >
+                <tr align="center">
                 <td colspan="3" style="padding-top:25px; padding-bottom:30px">
                     <h4 class="ttd-header">Mengetahui,</h4>
 
                 </td>
             </tr>
+
+        
             <tr>
                 <td align="center">
                     <div class="wrappers">
@@ -249,8 +262,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
                     </div>
                 </td>
-            </tr><br><br>
-             <tr >
+            </tr>  <tr >
                 <td align="center" >
                     <br><br><br>
                     <div class="wrappers">

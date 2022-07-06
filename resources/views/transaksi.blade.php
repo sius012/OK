@@ -269,8 +269,13 @@ $haslampau = false;
             <label for="ck"> Unduh Untuk Admin Gudang </label>
             <input id="ck" class="" type="checkbox" name="cua">
           </div>
-      </div>
+
       @endif
+      <div class="form-group">
+            <label for="ck"> Excel </label>
+            <input id="ck" class="" type="checkbox" name="excel">
+          </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
         <button type="submit" class="btn btn-primary">Unduh</button>

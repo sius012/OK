@@ -16,7 +16,7 @@ class TransaksiExport implements FromView
     }
     public function view(): View
     {
-        return view('laporan.transaksi', [
+        return view('laporan.transaksiexcel', [
             'datas' => $this->data,
             'has'=>$this->untukadmin
         ]);

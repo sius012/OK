@@ -20,6 +20,7 @@ $(document).ready(function(){
         <input required class="form-control readonly mb-3" id="pilarpg">
         <label for='warnatipepg'>Warna/Tipe : </label>
         <input required class="form-control readonly mb-3" id="warnatipepg">
+        
         <label for='waktupg'>Waktu : </label>
         <textarea type="text-area" required class="form-control readonly" id="waktupg" value="">2 Bulan dari Penerimaan DP 50% dan persetujuan warna, tipe, ukuran lebar dan tinggi lapangan</textarea>
     `;
@@ -29,6 +30,8 @@ $(document).ready(function(){
     <input required class="form-control readonly mb-3" id="ukurankusenpgadp">
     <label for='warnatipepgadp'>Warna/Tipe : </label>
     <input required class="form-control readonly mb-3" id="warnatipepgadp">
+    <label for='warnatipepg'>Arah Buka : </label>
+    <input required class="form-control readonly mb-3" id="arahbukapgapg">
     <label for='waktupgadp'>Waktu : </label>
     <textarea type="text-area" required class="form-control readonly" id="waktupgadp" value="">2 Bulan dari Penerimaan DP 50% dan persetujuan warna, tipe, ukuran lebar dan tinggi lapangan</textarea>
 `;
@@ -143,8 +146,8 @@ $("#trigger").click(function(e){
         var judulpg = ["Ukuran", "Daun Pintu", "Arah Tikung", "Pilar", "Warna/Tipe", "Waktu"];
         var ospipg = [$("#ukuranpg").val(), $("#daunpintupg").val(), $("#arahtikungpg").val(), $("#pilarpg").val(), $("#warnatipepg").val(), $("#waktupg").val()];
 
-        var judulpgad = ["Ukuran Kusen", "Warna/Tipe", "Waktu"];
-        var ospipgagd = [$("#ukurankusenpgadp").val(), $("#warnatipepgadp").val(), $("#waktupgadp").val()];
+        var judulpgad = ["Ukuran Kusen", "Warna/Tipe", "Arah Buka","Waktu"];
+        var ospipgagd = [$("#ukurankusenpgadp").val(), $("#warnatipepgadp").val(), $("#arahbukapgapg").val(),$("#waktupgadp").val()];
 
         var judulag = ["Ukuran Diperuntukan"];
         var ospiag = [$("#ukuranag").val()];

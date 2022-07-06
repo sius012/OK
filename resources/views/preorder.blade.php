@@ -39,7 +39,6 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
         td{
             height: 0px;
             padding: 1px;
-      
         }
 
         td h4,h5,th{
@@ -155,14 +154,14 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
     <div class="container-wrapper">
     <table style="margin-top: 20px; width: 100px">
             <tr>
-                <td style="width:170px">
+                <td style="width:260px">
                     <div class="address">
                         <img style="height:25px;" src="{{ public_path('assets/logo.svg') }}" alt="">
                         <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax (024) 3554929 /085712423453 <br> Semarang </p>
                     </div>
                 </td>
-                <td style="width: 100px" colspan=4></td>
-                <td align="left" valign="top" style="width: 20px" width=90>
+                <td style="width: 200px" ></td>
+                <td align="right" valign="top" style="width: 20px" width=90>
                     <h4 class="date-times">Semarang, {{date('d-M-Y', strtotime($data->created_at))}}
                      
                 </td>
@@ -178,12 +177,14 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 </td>
 
             </tr>
+            </table>
+            <table>
             <tr>
                 <td valign="top" style="width: 150px">
                     <h4>Telah terima dari</h4>
                 </td>
                 <td valign="top" width="150" colspan=4> {{ $data->nama_pelanggan }}</td>
-                <td></td>
+                
             </tr>
             <tr>
                 <td valign="top">
@@ -197,7 +198,6 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <h4>Alamat</h4>
                 </td>
                 <td valign="top" colspan=4> {{ $data->alamat}}</td>
-                <td></td>
             </tr>
           
             <tr>
@@ -205,14 +205,14 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <h4>Uang Sejumlah</h4>
                 </td>
                 <td class="notabesar" valign="top" colspan=4> Rp. {{ number_format($data->bayar) }}</td>
-                <td></td>
+               
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Berupa</h4>
                 </td>
                 <td valign="top" colspan=4> {{ $data->metode}}</td>
-                <td></td>
+              
             </tr>
             @foreach($data2 as $i => $datas)
                 <tr>

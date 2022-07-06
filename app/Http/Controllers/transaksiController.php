@@ -166,6 +166,10 @@ class transaksiController extends Controller
         $datas = DB::table("transaksi")->where("status","!=","draf")->where("status","!=","preorder")->where("status","!=","suratjalan")->whereBetween(DB::raw('substr(created_at,1,10)'),[$tglstart,$tglend])->get();
 
         $data = [];
+        $excel = 0;
+        if($req->input('excel')){
+            $excel = 1;
+        }
 
         foreach($datas as $i => $dts){
           
@@ -191,14 +195,18 @@ class transaksiController extends Controller
             }
         }
        
-    
-        $pdf = PDF::loadview('laporan.transaksi', ["datas" => $data,"has"=>$has,'start'=>$tglstart,'end'=>$tglend]);
+        if($excel == 0){
+            $pdf = PDF::loadview('laporan.transaksi', ["datas" => $data,"has"=>$has,'start'=>$tglstart,'end'=>$tglend]);
         $path = public_path('pdf/Laporan Nota Kecil');
             $fileName =  date('mdy').'-'."Laporan Nota Kecil". '.' . 'pdf' ;
-            $pdf->save(storage_path("pdf/Laporan Nota Kecil/.$fileName"));
+
         $storagepath = storage_path("pdf/$fileName");
         $pdf->setPaper("a4","potrait");
         return $pdf->download($fileName);
+        }else{
+             return Excel::download(new TransaksiExport($data,$has),"Laporan Nota Kecil.xls");
+        }
+        
 
     }
 }

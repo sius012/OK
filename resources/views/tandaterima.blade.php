@@ -154,16 +154,16 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 <body>
     <div class="container-wrapper">
     <table style="margin-top: 20px; width: 100px">
-            <tr>
-                <td style="width:170px">
+    <tr>
+                <td style="width:260px">
                     <div class="address">
                         <img style="height:25px;" src="{{ public_path('assets/logo.svg') }}" alt="">
                         <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax (024) 3554929 /085712423453 <br> Semarang </p>
                     </div>
                 </td>
-                <td style="width: 100px" colspan=4></td>
-                <td align="left" valign="top" style="width: 20px" width=90>
-                    <h4 class="date-times">Semarang, {{date('d-M-Y')}}
+                <td style="width: 200px" ></td>
+                <td align="right" valign="top" style="width: 20px" width=90>
+                    <h4 class="date-times">Semarang, {{date('d-M-Y', strtotime($data->created_at))}}
                      
                 </td>
             </tr>
@@ -178,6 +178,8 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 </td>
 
             </tr>
+           </table>
+           <table>
             <tr>
                 <td valign="top" style="width: 150px">
                     <h4>Telah terima dari</h4>
