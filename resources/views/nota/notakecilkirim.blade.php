@@ -43,6 +43,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
         td{
             height: 0px;
             padding: 1px;
+            border: 2px solid black;
         }
 
         td h4,h5{
@@ -184,7 +185,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
             </table>
             <table>
             <tr>
-                <td valign="top">
+                <td valign="top" style="width: 200px">
                     <h4>Telah terima dari</h4>
                 </td>
                 <td style="width:280px"> {{ $data[0]->nama_pelanggan }}</td>
@@ -226,7 +227,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <h4>Berupa</h4>
                 </td>
                 <td> {{ $data[0]->metode }}</td>
-                <td></td>
+                <td style="width:100px"></td>
                 <td></td>
             </tr>
 
@@ -238,7 +239,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <td></td>
                     @endif
                     <td @if($datas->diskon <= 0) colspan= 2 @endif>{{$datas->nama_produk}} {{$datas->nama_merek}}  {{$datas->jumlah}} {{$datas->satuan}}</td>
-                   @if($datas->diskon > 0) <td style="width:175px">- {{$datas->prefix == "rupiah"? number_format($datas->potongan,0,".",".") : $datas->potongan."%"}}</td>@endif
+                   @if($datas->diskon > 0) <td style="width:100px">- {{$datas->prefix == "rupiah"? number_format($datas->potongan,0,".",".") : $datas->potongan."%"}}</td>@endif
                     <td>{{number_format(Tools::doDisc($datas->jumlah,$datas->harga_produk,$datas->potongan,$datas->prefix),0,".",".")}}</td>
                 </tr>
                 @php $subtotal += Tools::doDisc($datas->jumlah,$datas->harga_produk,$datas->potongan,$datas->prefix)  @endphp
