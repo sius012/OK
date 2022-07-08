@@ -156,7 +156,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
 <body>
     <div class="container-wrapper">
-        <table style="margin-top: 20px; width: 600px">
+        <table style="margin-top: 30px; width: 600px">
         <tr>
                 <td style="width:300px">
                     <div class="address">
@@ -174,7 +174,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td align="center" id="bigtitle" colspan="4">
                     <div class="big-title">
                         <h2 class="title">
-                            {{ $data[0]->status === "lunas" ? "TANDA TERIMA" : "SURAT JALAN" }}
+                            {{ $data[0]->status === "lunas" ? "NOTA" : "SURAT JALAN" }}
                         </h2>
                         <h5 class="no-nota">NO.{{ $data[0]->no_nota }}</h5>
                     </div>
@@ -253,6 +253,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td style="padding-bottom: 5px;">{{ number_format($subtotal,0,".",".") }}</td>
                 <td></td>
             </tr>
+            @if($data[0]->diskon > 0)
             <tr>
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Diskon</h4>
@@ -260,6 +261,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td style="padding-bottom: 5px;">  {{ number_format($data[0]->diskon,0,".",".") }}</td>
                 <td></td>
             </tr>
+            @endif
             <tr>
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Total</h4>
