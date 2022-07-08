@@ -43,7 +43,6 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
         td{
             height: 0px;
             padding: 1px;
-            border: 2px solid black;
         }
 
         td h4,h5{
