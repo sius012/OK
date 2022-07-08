@@ -1,5 +1,7 @@
 
-
+@php
+    $subtotal = 0;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 
@@ -41,6 +43,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
         td{
             height: 0px;
             padding: 1px;
+            border: 2px solid black;
         }
 
         td h4,h5{
@@ -154,17 +157,17 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
 <body>
     <div class="container-wrapper">
-        <table style="margin-top: 20px; width: 450px">
+        <table style="margin-top: 20px; width: 600px">
         <tr>
-                <td style="width:260px">
+                <td style="width:300px">
                     <div class="address">
                         <img style="height:25px;" src="{{ public_path('assets/logo.svg') }}" alt="">
                         <p class="brand-address">Jl. Agus Salim D no.10 <br> Telp/Fax (024) 3554929 /085712423453 <br> Semarang </p>
                     </div>
                 </td>
-                <td style="width: 200px" ></td>
+    
                 <td align="right" valign="top" style="width: 20px" width=90>
-                    <h4 class="date-times">Semarang, {{date('d-M-Y', strtotime($data->created_at))}}
+                    <h4 class="date-times">Semarang, {{date('d-M-Y')}}
                      
                 </td>
             </tr>
@@ -185,7 +188,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td valign="top">
                     <h4>Telah terima dari</h4>
                 </td>
-                <td style="width:200px"> {{ $data[0]->nama_pelanggan }}</td>
+                <td style="width:280px"> {{ $data[0]->nama_pelanggan }}</td>
                 <td stlye="width:100px"></td>
                 <td></td>
             </tr>
@@ -214,7 +217,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td valign="top">
                  <h4>Uang Sejumlah</h4>
                 </td>
-                <td>Rp. {{ number_format($data[0]->bayar) }}</td>
+                <td>{{ number_format($data[0]->bayar) }}</td>
                 <td></td>
                 <td></td>
 
@@ -235,33 +238,35 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     @else
                     <td></td>
                     @endif
-                    <td>{{$datas->nama_produk}} {{$datas->nama_merek}}  {{$datas->jumlah}} {{$datas->satuan}}</td>
-                    <td style="width:175px">- {{$datas->prefix == "rupiah"? "Rp.".number_format($datas->potongan) : $datas->potongan."%"}}</td>
-                    <td>Rp. {{number_format(Tools::doDisc($datas->jumlah,$datas->harga_produk,$datas->potongan,$datas->prefix))}}</td>
+                    <td @if($datas->diskon <= 0) colspan= 2 @endif>{{$datas->nama_produk}} {{$datas->nama_merek}}  {{$datas->jumlah}} {{$datas->satuan}}</td>
+                   @if($datas->diskon > 0) <td style="width:175px">- {{$datas->prefix == "rupiah"? number_format($datas->potongan,0,".",".") : $datas->potongan."%"}}</td>@endif
+                    <td>{{number_format(Tools::doDisc($datas->jumlah,$datas->harga_produk,$datas->potongan,$datas->prefix),0,".",".")}}</td>
                 </tr>
+                @php $subtotal += Tools::doDisc($datas->jumlah,$datas->harga_produk,$datas->potongan,$datas->prefix)  @endphp
             @endforeach
             <tr>
-                <th style="height:20px"></th>
+                <th style="height:5px"></th>
             </tr>
             <tr>
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Subtotal</h4>
                 </td>
-                <td style="padding-bottom: 5px;"> Rp. {{ number_format($data[0]->subtotal) }}</td>
+                <td style="padding-bottom: 5px;">{{ number_format($subtotal,0,".",".") }}</td>
                 <td></td>
             </tr>
             <tr>
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Diskon</h4>
                 </td>
-                <td style="padding-bottom: 5px;"> Rp. {{ number_format($data[0]->diskon) }}</td>
+                <td style="padding-bottom: 5px;">  {{ number_format($data[0]->diskon,0,".",".") }}</td>
                 <td></td>
             </tr>
             <tr>
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Total</h4>
                 </td>
-                <td style="padding-bottom: 5px;"> Rp. {{ number_format($data[0]->subtotal - $data[0]->diskon) }}</td>
+                <td style="padding-bottom: 5px;">  {{ number_format($data[0]->subtotal,0,".",".
+                    ") }}</td>
                 <td></td>
             </tr>
             @if($data[0]->status != "lunas")
@@ -269,7 +274,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Kurang Bayar</h4>
                 </td>
-                <td style="padding-bottom: 5px;"> Rp. {{ number_format($data[0]->subtotal-$data[0]->diskon - $data[0]->bayar) }}</td>
+                <td style="padding-bottom: 5px;">  {{ number_format($data[0]->subtotal - $data[0]->bayar,0,".",".") }}</td>
                 <td></td>
             </tr>
             @endif

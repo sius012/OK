@@ -234,7 +234,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td colspan=2>
                     {{number_format($data->subtotal,0,".",".")}} 
                     @if($data->diskon != null)
-                    (diskon {{$data->prefix == "rupiah" ? "Rp.".number_format(0,$data->diskon,".",".") : $data->diskon." ".$data->prefix}})
+                    (diskon {{$data->prefix == "rupiah" ? "Rp.".number_format($data->diskon,0,".",".") : $data->diskon." ".$data->prefix}})
                     @endif
                 </td>
             </tr>
