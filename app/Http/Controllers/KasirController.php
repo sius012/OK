@@ -394,13 +394,13 @@ class KasirController extends Controller
     public function printnotakecil(Request $req){
         $id = $req->id;
         $data = DB::table('transaksi')->join('users', 'users.id', '=', 'transaksi.id_kasir')->where('kode_trans',$id)->get();
-       
+        $datatrans = DB::table('transaksi')->where('kode_trans',$id)->first();
         $data2 = DB::table('detail_transaksi')->join('new_produks', 'new_produks.kode_produk','=','detail_transaksi.kode_produk')->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans',$id)->get();
     
        
         
 
-        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2]);
+        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2,"datatrans"=>$datatrans]);
     
         
         $path = public_path('pdf/');

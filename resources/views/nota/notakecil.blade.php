@@ -241,7 +241,7 @@ $subtotal = 0;
                 </tr>
                 <tr>
                    <td>YTH. {{$data[0]->nama_pelanggan}}</td>
-                   <td style="width: 100px !important; font-size: 8.5pt" width ='10000' align="right" width="300">{{date("d-m-Y h:i:s", strtotime($data[0]->created_at))}}</td>
+                   <td style="width: 100px !important; font-size: 8.5pt" width ='10000' align="right" width="300">{{date("d-m-Y h:i:s", strtotime($datatrans->created_at))}}</td>
                   
                 </tr>
                 <tr>
