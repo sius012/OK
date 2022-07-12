@@ -238,6 +238,54 @@ class ProdukController extends Controller
         
     }
 
+
+    public function printbarcodepage(Request $req){
+        $produk = DB::table('new_produks')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->join('stok','stok.kode_produk','=','new_produks.kode_produk');
+
+        if($req->filled("tipe")){
+            $produk->where('new_produks.id_tipe',$req->tipe);
+        }
+        if($req->filled("kodetipe")){
+            $produk->where('new_produks.id_ct',$req->kodetipe);
+        }
+        if($req->filled("merek")){
+            $produk->where('new_produks.id_merek',$req->merek);
+        }
+        if($req->filled("nama")){
+            $produk->where('new_produks.nama_produk',"LIKE","%".$req->nama."%")->orWhere('new_produks.kode_produk',"LIKE","%".$req->nama."%");
+        }
+        $listdata= [];
+
+        
+        foreach($produk->get() as $produks){
+            for($i=0;$i<$produks->jumlah;$i++){
+                array_push($listdata,$produks);
+            }
+        }
+
+        if($listdata>300){
+            return json_encode(["limitation"=>1,"jml"=>count($listdata)]); 
+        }
+
+        $pdf = PDF::loadview('cetakbarcode', ["data" => $listdata]);
+        $path = public_path('pdf/');
+            $fileName =  date('mdy').'-'."cetakbarcode". '.' . 'pdf' ;
+            $pdf->save(storage_path("pdf/$fileName"));
+        $thepath = storage_path("pdf/$fileName");
+        $storagepath = storage_path("pdf/$fileName");
+        $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+        unlink($thepath);
+    	return json_encode(["filename"=>$base64,"jml"=>count($listdata)]); 
+        
+    }    
+
+
+
+
+
+
+
+
     public function savebuffer(Request $req){
         $datas = 
         [

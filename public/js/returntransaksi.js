@@ -3,6 +3,7 @@ $(document).ready(function(){
     var jmlproduk = 0;
     //mengklik tombol return disetiap item
     $(document).on("click", ".setjml", function(event){
+  
         let iddtrans = $(event.target).attr("iddtrans");
         let jmlretur = $(event.target).attr("jmlretur");
         let jml = $(event.target).attr("jml");
@@ -15,7 +16,7 @@ $(document).ready(function(){
         $(".setjmlreturn .inputan").val(jmlretur);
         $(".setjmlreturn .idnya").val(iddtrans);
 
-        $(".setjmlreturn").modal("show");
+        $(".setjmlreturn").appendTo("body").modal("show");
     });
 
     //ketika tombol oke dimodalnya diklik

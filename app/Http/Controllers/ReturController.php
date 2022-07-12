@@ -47,7 +47,7 @@ class ReturController extends Controller
             //menambahkan transaksi yg berjenis return berdasarkan transaksi diatas
             $id_kasir = Auth::user()->id;  
             $counter = DB::table('transaksi')->where("status","return")->whereDate('created_at', Carbon::today())->count();
-            $no_nota = "R".date("ymd").str_pad($counter+2, 3, '0', STR_PAD_LEFT);
+            $no_nota = "R".date("ymd").str_pad($counter+1, 3, '0', STR_PAD_LEFT);
 
             $id = DB::table('transaksi')->insertGetId(['no_nota'=>$no_nota, 'status'=>'return','nama_pelanggan'=>$btrans->nama_pelanggan,'telepon'=>$btrans->telepon,"alamat"=>$btrans->alamat, 'id_kasir' =>$id_kasir,'keterangan'=>$btrans->no_nota,"diskon"=>$btrans->diskon,"prefix"=>$btrans->prefix]);
             
@@ -71,6 +71,10 @@ class ReturController extends Controller
                  if($getdata->status != "return"){
                     DB::table('stok')->where('kode_produk',$getdata->kode_produk)->update(['jumlah'=> DB::raw("jumlah + ".$arrjmlreturn[$index])]);
                  }
+
+                 //MENAMBAHKAN DETAIL STOK
+                 DB::table("detail_stok")->insert(['kode_produk'=>$getdata->kode_produk,'jumlah'=>$arrjmlreturn[$index],"status"=>"masuk","status2"=>"retur","id_ag"=>$id_kasir,"keterangan"=>"Retur Transaksi ".$no_nota]);
+
             }
 
             //perbarui subtotal pembayaran

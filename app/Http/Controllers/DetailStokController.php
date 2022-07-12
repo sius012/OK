@@ -189,21 +189,21 @@ class DetailStokController extends Controller
 
         $dato = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("users","users.id","=","detail_stok.id_ag");
+        ->join("users","users.id","=","detail_stok.id_ag")->where("status2","!=","retur")->where("status2","!=","transaksi");
         $dato_trans = DB::table("detail_transaksi")->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
         ->where("status","!=","return")->orWhere('status','!=','draft');
 
         $keluar1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status","keluar");
+        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status","keluar")->where("status2","!=","retur")->where("status2","!=","transaksi");
         $keluar1trans = DB::table("detail_transaksi")->join('transaksi','transaksi.kode_trans','=','detail_transaksi.kode_trans')->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
         ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
 
         $masuk1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->where("status","masuk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag");
+        ->where("status","masuk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status2","!=","retur")->where("status2","!=","transaksi");
         $masuk1trans = DB::table("detail_transaksi")->join("transaksi","transaksi.kode_trans","=","detail_transaksi.kode_trans")->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
    
         ->join("mereks","mereks.id_merek","=","new_produks.id_merek")

@@ -72,7 +72,7 @@ $haslampau = false;
 <h5 class="font-weight-bold">Sebelumnya</h5>
 @php $haslampau=true @endphp
 @endif
-<div class="cardo">
+<div class="cardo" >
 <div class="container">
   <div class="row text-center">
   <div class="col text-center"><div class="text-center" style="width: 120px;">Inv.</div></div>
@@ -104,7 +104,7 @@ $haslampau = false;
         <div class="d-inline">
           <a id_trans="{{$datas['kode_trans']}}" class="btn btn-warning printing btn-sm m-1 w-25"><i style="" class="fa fa-print"></i></a>
           <a style="padding-left: 12px; padding-right: 12px;" id_trans="{{$datas['kode_trans']}}" class="btn btn-primary btn-sm returntrans"><i style="" class="fa fa-info"></i></a>
-        @if((Auth::user()->roles[0]['name'] == 'manager' or Auth::user()->roles[0]['name'] == 'kasir') and $datas["status"]=="lunas")  <a id_trans="{{$datas['kode_trans']}}" class="btn btn-primary printingtt btn-sm m-1 w-25"><b>T</b></a>
+        @if((Auth::user()->roles[0]['name'] == 'manager' or Auth::user()->roles[0]['name'] == 'kasir') and $datas["antar"] == "ya"  and $datas["status"]=="lunas")  <a id_trans="{{$datas['kode_trans']}}" class="btn btn-primary printingtt btn-sm m-1 w-25"><b>T</b></a>
         </div>
         @endif
         @elseif($datas['status']=='draf')
@@ -114,7 +114,10 @@ $haslampau = false;
   </div>
   </div>
 </div>
+
 </div>
+</div>
+
 @endforeach
 
 <div class="modal fade bd-example-modal-lg" tabindex="-2" role="dialog" id="returnform">
@@ -285,7 +288,7 @@ $haslampau = false;
   </div>
 </div>
 
-<div class="modal fade bd-example-modal-sm setjmlreturn" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div class="modal fade bd-example-modal-sm setjmlreturn" tabindex="-5" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style=" z-index: 1052 !important;">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">

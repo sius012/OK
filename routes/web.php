@@ -145,6 +145,7 @@ Route::middleware(["role:manager"])->group(function(){
     Route::post('/loaddsm', 'DSMController@loaddatadetailstok');
     Route::post('/verifiying', 'DSMController@verifiying');
     Route::post('/rejecting', 'DSMController@rejecting');
+    Route::post('/printbarcodehalaman', 'ProdukController@printbarcodepage');
     Route::post('/printbarcode', 'ProdukController@printbarcode');
     Route::get('/manajemen_akun', 'AkunController@index')->name('ma');
     Route::post('/updateakun/{id}', 'AkunController@updateakun')->name('updateakun');

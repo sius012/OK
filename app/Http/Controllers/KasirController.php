@@ -209,7 +209,7 @@ class KasirController extends Controller
         $no += 1;   
         $no_nota = date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
         $notab=$data["notab"];
-
+        $id_kasir = Auth::user()->id;   
         $jenistrans = $data["jenis_transaksi"];
 
 
@@ -246,6 +246,7 @@ class KasirController extends Controller
             foreach($stok as $produks){
                 $currentstok = DB::table("stok")->where('kode_produk', $produks->kode_produk)->pluck('jumlah')->first();
                 DB::table("stok")->where('kode_produk', $produks->kode_produk)->update(["jumlah" => (int) $currentstok - (int) $produks->jumlah]);
+                DB::table("detail_stok")->insert(['kode_produk'=>$produks->kode_produk,"jumlah"=>$produks->jumlah,"status2"=>"transaksi","status"=>"keluar","id_ag"=>$id_kasir,"keterangan"=>"Transaksi Nota Kecil"]);
             }
         }else if($jenistrans == "suratjalan"){
             $no = DB::table('transaksi')->where("status","!=","draf")->where("status","suratjalan")->whereDate('transaksi.created_at', Carbon::today())->count();
@@ -380,11 +381,6 @@ class KasirController extends Controller
         $data2 = DB::table('detail_transaksi')->join('new_produks', 'new_produks.kode_produk','=','detail_transaksi.kode_produk')->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans',$id)->get();
 
         $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2]);
-        if($data[0]->antar == "ya"){
-            $pdf = PDF::loadview('nota.notakecilkirim', ["data" => $data,"data2"=>$data2]);
-        }else{
-            
-        }
         
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'.$data[0]->kode_trans. '.' . 'pdf' ;
@@ -405,11 +401,8 @@ class KasirController extends Controller
         
 
         $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2]);
-         if($data[0]->antar == "ya"){
-            $pdf = PDF::loadview('nota.notakecilkirim', ["data" => $data,"data2"=>$data2]);
-        }else{
-            
-        }
+    
+        
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'.$data[0]->kode_trans. '.' . 'pdf' ;
             $pdf->save(storage_path("pdf/$fileName"));
