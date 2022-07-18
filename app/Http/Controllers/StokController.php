@@ -166,6 +166,9 @@ class StokController extends Controller
         if($req->filled("id_merek")){
             $produk->where('new_produks.id_merek',$req->id_merek);
         }
+        if($req->filled("nama")){
+            $produk->where('new_produks.nama_produk',"LIKE","%".$req->nama."%")->orWhere("new_produks.kode_produk","LIKE","%".$req->nama."%");
+        }
 
 
         $req2 = $produk->get();

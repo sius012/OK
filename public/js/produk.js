@@ -32,12 +32,14 @@ $(document).ready(function(){
                     Swal.fire("Stok barang masih kosong");
                 }else if(data["jml"]>20){
                     console.log(data);
+                    printJS({printable: data['filename'], type: 'pdf', base64: true});
                 }   else{
                     printJS({printable: data['filename'], type: 'pdf', base64: true});
                 }
             },
             error: function(err){
                 Swal.hideLoading();
+                Swal.fire("Proses Pencetakan Barcode Gagal, Barcode terlalu banyak");
                 console.log(`error : ${err.responseText}`);
             }
         });
@@ -439,9 +441,8 @@ $(document).ready(function(){
         $("#submitterkategori").attr('action','/tambahkategori');
     });
 
-  
+    $(".form-control").select2();
 
     
 });
 
-$(".form-control").select2();

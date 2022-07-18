@@ -66,6 +66,9 @@ $m = isset($merekr) ? $merekr : "";
                 <br>
                 <div class="wrappers d-inline-flex mt-3">
                 <div class="form-group d-inline-flex">
+                <input type="text" id="nama" name="nama" class="form-control form-control-sm mr-2" placeholder="ketik nama atau kode produk">
+                </div>
+                <div class="form-group d-inline-flex">
                     <select name="tipe" id="tipe" class="form-control dynamic w-50 form-control-sm mr-5" data-dependent = "state">
                         <option value="">TIPE</option>
                         @foreach($tipe as $tipes)

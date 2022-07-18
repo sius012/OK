@@ -4,7 +4,9 @@
     $subtotal=0;
     $potongan=0;
     $potonganRetur=0;
-    $jml=0; @endphp
+    $jml=0; 
+    $jmlretur=0;
+    @endphp
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -76,15 +78,17 @@
                 
            @if($has==0)     
            <td>{{number_format(Tools::doDisc(1,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
-           <td style="background-color: {{$dts['datas']->metode != 'Tunai' ? 'red' : 'white' }}" >{{number_format(Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
+           <td >{{number_format(Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
            @if($j==0) 
-            <td style="background-color: {{$dts['datas']->metode != 'Tunai' ? 'red' : 'white' }}" rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
+            <td style="background-color: {{$dts['datas']->metode == 'suratjalan' ? 'red' : 'white' }}" rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
             @endif
            @endif
             </tr>
         @php $no++;
         $subtotal += Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix);
-        $jml += $dts[$j]->jumlah;
+        if($dts[$j]->status != "return"){$jml += $dts[$j]->jumlah;}else{
+            $jmlretur += $dts[$j]->jumlah;
+        }
         
         @endphp
         @endfor 
@@ -100,7 +104,8 @@
                 <td colspan=4>{{number_format($subtotal,0,".",".")}}</td>
             </tr>
             <tr>
-                <th colspan=7>Total Retur</td>
+                <th colspan=6>Total Retur</th>
+                <td colspan=1>{{$jmlretur}}</td>
                 <td colspan=4>{{number_format($potonganRetur,0,".",".")}}</td>
             </tr>
             <tr>

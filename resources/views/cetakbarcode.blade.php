@@ -64,11 +64,11 @@ img{
 <body>
 
 
-<div id="main">
+<div id="main" >
     @foreach($data as $datas)
     @php 
     $flenght = strlen($datas->nama_kodetype." ".$datas->nama_merek." ".$datas->nama_produk);
-    $fontsize = 210 / $flenght;
+    $fontsize = 220 / $flenght;
 
     if($fontsize<=10){
         $fontsize+=1;
@@ -79,16 +79,17 @@ img{
     @endphp
     <div style="margin-left: 2px; margin-top: 12px;" class="cardi">
     <div class="cont-main">
-    <div style="margin-left: 12px">
-  <span class="jdl"  style="text-align:left; width:10px; font-size:{{$fontsize}}">{{$datas->nama_kodetype}} {{$datas->nama_merek}} {{$datas->nama_produk}}</span>
-  <div style="padding-top: 4px">
-    <span class="barcoder" style="">{!! DNS1D::getBarcodeHTML($datas->kode_produk, 'C128',1.35,30) !!}</span><br>
-    <span class="barcode" >{{$datas->kode_produk}}</span>
+        <div style="margin-left: 12px">
+    <span class="jdl"  style="text-align:left; width:10px; font-size:{{$fontsize}}">{{$datas->nama_kodetype}} {{$datas->nama_merek}} {{$datas->nama_produk}}</span>
+    <div style="padding-top: 4px">
+        <span class="barcoder" style="">{!! DNS1D::getBarcodeHTML($datas->kode_produk, 'C128',1.35,30) !!}</span><br>
+        <span class="barcode" >{{$datas->kode_produk}}</span>
+        </div>
+        
+        </div>
+        <img  src="{{public_path('assets/ok.png')}}" alt="">
     </div>
-    
-    </div>
-    </div>
-    <img  src="{{public_path('assets/ok.png')}}" alt="">
+  
     </div>
     @endforeach
   

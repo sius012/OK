@@ -146,7 +146,7 @@ class KasirController extends Controller
             }else{
                 $no = DB::table('transaksi')->whereDate('transaksi.created_at', Carbon::today())->count();
                 $no += 1;   
-                $id = DB::table('transaksi')->insertGetId(['no_nota' => date("ymd").str_pad($no+1, 3, '0', STR_PAD_LEFT), 'id_kasir' =>$id_kasir]); 
+                $id = DB::table('transaksi')->insertGetId(['no_nota' => date("ymd").str_pad($no, 3, '0', STR_PAD_LEFT), 'id_kasir' =>$id_kasir]); 
                 $id_trans = $id;
             }
 
@@ -205,7 +205,7 @@ class KasirController extends Controller
         $id_transaksi = $data['id_trans'];
         $diantar = $data['antarkah'];
         $metode = $data['via'];
-        $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
+        $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->where("status","!=","suratjalan")->whereDate('transaksi.created_at', Carbon::today())->count();
         $no += 1;   
         $no_nota = date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
         $notab=$data["notab"];
@@ -379,8 +379,10 @@ class KasirController extends Controller
         $id = $req->id_trans;
         $data = DB::table('transaksi')->join('users', 'users.id', '=', 'transaksi.id_kasir')->where('kode_trans',$id)->get();
         $data2 = DB::table('detail_transaksi')->join('new_produks', 'new_produks.kode_produk','=','detail_transaksi.kode_produk')->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans',$id)->get();
+        $datatrans = DB::table('transaksi')->where('kode_trans',$id)->first();
 
-        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2]);
+        
+        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2,"datatrans"=>$datatrans]);
         
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'.$data[0]->kode_trans. '.' . 'pdf' ;

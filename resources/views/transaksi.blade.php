@@ -63,7 +63,7 @@ $haslampau = false;
                 <!--<button data-toggle="modal" data-target="#modaluser" class="btn btn-info"><i class="fa fa-excel; mr-3"></i>Unduh Daftar Pelangan</button>-->
   </div>
 </div>
-
+<div>
 @foreach($data as $datas)
 @if(\Carbon\Carbon::parse($datas['created_at'])->isToday() == 1 and $hastoday == false)
 <h5 class="font-weight-bold ml-2 mb-2">Hari Ini</h5>
@@ -104,8 +104,8 @@ $haslampau = false;
         <div class="d-inline">
           <a id_trans="{{$datas['kode_trans']}}" class="btn btn-warning printing btn-sm m-1 w-25"><i style="" class="fa fa-print"></i></a>
           <a style="padding-left: 12px; padding-right: 12px;" id_trans="{{$datas['kode_trans']}}" class="btn btn-primary btn-sm returntrans"><i style="" class="fa fa-info"></i></a>
-        @if((Auth::user()->roles[0]['name'] == 'manager' or Auth::user()->roles[0]['name'] == 'kasir') and $datas["antar"] == "ya"  and $datas["status"]=="lunas")  <a id_trans="{{$datas['kode_trans']}}" class="btn btn-primary printingtt btn-sm m-1 w-25"><b>T</b></a>
-        </div>
+        @if((Auth::user()->roles[0]['name'] == 'manager' or Auth::user()->roles[0]['name'] == 'kasir')  and $datas["status"]=="lunas")  <a id_trans="{{$datas['kode_trans']}}" class="btn btn-primary printingtt btn-sm m-1 w-25"><b>T</b></a>
+       
         @endif
         @elseif($datas['status']=='draf')
         <a href="{{route('hapusdraft',['id'=>$datas['kode_trans']])}}" id_trans="{{$datas['kode_trans']}}" class="btn btn-danger hapustrans btn-sm m-1 w-25"><i style="" class="fa fa-trash"></i></a>
@@ -114,10 +114,8 @@ $haslampau = false;
   </div>
   </div>
 </div>
-
 </div>
 </div>
-
 @endforeach
 
 <div class="modal fade bd-example-modal-lg" tabindex="-2" role="dialog" id="returnform">

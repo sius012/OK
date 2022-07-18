@@ -263,9 +263,7 @@ class ProdukController extends Controller
             }
         }
 
-        if($listdata>300){
-            return json_encode(["limitation"=>1,"jml"=>count($listdata)]); 
-        }
+    
 
         $pdf = PDF::loadview('cetakbarcode', ["data" => $listdata]);
         $path = public_path('pdf/');

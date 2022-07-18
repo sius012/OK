@@ -136,7 +136,7 @@ $m = isset($merekkw) ? $merekkw : '';
         <div class="card-body">
             <form action="{{url('/produk')}}" method="get">
                 @csrf
-                <input type="text" id="nama" name="nama" class="form-control form-control-sm w-25" placeholder="ketik nama atau kode produk">
+                <input type="text" id="" name="nama" class="form-control form-control-sm w-25" placeholder="ketik nama atau kode produk">
                 <br>
                 <h5 class="card-title mb-0">Cari Berdasarkan : </h5>
                 <br>
