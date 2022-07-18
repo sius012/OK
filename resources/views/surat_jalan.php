@@ -202,10 +202,10 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 </tr>
             @endif
             <tr>
-                <td style="padding-bottom: 5px;" valign="top">
+                <td  valign="top">
                     <h4>Uang Sejumlah</h4>
                 </td>
-                <td style="padding-bottom: 5px;"> Rp. {{ number_format($data->us) }}</td>
+                <td > Rp. {{ number_format($data->us) }}</td>
                 <td></td>
             </tr>
             <tr>
@@ -223,10 +223,10 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td></td>
             </tr>
             <tr>
-                <td  style="padding-bottom: 5px;" valign="top">
+                <td  valign="top">
                     <h4>Total</h4>
                 </td>
-                <td style="padding-bottom: 5px;">  Rp. {{ number_format($data->total)}}</td>
+                <td >  Rp. {{ number_format($data->total)}}</td>
                 <td></td>
             </tr>
             <tr><td></td></tr>
