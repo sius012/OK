@@ -229,7 +229,7 @@
                         <th style="width:60px">Kode Produk</th>
                         <th>Nama Produk</th>
                       
-                       @if(Auth::user()->roles[0]['name']=='manager') <th>Harga</th> @endif
+                       @if($gudang =='false') <th>Harga</th> @endif
                         <th>Jumlah</th>
                     </tr>
     
@@ -248,7 +248,7 @@
                        <td>{{date("d-M-Y",strtotime($da->created_at))}}</td>
                        <td>{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
-                        @if(Auth::user()->roles[0]['name']=="manager") <td >{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
+                        @if($gudang=="false") <td >{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
                         <td>{{$da->jumlah}}</td>
 
                     </tr>
@@ -261,12 +261,12 @@
                     
                     @endforeach
                     <tr>
-                    @if(Auth::user()->roles[0]['name']=="manager") <td colspan="4">Total</td> @else <td colspan="4">Total</td>@endif
-                        @if(Auth::user()->roles[0]['name']=="manager")<td>Rp. {{number_format($total,0,",",".")}}</td>@endif
+                    @if($gudang=="false") <td colspan="4">Total</td> @else <td colspan="4">Total</td>@endif
+                    @if($gudang=="false")<td>Rp. {{number_format($total,0,",",".")}}</td>@endif
                         <td>{{$jumlah}}</td>
 
                     </tr>
-                    @if(Auth::user()->roles[0]['name']=='manager')
+                    @if($gudang=="false")
                     @isset($k1potongan)
                     <tr>
                         <td colspan=4>Potongan</td>

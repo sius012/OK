@@ -331,7 +331,7 @@ class DetailStokController extends Controller
         }
 
         $myArr['tanggal'] = $req->berdasarkan == 'tanggal' ? date("d M Y",strtotime($req->tanggal))." - ".date("d M Y",strtotime($req->tanggal2)) : "Hari Minggu dan Bulan";
-        
+        $myArr['gudang'] = $req->gudang;
         
        
         $pdf = PDF::loadview('trackstokprint', $myArr);

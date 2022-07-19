@@ -251,6 +251,7 @@ $(document).ready(function () {
                 keluar: $("#keluars").prop("checked") == true ? "true" : "false",
                 masuk: $("#masuks").prop("checked") == true ? "true" : "false",
                 suplier: $("#suplier").prop("checked") == true ? "true" :"false",
+            gudang: $("#ck").prop("checked") == true ? "true" :"false",
 
             },
             dataType: "json",
