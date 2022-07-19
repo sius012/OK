@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class RiwayatPre extends Controller
 {
     public function index(Request $req){
+     
         $data = DB::table('transaksi')->where("status","preorder")  ;
         if($req->has('nama')){
            $data->where('nama_pelanggan','LIKE','%'.$req->nama."%")->orWhere('no_nota','LIKE','%'.$req->nama."%");

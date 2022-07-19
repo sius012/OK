@@ -60,7 +60,7 @@
         @foreach($datas as $i => $dts)
         
         @for($j=0;$j<(int)$dts['jmltrans'];$j++)
-            <tr>
+            <tr @if($dts['datas']->status == 'return') style="background: yellow" @endif>
         @if($j==0)
                 <td rowspan="{{$dts['jmltrans']}}">{{$no}}</td>
                 <td rowspan="{{$dts['jmltrans']}}">{{date("d-M-Y",strtotime($dts['datas']->created_at))}}</td>
@@ -71,6 +71,8 @@
                      <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->telepon}}</td>
                      <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->alamat}}</td>
                      @endif
+        
+    @php $no++; @endphp
        @endif
                 <td>{{$dts[$j]->jumlah}}</td>
                 <td>{{$dts[$j]->nama_kodetype." ".$dts[$j]->nama_merek." ".$dts[$j]->nama_produk." "}}</td>
@@ -84,7 +86,7 @@
             @endif
            @endif
             </tr>
-        @php $no++;
+        @php 
         $subtotal += Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix);
         if($dts[$j]->status != "return"){$jml += $dts[$j]->jumlah;}else{
             $jmlretur += $dts[$j]->jumlah;

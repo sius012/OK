@@ -393,6 +393,24 @@ class KasirController extends Controller
         return response()->json(["filename" => $base64]);
     }
 
+    public static function notakecil($id_trans){
+        $id = $id_trans;
+        $data = DB::table('transaksi')->join('users', 'users.id', '=', 'transaksi.id_kasir')->where('kode_trans',$id)->get();
+        $data2 = DB::table('detail_transaksi')->join('new_produks', 'new_produks.kode_produk','=','detail_transaksi.kode_produk')->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans',$id)->get();
+        $datatrans = DB::table('transaksi')->where('kode_trans',$id)->first();
+
+        
+        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2,"datatrans"=>$datatrans]);
+        
+        $path = public_path('pdf/');
+            $fileName =  date('mdy').'-'.$data[0]->kode_trans. '.' . 'pdf' ;
+            $pdf->save(storage_path("pdf/$fileName"));
+        $storagepath = storage_path("pdf/$fileName");
+        $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+        unlink($storagepath);
+        return $base64;
+    }
+
     public function printnotakecil(Request $req){
         $id = $req->id;
         $data = DB::table('transaksi')->join('users', 'users.id', '=', 'transaksi.id_kasir')->where('kode_trans',$id)->get();

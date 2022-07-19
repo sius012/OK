@@ -94,7 +94,7 @@ Route::middleware(["role:kasir|manager"])->group(function(){
     Route::post('/tambahpreorder2', 'KasirController@tambahpreorder');
     Route::post('/cetakpreorder', 'KasirController@cetakpreorder');
     Route::get('/hapusnotabesar/{no_nota}', 'TransaksiPreorder@hapusnotabesar')->name('hapusnotabesar');
-    Route::get('preorderpage', 'RiwayatPre@index');
+    Route::get('preorderpage', 'RiwayatPre@index')->name("po");
     Route::get('/caripreorder', 'RiwayatPre@index')->name('caripreorder');
     Route::get('/hapuspreorder/{id}', 'RiwayatPre@hapus')->name('hapuspre');
     

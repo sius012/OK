@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\config\CetakConfig;
+use App\Http\Controllers\KasirController;
 use Carbon\Carbon;
 use PDF;
 
@@ -51,14 +52,17 @@ class PreorderController extends Controller
         
 }
 
-    public function lunasi($idpre){
+    public function lunasi(Request $req,$idpre){
         DB::table("transaksi")->where("kode_trans",$idpre)->update(['bayar'=>DB::raw("subtotal"),"status"=>"lunas"]);
         $detail =  DB::table("detail_transaksi")->where("kode_trans",$idpre)->get();
 
         //updater
         DB::table("detail_transaksi")->where("kode_trans",$idpre)->update(["status"=>"terjual"]);
-
-        $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
+        $no=0;
+        $query = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","suratjalan")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->get();
+        foreach($query as $quer){
+            $no+=1;
+        }
         $no += 1;   
         $no_nota = date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
         DB::table("transaksi")->where("kode_trans",$idpre)->update(["no_nota"=>$no_nota]);
@@ -68,7 +72,14 @@ class PreorderController extends Controller
         foreach($detail as $d){
             DB::table("stok")->where('kode_produk',$d->kode_produk)->update(["jumlah"=> DB::raw("jumlah -".$d->jumlah)]);
         }
-        return redirect()->back();
+
+
+        $base64 = KasirController::notakecil($idpre);
+
+        $req->session()->flash("dp",["id_trans"=>$idpre,"no_nota"=>$no_nota]);
+
+
+        return redirect()->route("po");
     }
 
 
@@ -304,7 +315,7 @@ class PreorderController extends Controller
          }else{
             $data1 = DB::table('nota_besar')->where("no_nota",$nn)->where("termin", $termin-1)->get();
             $td = DB::table("nota_besar")->where("no_nota", $nn)->where("termin", "<", $termin-1)->sum("us");
-            return json_encode(["nb" => $data1,  "opsi" => $data2, "td"=>$td, "peringatan"=>"Termin Sebelumnya harus dilunasi"]);
+            return json_encode(["nb" => $data1,  "opsi" => $data2, "td"=>d, "peringatan"=>"Termin Sebelumnya harus dilunasi"]);
          }
          }else{
             return json_encode(["nb" => $data1,  "opsi" => $data2, "td"=>$td,]);
