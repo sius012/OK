@@ -64,7 +64,7 @@ class PreorderController extends Controller
             $no+=1;
         }
   
-        $no_nota = date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
+        $no_nota = date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
         DB::table("transaksi")->where("kode_trans",$idpre)->update(["no_nota"=>$no_nota]);
 
 
