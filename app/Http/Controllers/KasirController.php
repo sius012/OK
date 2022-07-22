@@ -92,7 +92,7 @@ class KasirController extends Controller
 
         $getbayar =  DB::table('transaksi')->where('kode_trans',$id)->pluck('bayar')->first();
 
-        DB::table('transaksi')->where('kode_trans',$id)->update(['status'=>'lunas','bayar'=>$getbayar+$nominal  ,'terakhir_dilunasi'=>date("Y-m-d h:i:s"),'created_at'=>date("Y-m-d h:i:s")]);
+        DB::table('transaksi')->where('kode_trans',$id)->update(['status'=>'lunas','bayar'=>$getbayar+$nominal  ,'terakhir_dilunasi'=>date("Y-m-d H:i:s"),'created_at'=>date("Y-m-d H:i:s")]);
     }
     public function tambahTransaksiDetail(Request $req){
         $data = $req->input('data');
@@ -258,7 +258,7 @@ class KasirController extends Controller
 
         
         
-        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["created_at"=>date("Y-m-d h:i:s"),"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,'alamat'=>$alamat,"subtotal" => $afterdiskon, "status" => $status,'prefix'=>$data['prefix'], "diskon" => $data["diskon"],"metode" => $data['via'],"bayar" => $data["bayar"],"antar"=>$diantar, "no_nota"=>$no_nota]);
+        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["created_at"=>date("Y-m-d H:i:s"),"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,'alamat'=>$alamat,"subtotal" => $afterdiskon, "status" => $status,'prefix'=>$data['prefix'], "diskon" => $data["diskon"],"metode" => $data['via'],"bayar" => $data["bayar"],"antar"=>$diantar, "no_nota"=>$no_nota]);
        
         //cek apakah ini transaksi retur
         if($returkah){
@@ -273,7 +273,7 @@ class KasirController extends Controller
 
 
        if($jenistrans == "normal"){
-        DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(['status'=>'terjual','created_at'=>date("Y-m-d h:i:s")]);
+        DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(['status'=>'terjual','created_at'=>date("Y-m-d H:i:s")]);
        }else{
         DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(['status'=>'suratjalan']);
        }

@@ -53,7 +53,7 @@ class PreorderController extends Controller
 }
 
     public function lunasi(Request $req,$idpre){
-        DB::table("transaksi")->where("kode_trans",$idpre)->update(['bayar'=>DB::raw("subtotal"),"status"=>"lunas"]);
+        DB::table("transaksi")->where("kode_trans",$idpre)->update(['bayar'=>DB::raw("subtotal"),"status"=>"lunas","created_at"=>date("Y-m-d H:i:s"),"terakhir_dilunasi"=>date("Y-m-d H:i:s")]);
         $detail =  DB::table("detail_transaksi")->where("kode_trans",$idpre)->get();
 
         //updater
@@ -150,7 +150,7 @@ class PreorderController extends Controller
             $id = $req->session()->get('id_nb');
             DB::table('nota_besar')->where('id_transaksi', $id)->update($req->input('formData'));
         }else{
-            $counter = DB::table('nota_besar')->whereMonth('created_at',Carbon::now()->month )->whereYear('created_at',Carbon::now()->year)->groupBy("no_nota")->get();
+            $counter = DB::table('nota_besar')->whereMonth('created_at',Carbon::now()->month )->whereDate('created_at', Carbon::today())->groupBy("no_nota")->get();
             $no = $inisialnota. date("ymd").str_pad(count($counter)+1,4,0,STR_PAD_LEFT);
             $counting = DB::table('nota_besar')->where("no_nota",$no)->count();
 

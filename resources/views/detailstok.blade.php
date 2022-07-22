@@ -8,6 +8,11 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/detail_stok.css') }}">
+<style>
+    .myUL{
+        top: 173px;
+    }
+</style>
 <script src="{{ asset('js/print.js') }}"></script>
 @isset($kodeproduk)
 <script>
@@ -198,7 +203,7 @@
             <label for="ck"> Unduh Untuk Admin Gudang </label>
             <input id="ck" class="" type="checkbox" name="cua">
           </div>
-    
+
                                 <div class="form-group" id="toggle-hmb">
                                     <select name="" id="hmb" class="form-control">
                                         <option value="harian">Harian</option>
