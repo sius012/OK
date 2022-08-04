@@ -78,7 +78,8 @@ $(document).ready(function(){
             type: "post",
             data: {
                 iddtrans : arridtrans,
-                jmlreturn : arrjmlreturn
+                jmlreturn : arrjmlreturn,
+                nominal_disc : $("#nominal-disc-retur").val().replace(/[._]/g, '')
             },
             success: function(response){
                 

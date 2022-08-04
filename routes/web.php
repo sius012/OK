@@ -22,7 +22,8 @@ Route::get('/', function(){
 Auth::routes();
 // Route Untuk Omah Kunci
 
-
+Route::get('/updatercode', 'CodeFixer@updater');
+Route::get('/fixds', 'CodeFixer@fixds');
 
 Route::get('/accountsetting', 'AccountSetting@index');
 Route::post('/accountsetting/update', 'AccountSetting@update')->name('accountupdate');
@@ -30,6 +31,8 @@ Route::post('/accountsetting/update', 'AccountSetting@update')->name('accountupd
 Route::get('/redirecting', 'RedirectController@index');
 
 Route::post('/cari', 'KasirController@cari')->name('cari');
+
+Route::get('/codefixer', 'CodeFixer@index');
 
 Route::middleware(["role:kasir|manager"])->group(function(){
     Route::get("/selesaikanpreorder/{idpre}","PreorderController@lunasi");

@@ -251,9 +251,12 @@ $(document).ready(function(e){
                  if(    data["hasretur"] > 0 || dato[0]["status_trans"] == "return"){
                      $("#re-button").attr('disabled','disabled');
                      $("#buyagain-button").show();
+                     $("#cont-disc-retur").hide();
                      $("#buyagain-parser").attr("href","/kasir?id_retur="+dato[0]['kode_trans']);
                  }else{
+                    $("#cont-disc-retur").show();
                     $("#buyagain-button").hide();
+                    $("#re-button").removeAttr('disabled');
                  }
 
                  //cek apakah nota ini pembelian baru setelah retur

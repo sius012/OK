@@ -196,14 +196,17 @@ class DetailStokController extends Controller
 
         $keluar1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status","keluar")->where("status2","!=","retur")->where("status2","!=","transaksi");
+        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status","keluar")->where("status2","!=","retur")->where("status2","!=","transaksi")
+        ->select("*","detail_stok.created_at as tgl");
         $keluar1trans = DB::table("detail_transaksi")->join('transaksi','transaksi.kode_trans','=','detail_transaksi.kode_trans')->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
         ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
 
         $masuk1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->where("status","masuk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status2","!=","retur")->where("status2","!=","transaksi");
+        ->where("status","masuk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status2","!=","retur")->where("status2","!=","transaksi")
+        ->select("*","detail_stok.created_at as tgl");
+        ;
         $masuk1trans = DB::table("detail_transaksi")->join("transaksi","transaksi.kode_trans","=","detail_transaksi.kode_trans")->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
    
         ->join("mereks","mereks.id_merek","=","new_produks.id_merek")
@@ -219,6 +222,7 @@ class DetailStokController extends Controller
             $masuk1trans->where('new_produks.kode_produk',$req->produk);
             $masuk1->where('new_produks.kode_produk',$req->produk);
         }
+        
       
 
         $getsr = DB::table('retursup')->join("users","users.id","=","retursup.id_ag");
@@ -330,7 +334,7 @@ class DetailStokController extends Controller
             $myArr["suplier"] = $retur;
         }
 
-        $myArr['tanggal'] = $req->berdasarkan == 'tanggal' ? date("d M Y",strtotime($req->tanggal))." - ".date("d M Y",strtotime($req->tanggal2)) : "Hari Minggu dan Bulan";
+        $myArr['tanggal'] = $req->berdasarkan == 'tanggal' ? date("d M Y",strtotime($req->tanggal))." - ".date("d M Y",strtotime($req->tanggalakhir)) : "Hari Minggu dan Bulan";
         $myArr['gudang'] = $req->gudang;
         
        

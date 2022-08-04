@@ -135,7 +135,7 @@
                     @foreach($m2 as $da)
                     <tr>
                        <td >{{$no}}</td>
-                       <td>{{date("d-M-Y",strtotime($da->created_at))}}</td>
+                       <td>{{date("d-M-Y",strtotime($da->tgl))}}</td>
                         <td>{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
                         <td>{{$da->jumlah}}</td>
@@ -203,8 +203,8 @@
                     @foreach($k2 as $da)
                     <tr>
                        <td >{{$no}}</td>
-                       <td>{{date("d-M-Y",strtotime($da->created_at))}}</td>
-                        <td>{{$da->kode_produk}}</td>
+                       <td>{{$da->kode_produk}}</td>
+                        <td>{{date("d-M-Y",strtotime($da->tgl))}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
               
                         <td>{{$da->jumlah}}</td>

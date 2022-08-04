@@ -112,7 +112,7 @@ class ProdukController extends Controller
         $count = DB::table("new_produks")->where("id_tipe", $id_tipe)->where("id_ct", $id_codetype)->where("id_merek",$id_merek)->count();
 
 
-        $kode_produk = str_pad($id_tipe,2,0,STR_PAD_LEFT).$id_tipe.str_pad($id_codetype,3,0,STR_PAD_LEFT).str_pad($id_merek,3,0,STR_PAD_LEFT).str_pad($count+1,3,0,STR_PAD_LEFT);
+        $kode_produk = str_pad($id_tipe,2,0,STR_PAD_LEFT).str_pad($id_codetype,3,0,STR_PAD_LEFT).str_pad($id_merek,3,0,STR_PAD_LEFT).str_pad($count+1,3,0,STR_PAD_LEFT);
         DB::table('detail_stok')->insert(['id_ag'=>auth()->user()->id,'kode_produk'=>$kode_produk,'jumlah'=>$req->stok,'status'=>'masuk','keterangan'=>'stock awal','created_at'=>date('Y-m-d H:i:s')]);
 
         

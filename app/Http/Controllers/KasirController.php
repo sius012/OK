@@ -246,7 +246,7 @@ class KasirController extends Controller
             foreach($stok as $produks){
                 $currentstok = DB::table("stok")->where('kode_produk', $produks->kode_produk)->pluck('jumlah')->first();
                 DB::table("stok")->where('kode_produk', $produks->kode_produk)->update(["jumlah" => (int) $currentstok - (int) $produks->jumlah]);
-                DB::table("detail_stok")->insert(['kode_produk'=>$produks->kode_produk,"jumlah"=>$produks->jumlah,"status2"=>"transaksi","status"=>"keluar","id_ag"=>$id_kasir,"keterangan"=>"Transaksi Nota Kecil"]);
+                DB::table("detail_stok")->insert(['kode_produk'=>$produks->kode_produk,"jumlah"=>$produks->jumlah,"status2"=>"transaksi","status"=>"keluar","id_ag"=>$id_kasir,"keterangan"=>"Transaksi Nota Kecil", "created_at"=>date("Y-m-d H:i:s")]);
             }
         }else if($jenistrans == "suratjalan"){
             $no = DB::table('transaksi')->where("status","!=","draf")->where("status","suratjalan")->whereDate('transaksi.created_at', Carbon::today())->count();

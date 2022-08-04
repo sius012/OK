@@ -20,7 +20,7 @@ class CheckDataController extends Controller
         foreach($data as $datas){
             $now = Carbon::createFromFormat("m/d/Y", date("m/d/Y"));
             $min3 = Carbon::createFromFormat("m/d/Y", date("m/d/Y",strtotime($datas->jatuh_tempo)))->addDays(-3);
-            if($now->gte($min3) and $datas->status == "menunggu" or $datas->status == "ready"){
+            if($now->gte($min3) and $datas->status == "menunggu" and $datas->jatuh_tempo == "null" or  $datas->status == "ready"){
                 array_push($data2, $datas);
             }
         }   
@@ -37,7 +37,7 @@ class CheckDataController extends Controller
         foreach($data as $datas){
             $now = Carbon::createFromFormat("m/d/Y", date("m/d/Y"));
             $min3 = Carbon::createFromFormat("m/d/Y", date("m/d/Y",strtotime($datas->jatuh_tempo)))->addDays(-3);
-            if($now->gte($min3) and $datas->status == "menunggu" or $datas->status == "ready"){
+            if($now->gte($min3) and $datas->status == "menunggu" or $datas->status == "ready" and $datas->jatuh_tempo != null){
                 array_push($data2, $datas);
             }
         }

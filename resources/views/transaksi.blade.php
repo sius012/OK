@@ -157,6 +157,10 @@ $haslampau = false;
             
             </tbody>
         </table>
+        <div id="cont-disc-retur">
+        <label for="nominal-disc-retur">Masukan Jumlah Diskon</label>
+        <input type="text" id="nominal-disc-retur" value = 0 class="form-control w-25 uang">
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

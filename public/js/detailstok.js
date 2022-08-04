@@ -235,7 +235,10 @@ $(document).ready(function () {
     });
 
     $("#cetaksubmitter").submit(function (e) {
+    
         e.preventDefault();
+
+        alert($("#tanggal3").val());
         alert( $("#produk-select2").val());
         $.ajax({
             headers: {

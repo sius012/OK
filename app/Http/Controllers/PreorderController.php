@@ -150,7 +150,7 @@ class PreorderController extends Controller
             $id = $req->session()->get('id_nb');
             DB::table('nota_besar')->where('id_transaksi', $id)->update($req->input('formData'));
         }else{
-            $counter = DB::table('nota_besar')->whereMonth('created_at',Carbon::now()->month )->whereDate('created_at', Carbon::today())->groupBy("no_nota")->get();
+            $counter = DB::table('nota_besar')->whereDate('created_at', Carbon::today())->groupBy("no_nota")->get();
             $no = $inisialnota. date("ymd").str_pad(count($counter)+1,4,0,STR_PAD_LEFT);
             $counting = DB::table('nota_besar')->where("no_nota",$no)->count();
 
@@ -315,7 +315,7 @@ class PreorderController extends Controller
          }else{
             $data1 = DB::table('nota_besar')->where("no_nota",$nn)->where("termin", $termin-1)->get();
             $td = DB::table("nota_besar")->where("no_nota", $nn)->where("termin", "<", $termin-1)->sum("us");
-            return json_encode(["nb" => $data1,  "opsi" => $data2, "td"=>d, "peringatan"=>"Termin Sebelumnya harus dilunasi"]);
+            return json_encode(["nb" => $data1,  "opsi" => $data2, "td"=>$td, "peringatan"=>"Termin Sebelumnya harus dilunasi"]);
          }
          }else{
             return json_encode(["nb" => $data1,  "opsi" => $data2, "td"=>$td,]);

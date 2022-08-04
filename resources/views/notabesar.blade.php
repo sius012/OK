@@ -151,8 +151,9 @@ $master='kasir' @endphp
                 $(".readonly").attr('readonly', 'readonly');
             }
             , error: function(err) {
-              
-                Swal.fire("error", "", "info");
+              alert("ei");
+             //   Swal.fire("lol", "", "info");
+             alert(err.responseText);
             }
         });
 
