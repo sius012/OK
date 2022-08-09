@@ -44,6 +44,8 @@ $master='kasir' @endphp
          
         });
 
+        
+
         $("#printbutton").click(function(){
             
         $.ajax({
@@ -86,7 +88,38 @@ $master='kasir' @endphp
          });
     });
 
+   
+    $("#cbnb").click(function(){
+      if($(this).attr("nota_cb") != undefined){
+        cetakcbnb($(this).attr("nota_cb"));
+      }else{
+        $(".modalcbnb").modal("show");
+      }
+    
+    });
 
+
+    function cetakcbnb(id){
+    
+      
+      $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            url: "/cetakcbnb",
+            type: "post",
+            data: {
+                id_trans : id,
+              
+            },
+            dataType: "json",
+            success: function(data){
+                 printJS({printable: data["file"], type: 'pdf', base64: true});
+              
+            },error: function(err){
+                 alert(err.responseText);
+            }});
+    }
 
       });
     </script>
@@ -241,7 +274,9 @@ $master='kasir' @endphp
                 </div>
             </div>
         </div>
+        
         <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="cbnb" @if($hascashback == 1) nota_cb = "{{$nota_cb}}" @endif>Cashback</button>
         <button type="button" class="btn btn-secondary btnClose" data-dismiss="modal">Tutup</button>
         @if($opsi!=null)
        @if($info[2]->status == 'ready' or $info[2]->status == 'dibayar') <button class="btn btn-primary" id="sj2" id_trans="{{$info[1]->id_transaksi}}">Surat Jalan</button>@endif
@@ -262,4 +297,63 @@ $master='kasir' @endphp
   </div>
 
   @endisset
+
+  <div class="modal fade modalcbnb" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <form action="{{url('/bayarcbnb')}}" method="post">
+      @csrf
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Cashback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+       
+        <input type="hidden" class="form-control" id="id_cb" @isset($no_nota)  value="{{$no_nota}}" @endisset name="no_nota">
+            <label for="">Masukan Nominal Cashback</label>
+            <input type="text" class="form-control uang" id="nominal-cashback" name="nominal-cashback">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Tutup</button>
+        <button type="submit" class="btn btn-primary" id="tombolbayarcb" id_trans="">Bayar</button>
+      </div>
+    </div>
+  </div>
+  </form>
+</div>
+
+<script>
+        $(document).ready(function () {
+
+
+         // alert("ds");
+
+            $(".uang").keyup(function () {
+                $(this).val(formatRupiah($(this).val(), ""))
+            });
+
+
+            function formatRupiah(angka, prefix) {
+                var number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                // tambahkan titik jika yang di input sudah menjadi angka ribuan
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return prefix == undefined ? rupiah : (rupiah ? '' + rupiah : '');
+            }
+        });
+</script>
+
 @endsection

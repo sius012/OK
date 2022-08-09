@@ -28,7 +28,7 @@ $master='home'; @endphp
                 <!-- ./card-body -->
                 <div class="card-footer">
                     <div class="row">
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan Nota Kecil</span>
 
@@ -40,7 +40,7 @@ $master='home'; @endphp
                             <!-- /.description-block -->
                         </div>
                         <!-- /.col -->
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan nota besar</span>
                                 <h5 class="description-header">Rp.
@@ -51,11 +51,21 @@ $master='home'; @endphp
                             <!-- /.description-block -->
                         </div>
                         <!-- /.col -->
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6 pt-5">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan preorder</span>
                                 <h5 class="description-header">Rp.
                                     {{ number_format($daily['hari']['pemasukan preorder']) }}
+                                </h5>
+
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <div class="col-sm-6 col-6 pt-5">
+                            <div class="description-block border-right">
+                                <span class="description-text">Cashback</span>
+                                <h5 class="description-header"><b>Rp.
+                                    {{ number_format($daily['hari']['cashback']) }}</b>
                                 </h5>
 
                             </div>
@@ -69,15 +79,14 @@ $master='home'; @endphp
             <div class="card">
                 <div style="background-color: #022F59;" class="card-header mb-0 text-light">
                     <h5 class="card-title mt-2">Laporan mingguan</h5>
-                    <h5 class="card-title float-right mt-2"><b>Hari Ini,
-                            {{ date('d M Y') }}</b></h5>
+                   
                 </div>
                 <!-- /.card-header -->
 
                 <!-- ./card-body -->
                 <div class="card-footer">
                     <div class="row">
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan Nota Kecil</span>
 
@@ -89,7 +98,7 @@ $master='home'; @endphp
                             <!-- /.description-block -->
                         </div>
                         <!-- /.col -->
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan nota besar</span>
                                 <h5 class="description-header">Rp.
@@ -100,11 +109,21 @@ $master='home'; @endphp
                             <!-- /.description-block -->
                         </div>
                         <!-- /.col -->
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6 pt-5">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan preorder</span>
                                 <h5 class="description-header">Rp.
                                     {{ number_format($daily['minggu']['pemasukan preorder']) }}
+                                </h5>
+
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <div class="col-sm-6 col-6 pt-5">
+                            <div class="description-block border-right">
+                                <span class="description-text">Cashback</span>
+                                <h5 class="description-header">Rp.
+                                    {{ number_format($daily['minggu']['cashback']) }}
                                 </h5>
 
                             </div>
@@ -118,15 +137,15 @@ $master='home'; @endphp
             <div class="card">
                 <div style="background-color: #022F59;" class="card-header mb-0 text-light">
                     <h5 class="card-title mt-2">Laporan bulanan</h5>
-                    <h5 class="card-title float-right mt-2"><b>Hari Ini,
-                            {{ date('d M Y') }}</b></h5>
+                  
+                     
                 </div>
                 <!-- /.card-header -->
 
                 <!-- ./card-body -->
                 <div class="card-footer">
                     <div class="row">
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan Nota Kecil</span>
 
@@ -138,7 +157,7 @@ $master='home'; @endphp
                             <!-- /.description-block -->
                         </div>
                         <!-- /.col -->
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan nota besar</span>
                                 <h5 class="description-header">Rp.
@@ -149,11 +168,21 @@ $master='home'; @endphp
                             <!-- /.description-block -->
                         </div>
                         <!-- /.col -->
-                        <div class="col-sm-4 col-6">
+                        <div class="col-sm-6 col-6 pt-5">
                             <div class="description-block border-right">
                                 <span class="description-text">Pemasukan preorder</span>
                                 <h5 class="description-header">Rp.
                                     {{ number_format($daily['bulanan']['pemasukan preorder']) }}
+                                </h5>
+
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <div class="col-sm-6 col-6 pt-5">
+                            <div class="description-block border-right">
+                                <span class="description-text">Cashback</span>
+                                <h5 class="description-header">Rp.
+                                    {{ number_format($daily['bulanan']['cashback']) }}
                                 </h5>
 
                             </div>

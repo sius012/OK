@@ -44,9 +44,9 @@ Route::middleware(["role:kasir|manager"])->group(function(){
     Route::get("/itdash",function(){
         return view("laporan.stok");
     });
-    Route::get("/normalize","ITController@normalizetrans");
-
-
+  //  Route::get("/normalize","ITController@normalizetrans");
+    Route::post("/cetakcashbacknk","TransaksiController@cetakcashbacknk");
+    Route::post("/cashbacknk", "TransaksiController@cashback");
     Route::post("/hapusdraf",'TransaksiController@hapusdraft');
     Route::get("/menusuratjalan","MenuSuratJalan@index");
     Route::post("/getdetailofreturn", 'KasirController@loadreturinfo');
@@ -100,7 +100,8 @@ Route::middleware(["role:kasir|manager"])->group(function(){
     Route::get('preorderpage', 'RiwayatPre@index')->name("po");
     Route::get('/caripreorder', 'RiwayatPre@index')->name('caripreorder');
     Route::get('/hapuspreorder/{id}', 'RiwayatPre@hapus')->name('hapuspre');
-    
+    Route::post('/bayarcbnb','TransaksiPreorder@bayarcbnb');
+    Route::post('/cetakcbnb','TransaksiPreorder@cetakcbnb');
 });
 
 

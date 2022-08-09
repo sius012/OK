@@ -163,6 +163,7 @@ $haslampau = false;
         </div>
       </div>
       <div class="modal-footer">
+        <button id="cb" class="btn btn-primary" type="button">Cashback</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-warning" id="re-button">Kembalikan</button>
           <a href="" id="buyagain-parser"><button type="button"class="btn btn-primary" id="buyagain-button">Transaksi kembali</button></a>
@@ -197,6 +198,35 @@ $haslampau = false;
     </div>
   </div>
 </div>
+
+
+<div class="modal fade modalcb" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Cashback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+        <input type="hidden" class="form-control" id="id_cb">
+            <label for="">Masukan Nominal Cashback</label>
+            <input type="text" class="form-control uang" id="nominal-cashback">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" >Tutup</button>
+        <button type="button" class="btn btn-primary" id="tombolbayarcb" id_trans="">Bayar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 
 <div class="modal fade" id="modaluser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

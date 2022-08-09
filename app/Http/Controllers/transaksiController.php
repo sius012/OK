@@ -11,6 +11,8 @@ use function GuzzleHttp\json_encode;
 use App\Http\Controllers\Tools;
 use PDF;
 
+use Auth;
+
 use Illuminate\Support\Facades\Storage;
 class transaksiController extends Controller
 {
@@ -58,7 +60,7 @@ class transaksiController extends Controller
         $data = [];
       
         
-        $get = DB::table("transaksi")->where("status","!=","preorder")->where("status","!=","suratjalan");
+        $get = DB::table("transaksi")->where("status","!=","preorder")->where("status","!=","suratjalan")->where("status","!=","cashback");
             
         if($req->filled('no_nota')){
             $get->where('no_nota',$req->no_nota)->orWhere('nama_pelanggan',"LIKE","%".$req->no_nota."%");
@@ -101,12 +103,43 @@ class transaksiController extends Controller
     public function tampilreturn(Request $req){
         $id=$req->id_trans;
         $no_nota =  DB::table("transaksi")->where("kode_trans",$id)->pluck("no_nota")->first();
-        $hasretur = DB::table("transaksi")->where("keterangan",$no_nota)->count();
+        $hasretur = DB::table("transaksi")->where("keterangan",$no_nota)->where("status","!=","cashback")->count();
+        $checker = DB::table("transaksi")->where("status","cashback")->where("keterangan",$no_nota)->count() > 0 ? 1 : 0;
+        $id_cb = DB::table("transaksi")->where("status","cashback")->where("keterangan",$no_nota)->pluck("kode_trans")->first();
         $datatrans = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->select("transaksi.*","transaksi.status as status_trans","detail_transaksi.*","new_produks.*","mereks.*","kode_types.*","transaksi.tlh_bayar")->get();
         $jml = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->count();
-        return json_encode(["datatrans"=>$datatrans,"hasretur"=>$hasretur, "jml"=>$jml]);
+        return json_encode(["datatrans"=>$datatrans,"hasretur"=>$hasretur, "jml"=>$jml, "hascb"=>$checker,"no_nota"=>$no_nota,"id_cb"=>$id_cb]);
 
         
+    }
+
+    public function cashback(Request $req){
+        $id_kasir = Auth::user()->id;   
+        $no_nota = $req->no_nota;
+        $nominal_cb = $req->nominal;
+
+        $data = DB::table("transaksi")->where("no_nota",$no_nota)->first();
+
+        $id = DB::table("transaksi")->insertGetId(["nama_pelanggan"=>$data->nama_pelanggan,"telepon"=>$data->telepon,"alamat"=>$data->alamat,"id_kasir"=>$id_kasir,"subtotal"=>$nominal_cb,"status"=>"cashback","keterangan" =>$no_nota]);
+
+        return json_encode(["id"=>$id]);
+
+    }
+
+    public function cetakcashbacknk(Request $req){
+        $id = $req->id_trans;
+
+        $data = DB::table("transaksi")->where("kode_trans",$id)->first();
+
+        $pdf = PDF::loadview('cashbacknk', ["data" => $data]);
+        
+        $path = public_path('pdf/');
+            $fileName =  date('mdy').'-'.$data->no_nota. '.' . 'pdf' . "cbnk" ;
+            $pdf->save(storage_path("pdf/$fileName"));
+        $storagepath = storage_path("pdf/$fileName");
+        $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+        unlink($storagepath);
+        return json_encode(["file"=>$base64]);
     }
 
 
@@ -115,6 +148,7 @@ class transaksiController extends Controller
         $cicilandata = [];
         $trans =  DB::table("detail_transaksi")->join('produk', 'produk.kode_produk', '=', 'detail_transaksi.kode_produk')->join('kategori', 'produk.id_kategori', '=', 'kategori.id_kategori')->where("kode_trans", $id)->get();
         $detail = DB::table("transaksi")->where("kode_trans", $id)->get();
+       
         $cicilan = DB::table("cicilan")->where("kode_transaksi", $id)->get();
         foreach($cicilan as $cicilans){
             $row = [];
@@ -130,7 +164,7 @@ class transaksiController extends Controller
         }
 
 
-        return json_encode(["trans" => $trans, "detail" => $detail, 'cicilan'=>$cicilandata]);
+        return json_encode(["trans" => $trans, "detail" => $detail, 'cicilan'=>$cicilandata, ]);
     }
 
     public function hapus($id){

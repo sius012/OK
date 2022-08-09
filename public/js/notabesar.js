@@ -138,7 +138,8 @@ $("#trigger").click(function(e){
         `);
         }
     });
-
+   
+   
    
     //ketika tombol submit/bayar tertekan
     $("#preorderform").submit(function(e){
