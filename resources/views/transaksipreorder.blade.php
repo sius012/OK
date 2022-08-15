@@ -24,6 +24,12 @@ $master='kasir' @endphp
           $("#infomodal").modal("hide");
         });
 
+
+        $(".btn-cetak").click(function(){
+          cetakcbnb($(this).attr("id_nb"));
+        });
+
+
         $(".btnhapus").click(function(e){
           e.preventDefault();
           
@@ -121,7 +127,13 @@ $master='kasir' @endphp
             }});
     }
 
+    $("#btnnb").click(function(){
+        $("#modalRiwayatNB").modal("show");
       });
+
+      });
+
+      
     </script>
 @endsection
 
@@ -136,10 +148,12 @@ $master='kasir' @endphp
         </div>
       </form>
 
-        <div class="row">
-          
-        </div>
     
+
+        <div class="row mb-5 ml-2">
+        <button class="btn btn-primary" id="btnnb"><i class="fa fa-print"></i> Cetak Laporan</button>
+        </div>
+        
         @foreach($data as $datas)
         @if(\Carbon\Carbon::parse($datas['created_at'])->isToday() == 1 and $hastoday == false)
 <h5 class="font-weight-bold ml-2 mb-2">Hari Ini</h5>
@@ -154,7 +168,7 @@ $master='kasir' @endphp
                 <div class="card-header p-0 mt-0">
                     <div class="wrapperzz p-1 mb-4 mt-0 m-1">
                       <h6 style="font-size: 0.85rem; font-weight: bold;" class="card-title float-right mr-2">{{strtotime(date("d-m-Y")) < strtotime(date("d-m-Y", strtotime($datas['min3jatuhtempo']))) ? date("d-M-Y", strtotime($datas["created_at"])) : "Telah mendekati jatuh tempo"}} </h6>
-                      <h6 style="font-size: 0.85rem; font-weight: bold;" class="card-title">No Nota :  {{$datas["no_nota"]}}</h6>
+                      <h6 style="font-size: 0.85rem; font-weight: bold;" class="card-title">@if($datas["status"] == "cashback")(Cashback)@endif No Nota :  {{$datas["no_nota"]}}</h6>
                     </div>
                 </div>
                 <input type="hidden" >
@@ -164,20 +178,31 @@ $master='kasir' @endphp
                           <th style="width: 200px"><div >Telah diterima dari</div></th>
                           <th style="width: 200px"><div >Telepon</div></th>
                           <th style="width: 200px"><div >Total</div></th>
+                          @if($datas["status"] != 'cashback')
                           <th style="width: 120px"><div >Tagihan 1</div></th>
+                          @else
+                          <th style="width: 120px"><div >Cashback</div></th>
+
+                          @endif
                           @if($datas[0] != null)
+                       
                           <th style="width: 120px"><div >Tagihan 2</div></th>
                           <th style="width: 120px"><div >Tagihan 3</div></th>
+                         
                           @endif
                           <td style="width: 110px" rowspan="2" align="center" valign="center" class=""><div class="mt-3 justify-content-center">
+                            @if($datas["status"] != "cashback")
                               <a href="{{route('showdetail',['no_nota'=>$datas['no_nota']])}}" class="" ><i style="background-color:#1562AA; color:white; padding:10px; border-radius:100%;" class="fa fa-list"></i></a>
+                            @else
+                            <a href="#" id_nb="{{$datas['id_transaksi']}}"  class="btn-cetak" ><i style="background-color:#1562AA; color:white; padding:10px; border-radius:100%;" class="fa fa-print"></i></a>
+                            @endif
                           </div></td>
                       </tr>
                    
                       <tr style="font-size: 0.50rem;">
                           <td><div>{{$datas["ttd"]}}</div></td>
                           <td><div>{{$datas["telepon"]}}</div></td>
-                          <td><div>Rp. {{number_format( $datas["total"] )}}</div></td>
+                          <td><div>Rp. {{$datas["status"] == "cashback" ? number_format( $datas["us"]) :  number_format( $datas["total"])}}</div></td>
                       
                           <td><div class="mt-1"><i class="fa fa-check-circle"></i></div></td>
                           @if($datas[0] != null)
@@ -276,7 +301,7 @@ $master='kasir' @endphp
         </div>
         
         <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="cbnb" @if($hascashback == 1) nota_cb = "{{$nota_cb}}" @endif>Cashback</button>
+    @if($hascashback == 0)    <button type="button" class="btn btn-primary" id="cbnb" >Cashback</button> @endif
         <button type="button" class="btn btn-secondary btnClose" data-dismiss="modal">Tutup</button>
         @if($opsi!=null)
        @if($info[2]->status == 'ready' or $info[2]->status == 'dibayar') <button class="btn btn-primary" id="sj2" id_trans="{{$info[1]->id_transaksi}}">Surat Jalan</button>@endif
@@ -326,6 +351,41 @@ $master='kasir' @endphp
   </form>
 </div>
 
+<!-- modal print riwayat -->
+<div class="modal fade" id="modalRiwayatNB" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Cetak Riwayat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{route('download_rnb')}}" method="post">
+                    @csrf
+                    <div class="form-row mb-3">
+                        <div class="col">
+                            <label for="">Mulai dari</label>
+                            <input name="md" class="form-control" id="md" type="date">
+                        </div>
+                        <div class="col">
+                            <label for="">Sampai dengan</label>
+                            <input name="sd" class="form-control" id="sd" type="date">
+                        </div>
+
+                    </div>
+                 
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Unduh</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 <script>
         $(document).ready(function () {
 

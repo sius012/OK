@@ -14,7 +14,7 @@ class TransaksiPreorder extends Controller
     public function index(Request $req,$no_nota=null){
         $data = [];
         
-        $get = DB::table("nota_besar")->groupBy("no_nota")->where("status","!=","cashback")->orderBy("created_at",'desc')->get()->toArray();
+        $get = DB::table("nota_besar")->groupBy("no_nota")->orderBy("created_at",'desc')->get()->toArray();
         if($req->has("no_nota")){
             if($req->no_nota != ""){
                 $get = DB::table("nota_besar")->where("no_nota", $req->no_nota)->groupBy("no_nota")->get()->toArray();
@@ -86,7 +86,7 @@ class TransaksiPreorder extends Controller
      
 
         if(!$count){
-            DB::table("nota_besar")->insert(["no_nota"=>"-","termin"=>1,"ttd"=>$data->ttd,"up"=>$data->up,"us"=>$nominal,"brp"=>$data->brp,"gm"=>$data->gm,"total"=>$data->total,"status"=>"cashback","telepon"=>$data->telepon,"nota_cashback"=>$no_nota]);
+            DB::table("nota_besar")->insert(["no_nota"=>"CBNB".$data->no_nota,"termin"=>1,"ttd"=>$data->ttd,"up"=>$data->up,"us"=>$nominal,"brp"=>$data->brp,"gm"=>$data->gm,"total"=>$data->total,"status"=>"cashback","telepon"=>$data->telepon,"nota_cashback"=>$no_nota]);
         }
 
         return redirect("/showdetail/".$no_nota);

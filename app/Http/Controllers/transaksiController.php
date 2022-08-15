@@ -60,7 +60,7 @@ class transaksiController extends Controller
         $data = [];
       
         
-        $get = DB::table("transaksi")->where("status","!=","preorder")->where("status","!=","suratjalan")->where("status","!=","cashback");
+        $get = DB::table("transaksi")->where("status","!=","preorder")->where("status","!=","suratjalan");
             
         if($req->filled('no_nota')){
             $get->where('no_nota',$req->no_nota)->orWhere('nama_pelanggan',"LIKE","%".$req->no_nota."%");
@@ -93,7 +93,7 @@ class transaksiController extends Controller
             
            
         }
-    //  dd($data);
+    //dd($data);
 
         return view("transaksi", compact('data'));
 
@@ -120,7 +120,7 @@ class transaksiController extends Controller
 
         $data = DB::table("transaksi")->where("no_nota",$no_nota)->first();
 
-        $id = DB::table("transaksi")->insertGetId(["nama_pelanggan"=>$data->nama_pelanggan,"telepon"=>$data->telepon,"alamat"=>$data->alamat,"id_kasir"=>$id_kasir,"subtotal"=>$nominal_cb,"status"=>"cashback","keterangan" =>$no_nota]);
+        $id = DB::table("transaksi")->insertGetId(["no_nota"=>"CB".$no_nota,"nama_pelanggan"=>$data->nama_pelanggan,"telepon"=>$data->telepon,"alamat"=>$data->alamat,"id_kasir"=>$id_kasir,"subtotal"=>$nominal_cb,"status"=>"cashback","keterangan" =>$no_nota]);
 
         return json_encode(["id"=>$id]);
 
@@ -197,21 +197,21 @@ class transaksiController extends Controller
             $has = 1;
         }
 
-        $datas = DB::table("transaksi")->where("status","!=","draf")->where("status","!=","preorder")->where("status","!=","suratjalan")->whereBetween(DB::raw('substr(created_at,1,10)'),[$tglstart,$tglend])->get();
-
+        $datas = DB::table("transaksi")->where("status","!=","draf")->where("status","!=","preorder")->where("status","!=","suratjalan")->whereBetween(DB::raw('substr(created_at,1,10)'),[$tglstart,$tglend]);
+        $jmltrans =  $datas->count();
         $data = [];
         $excel = 0;
         if($req->input('excel')){
             $excel = 1;
         }
 
-        foreach($datas as $i => $dts){
+        foreach($datas->get() as $i => $dts){
           
-            $quer = DB::table('detail_transaksi')
-                                ->join('transaksi',"transaksi.kode_trans","=","detail_transaksi.kode_trans")
-                                ->join('new_produks', 'detail_transaksi.kode_produk', '=', 'new_produks.kode_produk')
-                                ->join('kode_types','kode_types.id_kodetype','new_produks.id_ct')
-                                ->join('mereks','mereks.id_merek','new_produks.id_merek')
+            $quer = DB::table('transaksi')
+                                ->rightJoin('detail_transaksi',"transaksi.kode_trans","=","detail_transaksi.kode_trans")
+                                ->rightJoin('new_produks', 'detail_transaksi.kode_produk', '=', 'new_produks.kode_produk')
+                                ->rightJoin('kode_types','kode_types.id_kodetype','new_produks.id_ct')
+                                ->rightJoin('mereks','mereks.id_merek','new_produks.id_merek')
                                 ->where('transaksi.kode_trans', $dts->kode_trans)->where("transaksi.status","!=","preorder")->where("transaksi.status","!=","suratjalan")
                                 ->select("transaksi.*","mereks.*","kode_types.*","new_produks.*","detail_transaksi.*","transaksi.created_at as tanggal_trans;");
             $data[$i] = $quer->get()->toArray();
@@ -220,6 +220,7 @@ class transaksiController extends Controller
             $data[$i]['datas'] = $dts;
             $data[$i]['potongan rupiah'] = 0;
             $data[$i]['potongan retur'] = $dts->tlh_bayar;
+            $data[$i]["cashback"] = $dts->status == "cashback" ? $dts->subtotal  : 0;
             if($dts->prefix != "rupiah"){
                 $oriPrice = $dts->subtotal / ((100 - $dts->diskon)/100);
                 $data[$i]['potongan rupiah'] = $oriPrice - $dts->subtotal;

@@ -34,7 +34,10 @@ Route::post('/cari', 'KasirController@cari')->name('cari');
 
 Route::get('/codefixer', 'CodeFixer@index');
 
+
+
 Route::middleware(["role:kasir|manager"])->group(function(){
+    Route::post('/laporannb', 'CetakNotaBesarController@index')->name("download_rnb");
     Route::get("/selesaikanpreorder/{idpre}","PreorderController@lunasi");
     Route::post("/cetaksj2","MenuSuratJalan@cetaksj");
     Route::post("/hapussuratjalan2","MenuSuratJalan@hapussj");

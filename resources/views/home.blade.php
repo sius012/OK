@@ -71,6 +71,17 @@ $master='home'; @endphp
                             </div>
                             <!-- /.description-block -->
                         </div>
+                        <div class="col-sm-6 col-6 pt-5"></div>
+                        <div class="col-sm-6 col-6 pt-5">
+                            <div class="description-block border-right">
+                                <span class="description-text">Cashback Nota Besar</span>
+                                <h5 class="description-header">Rp.
+                                    {{ number_format($daily['bulanan']['cashbacknb']) }}
+                                </h5>
+
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -124,6 +135,17 @@ $master='home'; @endphp
                                 <span class="description-text">Cashback</span>
                                 <h5 class="description-header">Rp.
                                     {{ number_format($daily['minggu']['cashback']) }}
+                                </h5>
+
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <div class="col-sm-6 col-6 pt-5"></div>
+                        <div class="col-sm-6 col-6 pt-5">
+                            <div class="description-block border-right">
+                                <span class="description-text">Cashback Nota Besar</span>
+                                <h5 class="description-header">Rp.
+                                    {{ number_format($daily['bulanan']['cashbacknb']) }}
                                 </h5>
 
                             </div>
@@ -183,6 +205,17 @@ $master='home'; @endphp
                                 <span class="description-text">Cashback</span>
                                 <h5 class="description-header">Rp.
                                     {{ number_format($daily['bulanan']['cashback']) }}
+                                </h5>
+
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <div class="col-sm-6 col-6 pt-5"></div>
+                        <div class="col-sm-6 col-6 pt-5">
+                            <div class="description-block border-right">
+                                <span class="description-text">Cashback Nota Besar</span>
+                                <h5 class="description-header">Rp.
+                                    {{ number_format($daily['bulanan']['cashbacknb']) }}
                                 </h5>
 
                             </div>

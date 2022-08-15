@@ -332,13 +332,9 @@ $(document).ready(function(e){
     
      
      $("#cb").click(function(){
-        if($(this).attr("id_cb") != undefined){
-            $("#tombolbayarcb").removeAttr("disabled");
-            cetakcb($(this).attr("id_cb"));
 
-        }else{
         $(".modalcb").modal("show");
-        }
+    
      });
 
 
@@ -355,10 +351,7 @@ $(document).ready(function(e){
             type: "post",
             dataType: "json",
             success: function(data){
-                $(".modalcb").modal("hide");
-                $("#cb").attr("id_cb",data["id"]);
-                $("#tombolbayarcb").attr("disabled","disabled");
-                cetakcb(data["id"]);
+                window.location = "/transaksi";
                 
             },error: function(err){
                 alert(err.responseText);
