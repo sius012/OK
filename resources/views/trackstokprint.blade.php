@@ -1,6 +1,7 @@
 @php 
     $no = 1;
-    
+    $nominal = 0;
+    $cashback = 0;
 @endphp
 @php
         $date = \Carbon\Carbon::parse(date('d-M-Y'))->locale('id');
@@ -54,7 +55,7 @@
             padding: 2px;
         }
 
-        .container .data-wrapper .table{
+        .container .data-wrapper .table.{
             border-collapse: collapse;
         
         }
@@ -91,6 +92,10 @@
         }
         h3{
             font-size: 10pt;
+        }
+
+        th, td{
+           font-size: 8pt; 
         }
     </style>
 </head>
@@ -319,17 +324,87 @@
                 
             </table>
         @endisset
-        Barang Nota Besar
-        <table>
-            <thead>
-                <tr>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
+        <br>
+        <br>
+        <br>
+        <h6>Barang Nota Besar</h6>
+        <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 10px" >
+        <thead>
+            <tr>
                 
-            </tbody>
-        </table>       
+                <th>No. nota</th>
+                <th>Nama, No Telepon</th>
+                <th style="width:75px">Proyek</th>
+                <th>Guna Membayar</th>
+                <th>Total</th>
+                <th>Termin</th>
+                <th>Tanggal</th>     
+               
+                <th  style="width:100px">Uang Sejumlah</th>
+                
+                
+            </tr>
+        </thead>
+        <tbody>
+        @foreach($barangNB as $i => $nb)
+        @if(isset($nb["termins"]))
+        @foreach($nb["termins"] as $j => $termins)
+        <tr>
+      
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif >{{$nb["maindata"]->no_nota}}</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->ttd}}<br>@if($nb["maindata"]->telepon != null)({{$nb["maindata"]->telepon}})@endif</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->up}}</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->gm}}</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{number_format($nb["maindata"]->total,0,".",".")}}</td> @endif
+                <td>{{$termins->termin}}</td>
+                <td>@if($termins->status == "dibayar"){{date("d-m-Y",strtotime($termins->updated_at))}}@else {{"-"}}@endif</td>
+                
+                <td>@if($termins->us != null){{number_format($termins->us,0,".",".")}}<br>({{$termins->brp}}) @else {{"Belum dibayar"}} @endif</td>
+                
+               
+            </tr>
+        @php
+            $nominal += $termins->us;
+        @endphp
+        @endforeach
+        @else
+        <tr>
+      
+      <td >{{$nb["maindata"]->no_nota}}</td> 
+     <td >{{$nb["maindata"]->ttd}}<br>@if($nb["maindata"]->telepon != null)({{$nb["maindata"]->telepon}})@endif</td> 
+      <td >{{$nb["maindata"]->up}}</td> 
+      <td >{{$nb["maindata"]->gm}}(Cashback)</td> 
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+      <td>{{number_format($nb["maindata"]->us,0,".",".")}}</td> 
+      
+      @php
+            $cashback += $nb["maindata"]->us;
+        @endphp
+      
+   </tr>
+
+        @endif
+        @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan=4>
+                    Nominal Uang Masuk
+                </td>
+                <td colspan=4>{{number_format($nominal,0,".",".")}}</td>
+            </tr>
+            <tr>
+            <td colspan=4>Nominal Cashback</td>
+            <td colspan=4>{{number_format($cashback,0,".",".")}}</td>
+            </tr>
+            <tr>
+                <td colspan=4>Nominal Akhir</td>
+                <td colspan=4>{{number_format($nominal-$cashback,0,".",".")}}</td>
+            </tr>
+        </tfoot>
+    </table>
  
  
 </body>

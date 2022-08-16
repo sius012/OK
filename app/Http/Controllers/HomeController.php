@@ -80,7 +80,7 @@ class HomeController extends Controller
       $daily["bulanan"]["pemasukan nota besar"] =  DB::table("nota_besar")->where("status","!=","cashback")->whereMonth("created_at",Carbon::now()->month)->where('status','!=','draft')->sum("us");
       $daily["bulanan"]["pemasukan preorder"] =DB::table("transaksi")->where("status","preorder")->whereMonth("created_at",Carbon::now()->month)->sum("subtotal");
       $daily["bulanan"]["cashback"] =DB::table("transaksi")->where("status","cashback")->whereMonth("created_at",Carbon::now()->month)->sum("subtotal");
-      $daily["bulanan"]["cashbacknb"] =DB::table("nota_besar")->where("status","cashback")->whereMonth("created_at",Carbon::now()->month)->where('status','!=','draft')->sum("us");;
+      $daily["bulanan"]["cashbacknb"] =DB::table("nota_besar")->where("status","cashback")->where('status','!=','draft')->sum("us");;
     
       
       return view('home',['daily'=>$daily,'produk'=>$product,'user'=>$user,'pt' => $pt]);

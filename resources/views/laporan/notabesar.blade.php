@@ -61,17 +61,19 @@
         @foreach($nb["termins"] as $j => $termins)
         <tr>
       
-               @if($j == 0) <td rowspan=3>{{$nb["maindata"]->no_nota}}</td> @endif
-               @if($j == 0) <td rowspan=3>{{$nb["maindata"]->ttd}}<br>@if($nb["maindata"]->telepon != null)({{$nb["maindata"]->telepon}})@endif</td> @endif
-               @if($j == 0) <td rowspan=3>{{$nb["maindata"]->up}}</td> @endif
-               @if($j == 0) <td rowspan=3>{{$nb["maindata"]->gm}}</td> @endif
-               @if($j == 0) <td rowspan=3>
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif >{{$nb["maindata"]->no_nota}}</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->ttd}}<br>@if($nb["maindata"]->telepon != null)({{$nb["maindata"]->telepon}})@endif</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->up}}</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->gm}}</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>
+                    @if(isset($nb["opsi"]))
                     @foreach($nb["opsi"] as $k => $opsis)
                         <p><b>{{$opsis->judul}}</b> : {{$opsis->ket}} </p><br>
                     @endforeach
+                    @endif
 
                </td> @endif
-               @if($j == 0) <td rowspan=3>{{number_format($nb["maindata"]->total,0,".",".")}}</td> @endif
+               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{number_format($nb["maindata"]->total,0,".",".")}}</td> @endif
                 <td>{{$termins->termin}}</td>
                 <td>@if($termins->status == "dibayar"){{date("d-m-Y",strtotime($termins->updated_at))}}@else {{"-"}}@endif</td>
                 

@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Http\Controllers\Tools;
+use App\Http\Controllers\CetakNotaBesarController;
 
 use Auth;
 use PDF;
 use Session;
+
+
 
 
 class DetailStokController extends Controller
@@ -185,7 +188,16 @@ class DetailStokController extends Controller
     }
 
     public function printstoktrack(Request $req){
-       
+        $notabesar = [];
+
+     
+
+        
+
+           //Pemanggilan Jin Nota besar
+           $nb = new CetakNotaBesarController();
+     
+           $notabesar = $nb->getNotaBesar("day","dwm");
 
         $dato = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
@@ -229,6 +241,7 @@ class DetailStokController extends Controller
         
         
         if($req->berdasarkan == "tanggal"){
+            $notabesar = $nb->getNotaBesar(["start"=>$req->tanggal,"end"=>$req->tanggalakhir],"range");
             $date_start = Carbon::parse($req->tanggal)->format('Y-m-d');
             $date_end = Carbon::parse($req->tanggalakhir)->format('Y-m-d');
             $dato->whereBetween(DB::raw('substr(detail_stok.created_at,1,10)'), [$date_start,$date_end]);
@@ -244,6 +257,7 @@ class DetailStokController extends Controller
             
         }else if($req->berdasarkan == "hmb"){
             if($req->hmb == "harian"){
+                $notabesar = $nb->getNotaBesar("day","dwm");
                 $dato->where(DB::raw('substr(detail_stok.created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
                 $dato_trans->where(DB::raw('substr(detail_transaksi.created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
     
@@ -255,6 +269,7 @@ class DetailStokController extends Controller
     
                 $getsr->where(DB::raw('substr(tanggal,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
             }else if($req->hmb == "mingguan"){
+                $notabesar = $nb->getNotaBesar("week","dwm");
                 $dato->whereBetween('detail_stok,created_at', 
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
                 );
@@ -280,6 +295,7 @@ class DetailStokController extends Controller
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
               );
             }else{
+                $notabesar = $nb->getNotaBesar("month","dwm");
                 $dato->whereMonth('detail_stok.created_at', Carbon::now()->month);
                 $dato_trans->whereMonth('detail_transaksi.created_at', Carbon::now()->month);
     
@@ -336,6 +352,7 @@ class DetailStokController extends Controller
 
         $myArr['tanggal'] = $req->berdasarkan == 'tanggal' ? date("d M Y",strtotime($req->tanggal))." - ".date("d M Y",strtotime($req->tanggalakhir)) : "Hari Minggu dan Bulan";
         $myArr['gudang'] = $req->gudang;
+        $myArr['barangNB'] = $notabesar;
         
        
         $pdf = PDF::loadview('trackstokprint', $myArr);

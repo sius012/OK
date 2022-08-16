@@ -14,9 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        table {
-	page-break-inside: avoid !important;
-}
+
         table{
             border-collapse: collapse;
         }
@@ -26,9 +24,7 @@
             
         }
 
-        tr{
-            page-break-after:avoid !important ;
-        }
+
         th{
             background: grey;
             color: white;
@@ -41,7 +37,7 @@
         ({{date('d-m-Y',strtotime($start))}} - {{date('d-m-Y',strtotime($end))}} )
     </h6>
     <table>
-        
+    <thead>
         <tr>
             <th>No</th>
             <th>tanggal</th>
@@ -61,6 +57,7 @@
     <th>Pembayaran</th>
     @endif
     </tr>
+    </thead>
 
     <tbody>
         @foreach($datas as $i => $dts)
@@ -112,14 +109,13 @@
                      <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->telepon}}</td>
                      <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->alamat}}</td>
                      @endif
-                     <td colspan=4>{{number_format($dts['datas']->subtotal,0,".",".")}}(Cashback)</td>
+                     <td  @if($has==0) colspan=5 @else colspan=2 @endif>{{number_format($dts['datas']->subtotal,0,".",".")}}(Cashback)</td>
         
     @php $no++; @endphp
               
                 
             
-            <td style="background-color: {{$dts['datas']->metode == 'suratjalan' ? 'red' : 'white' }}" rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
-          
+           
             </tr>
 
         @endif
@@ -127,32 +123,7 @@
              $potongan += $dts['potongan rupiah'];
              $potonganRetur += $dts['potongan retur'];
         @endphp
-        @if($i % 15 == 0 and $i >= 15)
-	</tr>
-</table> <!-- Table closed -->
 
-<table >
-<tr>
-            <th>No</th>
-            <th>tanggal</th>
-            <th>No Nota</th>
-            <th>Nama Pelanggan</th>
-            @if($has==0)
-                <th>No telp</th>
-                <th>Alamat</th>
-            @endif  
-            
-            <th>Jumlah</th>
-            <th>Produk</th>
-    @if($has==0)  
-    <th>Harga Satuan(Setelah Disc)</th>
-    
-    <th>Total</th>
-    <th>Pembayaran</th>
-    @endif
-    </tr>
-	
-@endif
         @php
             $cashback += $dts["cashback"];
         @endphp

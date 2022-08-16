@@ -221,7 +221,7 @@ class transaksiController extends Controller
             $data[$i]['potongan rupiah'] = 0;
             $data[$i]['potongan retur'] = $dts->tlh_bayar;
             $data[$i]["cashback"] = $dts->status == "cashback" ? $dts->subtotal  : 0;
-            if($dts->prefix != "rupiah"){
+            if($dts->prefix != "rupiah" and $dts->status != "cashback" and $dts->diskon > 0 and $dts->subtotal >0){
                 $oriPrice = $dts->subtotal / ((100 - $dts->diskon)/100);
                 $data[$i]['potongan rupiah'] = $oriPrice - $dts->subtotal;
                 
