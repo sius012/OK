@@ -95,7 +95,7 @@
         <td>-</td>
         <td>-</td>
         <td>-</td>
-        <td>-</td>
+        <td>{{$nb["maindata"]->created_at}}</td>
       <td>{{number_format($nb["maindata"]->us,0,".",".")}}</td> 
       
       @php

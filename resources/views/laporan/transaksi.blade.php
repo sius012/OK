@@ -24,6 +24,8 @@
             
         }
 
+      
+        
 
         th{
             background: grey;
@@ -65,19 +67,19 @@
         @if($dts["jmltrans"] > 0)
         @for($j=0;$j<(int)$dts['jmltrans'];$j++)
             <tr @if($dts['datas']->status == 'return') style="background: yellow" @endif>
-        @if($j==0)
-                <td rowspan="{{$dts['jmltrans']}}">{{$no}}</td>
-                <td rowspan="{{$dts['jmltrans']}}">{{date("d-M-Y",strtotime($dts['datas']->created_at))}}</td>
-                <td rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->no_nota}}</td>
+       
+                <td >{{$no}}</td>
+                <td >{{date("d-M-Y",strtotime($dts['datas']->created_at))}}</td>
+                <td >{{$dts["datas"]->no_nota}}</td>
                      
-                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->nama_pelanggan}}</td>
+                     <td >{{$dts['datas']->nama_pelanggan}}</td>
                      @if($has==0)
-                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->telepon}}</td>
-                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->alamat}}</td>
+                     <td >{{$dts['datas']->telepon}}</td>
+                     <td >{{$dts['datas']->alamat}}</td>
                      @endif
         
     @php $no++; @endphp
-       @endif
+      
                 <td>{{$dts[$j]->jumlah}}</td>
                 <td>{{$dts[$j]->nama_kodetype." ".$dts[$j]->nama_merek." ".$dts[$j]->nama_produk." "}}</td>
                 
@@ -85,9 +87,9 @@
            @if($has==0)     
            <td>{{number_format(Tools::doDisc(1,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
            <td >{{number_format(Tools::doDisc($dts[$j]->jumlah,$dts[$j]->harga_produk,$dts[$j]->potongan,$dts[$j]->prefix),0,".",".")}}</td>
-           @if($j==0) 
-            <td style="background-color: {{$dts['datas']->metode == 'suratjalan' ? 'red' : 'white' }}" rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->metode}}</td>
-            @endif
+        
+            <td style="background-color: {{$dts['datas']->metode == 'suratjalan' ? 'red' : 'white' }}" >{{$dts["datas"]->metode}}</td>
+   
            @endif
             </tr>
         @php 
@@ -100,15 +102,15 @@
         @endfor 
         @elseif($dts['datas']->status=='cashback')
         <tr style="background: lightblue">
-        <td rowspan="{{$dts['jmltrans']}}">{{$no}}</td>
-                <td rowspan="{{$dts['jmltrans']}}">{{date("d-M-Y",strtotime($dts['datas']->created_at))}}</td>
-                <td rowspan="{{$dts['jmltrans']}}">{{$dts["datas"]->no_nota}}</td>
+        <td >{{$no}}</td>
+                <td >{{date("d-M-Y",strtotime($dts['datas']->created_at))}}</td>
+                <td >{{$dts["datas"]->no_nota}}</td>
                      
-                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->nama_pelanggan}}</td>
-                     @if($has==0)
-                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->telepon}}</td>
-                     <td rowspan="{{$dts['jmltrans']}}">{{$dts['datas']->alamat}}</td>
-                     @endif
+                     <td >{{$dts['datas']->nama_pelanggan}}</td>
+                 
+                     <td >{{$dts['datas']->telepon}}</td>
+                     <td >{{$dts['datas']->alamat}}</td>
+                   
                      <td  @if($has==0) colspan=5 @else colspan=2 @endif>{{number_format($dts['datas']->subtotal,0,".",".")}}(Cashback)</td>
         
     @php $no++; @endphp

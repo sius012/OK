@@ -86,7 +86,7 @@ class TransaksiPreorder extends Controller
      
 
         if(!$count){
-            DB::table("nota_besar")->insert(["no_nota"=>"CBNB".$data->no_nota,"termin"=>1,"ttd"=>$data->ttd,"up"=>$data->up,"us"=>$nominal,"brp"=>$data->brp,"gm"=>$data->gm,"total"=>$data->total,"status"=>"cashback","telepon"=>$data->telepon,"nota_cashback"=>$no_nota]);
+            DB::table("nota_besar")->insert(["no_nota"=>"CB".$data->no_nota,"termin"=>1,"ttd"=>$data->ttd,"up"=>$data->up,"us"=>$nominal,"brp"=>$data->brp,"gm"=>$data->gm,"total"=>$data->total,"status"=>"cashback","telepon"=>$data->telepon,"nota_cashback"=>$no_nota]);
         }
 
         return redirect("/showdetail/".$no_nota);
