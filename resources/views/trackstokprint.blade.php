@@ -122,15 +122,15 @@
      
         @isset($m2)
            <h6>Barang Masuk dari Supplier</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 10px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 80px" >
             <tr>
-                        <th >No</th>
-                        <th>Tanggal</th>
+                        <th style="text-align: center">No</th>
+                        <th style="width: 60px">Tanggal</th>
                         <th style="width:60px">Kode Produk</th>
                         <th>Nama Produk</th>
                         <th>Jumlah</th>
                         <th>Keterangan</th>
-                        <th>A. Gudang</th>
+                        <th style="width: 60px; text-align: center">A. Gudang</th>
                     </tr>
     
             @php  $no = 1@endphp
@@ -139,13 +139,13 @@
               
                     @foreach($m2 as $da)
                     <tr>
-                       <td >{{$no}}</td>
-                       <td>{{date("d-M-Y",strtotime($da->tgl))}}</td>
-                        <td>{{$da->kode_produk}}</td>
+                       <td style="text-align: center">{{$no}}</td>
+                       <td style="text-align: center">{{date("d-M-Y",strtotime($da->tgl))}}</td>
+                        <td style="text-align: center">{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
-                        <td>{{$da->jumlah}}</td>
+                        <td style="text-align: center">{{$da->jumlah}}</td>
                         <td >{{$da->keterangan}}</td>
-                        <td >{{$da->name}}</td>
+                        <td style="text-align: center">{{$da->name}}</td>
                     </tr>
                     @php $no++ @endphp
               
@@ -157,13 +157,13 @@
 
         @isset($m1)
         <h6>Barang Retur</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px; margin-bottom: 80px" >
             <tr>
-                        <th >No</th>
-                        <th style="width:60px">Tanggal</th>
-                        <th style="width:60px">Kode Produk</th>
+                        <th style=" text-align: center">No</th>
+                        <th style="width:60px; text-align: center">Tanggal</th>
+                        <th style="width: 80px; text-align: center">Kode Produk</th>
                         <th>Nama Produk</th>
-                        <th>Jumlah</th>
+                        <th style="text-align: center; width: 40px">Jumlah</th>
                     </tr>
     
             @php  $no = 1@endphp
@@ -172,11 +172,11 @@
               
                     @foreach($m1 as $da)
                     <tr>
-                       <td >{{$no}}</td>
-                       <td>{{date("d-M-Y",strtotime($da->created_at))}}</td>
-                        <td>{{$da->kode_produk}}</td>
+                       <td style="text-align: center">{{$no}}</td>
+                       <td style="text-align: center">{{date("d-M-Y",strtotime($da->created_at))}}</td>
+                        <td style="text-align: center">{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
-                        <td>{{$da->jumlah}}</td>
+                        <td style="text-align: center">{{$da->jumlah}}</td>
 
                     </tr>
                     @php $no++ @endphp
@@ -190,15 +190,15 @@
 
         @isset($k2)
             <h6>Barang Revisi</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px; margin-bottom: 10px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px; margin-bottom: 80px" >
             <tr>
-            <th >No</th>
-                        <th style="width:60px">Kode Produk</th>
-                        <th>Tanggal</th>
+            <th style="text-align: center">No</th>
+                        <th style="width:80px; text-align: center">Kode Produk</th>
+                        <th style="text-align: center">Tanggal</th>
                         <th>Nama Produk</th>
-                        <th>Jumlah</th>
+                        <th style="text-align: center">Jumlah</th>
                         <th>Keterangan</th>
-                        <th>A. Gudang</th>
+                        <th style="text-align: center">A. Gudang</th>
                     </tr>
     
             @php  $no = 1@endphp
@@ -207,14 +207,14 @@
               
                     @foreach($k2 as $da)
                     <tr>
-                       <td >{{$no}}</td>
-                       <td>{{$da->kode_produk}}</td>
-                        <td>{{date("d-M-Y",strtotime($da->tgl))}}</td>
+                       <td style="text-align: center">{{$no}}</td>
+                       <td style="text-align: center">{{$da->kode_produk}}</td>
+                        <td style="text-align: center">{{date("d-M-Y",strtotime($da->tgl))}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
               
-                        <td>{{$da->jumlah}}</td>
+                        <td style="text-align: center">{{$da->jumlah}}</td>
                         <td >{{$da->keterangan}}</td>
-                        <td >{{$da->name}}</td>
+                        <td style="text-align: center">{{$da->name}}</td>
                     </tr>
                     @php $no++ @endphp
               
@@ -227,14 +227,16 @@
         
         @isset($k1)
             <h6>Barang Terjual</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 10px; margin: 5px;margin-bottom: 10px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 10px; margin: 5px;margin-bottom: 80px" >
             <tr>
-                        <th >No</th>
-                        <th>Tanggal</th>
-                        <th style="width:60px">Kode Produk</th>
+                        <th style="text-align: center">No</th>
+                        <th style="text-align: center; width: 70px">Tanggal</th>
+                        <th>Nama Pelanggan</th>
+                        <th style="width:60px; text-align: center">Kode Produk</th>
                         <th>Nama Produk</th>
                       
-                       @if($gudang =='false') <th>Harga</th> @endif
+                       @if($gudang =='false') <th style="text-align: center; width: 80px">Harga</th> @endif
+                      
                         <th>Jumlah</th>
                     </tr>
     
@@ -249,12 +251,14 @@
               
                     @foreach($k1 as $da)
                     <tr>
-                       <td >{{$no}}</td>
-                       <td>{{date("d-M-Y",strtotime($da->created_at))}}</td>
-                       <td>{{$da->kode_produk}}</td>
+                       <td style="text-align: center">{{$no}}</td>
+                       <td style="text-align: center">{{date("d-M-Y",strtotime($da->created_at))}}</td>
+                       <td>{{$da->nama_pelanggan}}</td>
+                       <td style="text-align: center">{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
-                        @if($gudang=="false") <td >{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
-                        <td>{{$da->jumlah}}</td>
+                        @if($gudang=="false") <td style="text-align: center">{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
+                       
+                        <td style="text-align: center">{{$da->nama_pelanggan}}</td>
 
                     </tr>
                     @php
@@ -269,6 +273,7 @@
                     @if($gudang=="false") <td colspan="4">Total</td> @else <td colspan="4">Total</td>@endif
                     @if($gudang=="false")<td>Rp. {{number_format($total,0,",",".")}}</td>@endif
                         <td>{{$jumlah}}</td>
+                        <td></td>
 
                     </tr>
                     @if($gudang=="false")
@@ -277,10 +282,12 @@
                         <td colspan=4>Potongan</td>
                         <td>Rp. {{number_format($k1potongan,0,".",".")}}</td>
                         <td></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td colspan=4>Total Pemasukan</td>
                         <td>Rp. {{number_format($total - $k1potongan,0,".",".")}}</td>
+                        <td></td>
                         <td></td>
                     </tr>
                     @endisset
@@ -292,15 +299,15 @@
         
         @isset($suplier)
             <h6>Barang Retur ke Supplier</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 10px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 80px" >
             <tr>
-                        <th >No</th>
-                        <th>Kode Produk</th>
-                        <th >Tanggal</th>
+                        <th style="text-align: center">No</th>
+                        <th style="text-align: center">Kode Produk</th>
+                        <th style="text-align: center">Tanggal</th>
                         <th>Nama Produk</th>
-                        <th>Jumlah</th>
+                        <th style="text-align: center">Jumlah</th>
                         <th>Keterangan</th>
-                        <th>Admin Gudang</th>
+                        <th style="text-align: center">Admin Gudang</th>
                     </tr>
     
             @php  $no = 1@endphp
@@ -309,13 +316,13 @@
               
                     @foreach($suplier as $da)
                     <tr>
-                       <td >{{$no}}</td>
-                        <td>{{$da["kode_produk"]}}</td>
-                        <td>{{date("d-M-Y",strtotime($da['tanggal']))}}</td>
+                       <td style="text-align: center">{{$no}}</td>
+                        <td style="text-align: center">{{$da["kode_produk"]}}</td>
+                        <td style="text-align: center">{{date("d-M-Y",strtotime($da['tanggal']))}}</td>
                         <td >{{$da['nama_kodetype']." ".$da['nama_merek']." ".$da['nama_produk']}}</td>
-                        <td >{{$da["jumlah"]}}</td>
+                        <td style="text-align: center">{{$da["jumlah"]}}</td>
                         <td>{{$da["keterangan"]}}</td>
-                        <td>{{$da["Nama Admin"]}}</td>
+                        <td style="text-align: center">{{$da["Nama Admin"]}}</td>
                     </tr>
                     @php $no++ @endphp
               
@@ -328,19 +335,19 @@
         <br>
         <br>
         <h6>Barang Nota Besar</h6>
-        <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 10px" >
+        <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 80px" >
         <thead>
             <tr>
                 
-                <th>No. nota</th>
-                <th>Nama, No Telepon</th>
-                <th style="width:75px">Proyek</th>
-                <th>Guna Membayar</th>
-                <th>Total</th>
-                <th>Termin</th>
-                <th>Tanggal</th>     
+                <th style="text-align: center">No. nota</th>
+                <th style="width: 100px; text-align: center">Nama, No Telepon</th>
+                <th>Proyek</th>
+                <th style="width: 100px">Guna Membayar</th>
+                <th style="text-align: center;">Total</th>
+                <th style="text-align: center;">Termin</th>
+                <th style="text-align: center; width: 60px;">Tanggal</th>     
                
-                <th  style="width:100px">Uang Sejumlah</th>
+                <th  style="">Uang Sejumlah</th>
                 
                 
             </tr>
@@ -351,13 +358,13 @@
         @foreach($nb["termins"] as $j => $termins)
         <tr>
       
-               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif >{{$nb["maindata"]->no_nota}}</td> @endif
-               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->ttd}}<br>@if($nb["maindata"]->telepon != null)({{$nb["maindata"]->telepon}})@endif</td> @endif
-               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->up}}</td> @endif
-               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->gm}}</td> @endif
-               @if($j == 0) <td @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{number_format($nb["maindata"]->total,0,".",".")}}</td> @endif
-                <td>{{$termins->termin}}</td>
-                <td>@if($termins->status == "dibayar"){{date("d-m-Y",strtotime($termins->updated_at))}}@else {{"-"}}@endif</td>
+               @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif >{{$nb["maindata"]->no_nota}}</td> @endif
+               @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->ttd}} @if($nb["maindata"]->telepon != null)({{$nb["maindata"]->telepon}})@endif</td> @endif
+               @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->up}}</td> @endif
+               @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->gm}}</td> @endif
+               @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{number_format($nb["maindata"]->total,0,".",".")}}</td> @endif
+                <td style="text-align: center">{{$termins->termin}}</td>
+                <td style="text-align: center">@if($termins->status == "dibayar"){{date("d-m-Y",strtotime($termins->updated_at))}}@else {{"-"}}@endif</td>
                 
                 <td>@if($termins->us != null){{number_format($termins->us,0,".",".")}}<br>({{$termins->brp}}) @else {{"Belum dibayar"}} @endif</td>
                 

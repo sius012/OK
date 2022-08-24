@@ -212,7 +212,7 @@ class DetailStokController extends Controller
         ->select("*","detail_stok.created_at as tgl");
         $keluar1trans = DB::table("detail_transaksi")->join('transaksi','transaksi.kode_trans','=','detail_transaksi.kode_trans')->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
+        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix","transaksi.nama_pelanggan")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
 
         $masuk1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")

@@ -238,8 +238,7 @@ $(document).ready(function () {
     
         e.preventDefault();
 
-        alert($("#tanggal3").val());
-        alert( $("#produk-select2").val());
+
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN": $("meta[name=csrf-token]").attr("content")
