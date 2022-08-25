@@ -213,6 +213,7 @@ $master='kasir' @endphp
                     <option value="upvc">UPVC</option>
                     <option value="omge">OMGE</option>
                     <option value="jasapasang">Jasa Pasang</option>
+                    <option value="jasaservice">Jasa Service</option>
                 </select>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Tanggal </label>

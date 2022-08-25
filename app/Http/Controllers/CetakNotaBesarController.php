@@ -33,7 +33,7 @@ class CetakNotaBesarController extends Controller
         // }
 
         $nb = $this->getNotaBesar(["start"=>$tglstart,"end"=>$tglend],"range");
-        //dd($nb);
+   
         $pdf = PDF::loadview('laporan.notabesar', ["notabesar" => $nb,'start'=>$tglstart,'end'=>$tglend]);
         $path = public_path('pdf/Laporan Nota Besar');
             $fileName =  date('mdy').'-'."Laporan Nota Besar". '.' . 'pdf' ;

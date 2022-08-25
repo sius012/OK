@@ -142,6 +142,10 @@ class PreorderController extends Controller
 
         $inisialnota = $req->jenisnota == "jasapasang" ? "JP" : "NB";
 
+        if($req->jenisnota == "jasaservice"){
+            $inisialnota = "JS";
+        }
+
         $id;
         $id2 = "";
         $id3;
@@ -158,7 +162,7 @@ class PreorderController extends Controller
 
             
             $id = DB::table('nota_besar')->insertGetId(array_merge($req->input('formData'),['no_nota' => $no, 'termin' => 1, "status" => "dibayar",'created_at'=>$tanggal, 'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]));
-            if($jenisnb != "jasapasang"){
+            if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
                 $id2 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 2, "status" => "ready",'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]);
                 $id3 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 3,'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]);
             }
@@ -183,7 +187,7 @@ class PreorderController extends Controller
                     DB::table('nb_detail')->insert(['id_nb' => $id, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
                 }
             }else{
-                if($jenisnb != "jasapasang"){
+                if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
                 DB::table('nb_detail')->insert(['id_nb' => $id, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
                 }
             }
@@ -191,7 +195,7 @@ class PreorderController extends Controller
             
         }
 
-        if($jenisnb != "jasapasang"){
+        if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
             for($i = 0; $i < count($judulopsi);$i++){
                 if($req->session()->has('id_nb')){
                   
@@ -219,7 +223,7 @@ class PreorderController extends Controller
                         DB::table('nb_detail')->insert(['id_nb' => $id3, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
                     }
                 }else{
-                    if($jenisnb != "jasapasang"){
+                    if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
                     DB::table('nb_detail')->insert(['id_nb' => $id3, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
                     }
                 }
@@ -333,8 +337,16 @@ class PreorderController extends Controller
         $opsi = DB::table("nb_detail")->join("nota_besar", "nota_besar.id_transaksi", "=", "nb_detail.id_nb")->where("id_nb", $id_trans)->get();
 
         $counter = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->count();
+
+        $jenisnota = "notabesar";
+
+        if(strpos($data[0]->no_nota, 'JP') !== false ){
+            $jenisnota = "jasapasang";
+        }else if(strpos($data[0]->no_nota, 'JS') !== false ){
+            $jenisnota = "jasaservice";
+        }
         
-        $pdf = PDF::loadview('nota_besar', ["jenisnota"=>$counter < 2 ? "jasapasang" : "notabesar","data" => $data[0],"opsi"=>$opsi, "td" => $td < 1 ? 0 : $td = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->where("termin","<",$data[0]->termin)->sum("us")])
+        $pdf = PDF::loadview('nota_besar', ["jenisnota"=>$jenisnota,"data" => $data[0],"opsi"=>$opsi, "td" => $td < 1 ? 0 : $td = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->where("termin","<",$data[0]->termin)->sum("us")])
         ;
         $path = public_path('pdf/');
         $fileName =  date('mdy').'-'.$data[0]->id_transaksi. '.' . "nota_besar".'pdf' ;
