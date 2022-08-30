@@ -212,7 +212,7 @@ class DetailStokController extends Controller
         ->select("*","detail_stok.created_at as tgl");
         $keluar1trans = DB::table("detail_transaksi")->join('transaksi','transaksi.kode_trans','=','detail_transaksi.kode_trans')->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix","transaksi.nama_pelanggan")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
+        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix as transfix","transaksi.nama_pelanggan")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
 
         $masuk1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
@@ -223,7 +223,9 @@ class DetailStokController extends Controller
    
         ->join("mereks","mereks.id_merek","=","new_produks.id_merek")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->where("detail_transaksi.status","return")->where("transaksi.status","=","return")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek','kode_types.nama_kodetype');
+        ->where("detail_transaksi.status","return")->where("transaksi.status","=","return")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek','kode_types.nama_kodetype',"transaksi.prefix as transfix","transaksi.diskon");
+
+        $cashbacknk = DB::table("transaksi")->where("status","cashback");
 
         $retur = [];
 
@@ -254,6 +256,7 @@ class DetailStokController extends Controller
             $masuk1trans->whereBetween(DB::raw('substr(detail_transaksi.created_at,1,10)'), [$date_start,$date_end]);
 
             $getsr->whereBetween(DB::raw('substr(tanggal,1,10)'), [$date_start,$date_end]);
+            $cashbacknk->whereBetween(DB::raw('substr(created_at,1,10)'), [$date_start,$date_end]);
             
         }else if($req->berdasarkan == "hmb"){
             if($req->hmb == "harian"){
@@ -268,6 +271,7 @@ class DetailStokController extends Controller
                 $masuk1trans->where(DB::raw('substr(detail_transaksi.created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
     
                 $getsr->where(DB::raw('substr(tanggal,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
+                $cashbacknk->where(DB::raw('substr(created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
             }else if($req->hmb == "mingguan"){
                 $notabesar = $nb->getNotaBesar("week","dwm");
                 $dato->whereBetween('detail_stok,created_at', 
@@ -294,7 +298,10 @@ class DetailStokController extends Controller
                 $getsr->whereBetween('tanggal', 
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
               );
-            }else{
+              $cashbacknk->whereBetween('created_at', 
+              [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
+            );
+       
                 $notabesar = $nb->getNotaBesar("month","dwm");
                 $dato->whereMonth('detail_stok.created_at', Carbon::now()->month);
                 $dato_trans->whereMonth('detail_transaksi.created_at', Carbon::now()->month);
@@ -331,9 +338,14 @@ class DetailStokController extends Controller
         $myArr = [];
 
         $listpotongan = [];
+        $listpotonganR = [];
         
         foreach($keluar1trans->get() as $ks){
-            $listpotongan[$ks->kode_trans] = $ks->prefix == "rupiah" ? $ks->potongan : $ks->subtotal -  Tools::doDisc(1,$ks->subtotal,$ks->diskon,$ks->prefix);
+            $listpotongan[$ks->kode_trans] = $ks->transfix == "rupiah" ? $ks->diskon : $ks->subtotal -  Tools::doDisc(1,$ks->subtotal,$ks->diskon,$ks->transfix);
+        }
+
+        foreach($masuk1trans->get() as $ks){
+            $listpotonganR[$ks->kode_trans] = $ks->transfix == "rupiah" ? $ks->diskon : $ks->subtotal -  Tools::doDisc(1,$ks->subtotal,$ks->diskon,$ks->transfix);
         }
 
         if($req->keluar == "true"){
@@ -344,6 +356,7 @@ class DetailStokController extends Controller
         }
         if($req->masuk == "true"){
             $myArr["m1"] = $masuk1trans->get();
+            $myArr["m1potongan"] = array_sum($listpotonganR);
             $myArr["m2"] = $masuk1->get();
         }
         if($req->suplier == "true"){
@@ -353,6 +366,7 @@ class DetailStokController extends Controller
         $myArr['tanggal'] = $req->berdasarkan == 'tanggal' ? date("d M Y",strtotime($req->tanggal))." - ".date("d M Y",strtotime($req->tanggalakhir)) : "Hari Minggu dan Bulan";
         $myArr['gudang'] = $req->gudang;
         $myArr['barangNB'] = $notabesar;
+        $myArr['cashbacknk'] = $cashbacknk->sum("subtotal");
         
        
         $pdf = PDF::loadview('trackstokprint', $myArr);

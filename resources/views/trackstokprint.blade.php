@@ -2,6 +2,11 @@
     $no = 1;
     $nominal = 0;
     $cashback = 0;
+   
+
+
+    $totalR=0;
+            $jumlahR=0;
 @endphp
 @php
         $date = \Carbon\Carbon::parse(date('d-M-Y'))->locale('id');
@@ -164,9 +169,15 @@
                         <th style="width: 80px; text-align: center">Kode Produk</th>
                         <th>Nama Produk</th>
                         <th style="text-align: center; width: 40px">Jumlah</th>
+                        @if($gudang =='false')  <th style="text-align: center; width: 40px">Harga</th> @endif
                     </tr>
     
-            @php  $no = 1@endphp
+            @php 
+            
+          
+            
+            $no = 
+            1; @endphp
          
               
               
@@ -177,12 +188,45 @@
                         <td style="text-align: center">{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
                         <td style="text-align: center">{{$da->jumlah}}</td>
+                        @if($gudang =='false')<td style="text-align: center">{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
 
                     </tr>
-                    @php $no++ @endphp
+                    @php $no++;
+                    
+                    
+                    
+                    $totalR += Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix);
+                    $jumlahR += $da->jumlah;
+                    @endphp
               
 
                     @endforeach
+                    <tr>
+                    @if($gudang=="false") <td colspan="4">Total</td> @else <td colspan="4">Total</td>@endif
+                    @if($gudang=="false")
+                    <td>{{$jumlahR}}</td>
+                    <td> {{number_format($totalR,0,",",".")}}</td>@endif
+                
+                 
+
+                    </tr>
+                    @if($gudang=="false")
+                    @isset($m1potongan)
+                    <tr>
+                        <td colspan=4>Potongan</td>
+                        <td></td>
+                        <td> {{number_format($m1potongan,0,".",".")}}</td>
+                        
+                  
+                    </tr>
+                    <tr>
+                        <td colspan=4>Total Retur</td>
+                        <td></td>
+                        <td> {{number_format($totalR - $m1potongan,0,".",".")}}</td>
+                     
+                    </tr>
+                    @endisset
+                    @endif
                 
             </table>
         @endisset
@@ -256,9 +300,9 @@
                        <td>{{$da->nama_pelanggan}}</td>
                        <td style="text-align: center">{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>
-                        @if($gudang=="false") <td style="text-align: center">{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
+                        @if($gudang=="false") <td style="text-align: right">{{number_format(Tools::doDisc($da->jumlah,$da->harga_produk,$da->potongan,$da->prefix),0,",",".")}}</td>@endif
                        
-                        <td style="text-align: center">{{$da->nama_pelanggan}}</td>
+                        <td style="text-align: center">{{$da->jumlah}}</td>
 
                     </tr>
                     @php
@@ -270,25 +314,40 @@
                     
                     @endforeach
                     <tr>
-                    @if($gudang=="false") <td colspan="4">Total</td> @else <td colspan="4">Total</td>@endif
-                    @if($gudang=="false")<td>Rp. {{number_format($total,0,",",".")}}</td>@endif
+                    @if($gudang=="false") <td colspan="5">Total</td> @else <td colspan="5">Total</td>@endif
+                    @if($gudang=="false")<td> {{number_format($total,0,",",".")}}</td>@endif
                         <td>{{$jumlah}}</td>
-                        <td></td>
+                        
 
                     </tr>
                     @if($gudang=="false")
                     @isset($k1potongan)
                     <tr>
-                        <td colspan=4>Potongan</td>
-                        <td>Rp. {{number_format($k1potongan,0,".",".")}}</td>
+                        <td colspan=5>Potongan</td>
+                        <td>{{number_format($k1potongan,0,".",".")}}</td>
                         <td></td>
-                        <td></td>
+              
                     </tr>
                     <tr>
-                        <td colspan=4>Total Pemasukan</td>
-                        <td>Rp. {{number_format($total - $k1potongan,0,".",".")}}</td>
+                        <td colspan=5>Total Cashback</td>
+                        <td> {{number_format($cashbacknk,0,".",".")}}</td>
                         <td></td>
+                     
+                        
+                    </tr>
+                    <tr>
+                        <td colspan=5>Total Retur</td>
+                        
+                        <td>{{number_format($totalR - $m1potongan,0,".",".")}}</td>
                         <td></td>
+                     
+                     
+                    </tr>
+                    <tr>
+                        <td colspan=5>Total Pemasukan</td>
+                        <td>{{number_format($total - $k1potongan - $cashbacknk - ($totalR - $m1potongan) ,0,".",".")}}</td>
+                        <td></td>
+                   
                     </tr>
                     @endisset
                     @endif
@@ -362,7 +421,7 @@
                @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->ttd}} @if($nb["maindata"]->telepon != null)({{$nb["maindata"]->telepon}})@endif</td> @endif
                @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->up}}</td> @endif
                @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{$nb["maindata"]->gm}}</td> @endif
-               @if($j == 0) <td style="text-align: center" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{number_format($nb["maindata"]->total,0,".",".")}}</td> @endif
+               @if($j == 0) <td style="text-align: right" @if(isset($nb['termins']))  rowspan="{{ count($nb['termins'])}}" @endif>{{number_format($nb["maindata"]->total,0,".",".")}}</td> @endif
                 <td style="text-align: center">{{$termins->termin}}</td>
                 <td style="text-align: center">@if($termins->status == "dibayar"){{date("d-m-Y",strtotime($termins->updated_at))}}@else {{"-"}}@endif</td>
                 

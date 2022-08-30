@@ -205,8 +205,13 @@ class KasirController extends Controller
         $id_transaksi = $data['id_trans'];
         $diantar = $data['antarkah'];
         $metode = $data['via'];
-        $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->where("status","!=","suratjalan")->whereDate('transaksi.created_at', Carbon::today())->count();
-        $no += 1;   
+        $no = DB::table('transaksi') //ganti pake eloquent
+                ->where("status","!=","draf") // ndak perlu
+                ->where("status","!=","return") // ndak perlu
+                ->where("status","!=","preorder") // ndak perlu
+                ->where("status","!=","suratjalan") // ndak perlu
+                ->whereDate('transaksi.created_at', Carbon::today())->count();
+        $no ++;   
         $no_nota = date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
         $notab=$data["notab"];
         $id_kasir = Auth::user()->id;   
