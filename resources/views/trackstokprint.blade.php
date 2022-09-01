@@ -26,9 +26,13 @@
     <style>
    
         * {
-         
+            page-break-inside: avoid;
             margin: 0px;
         }
+        table { page-break-inside:auto }
+    tr    { page-break-inside:avoid; page-break-after:auto }
+    thead { display:table-header-group }
+    tfoot { display:table-footer-group }
 
         body{
             margin: 1cm;
@@ -101,6 +105,7 @@
 
         th, td{
            font-size: 8pt; 
+           page-break-inside: avoid;
         }
     </style>
 </head>
@@ -127,7 +132,8 @@
      
         @isset($m2)
            <h6>Barang Masuk dari Supplier</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 80px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 20px" >
+            <thead>
             <tr>
                         <th style="text-align: center">No</th>
                         <th style="width: 60px">Tanggal</th>
@@ -137,6 +143,8 @@
                         <th>Keterangan</th>
                         <th style="width: 60px; text-align: center">A. Gudang</th>
                     </tr>
+                    </thead>
+                    <tbody>
     
             @php  $no = 1@endphp
          
@@ -156,13 +164,15 @@
               
 
                     @endforeach
-                
+                    </tbody>
+         
             </table>
         @endisset
 
         @isset($m1)
         <h6>Barang Retur</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px; margin-bottom: 80px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px; margin-bottom: 20px" >
+            <thead>
             <tr>
                         <th style=" text-align: center">No</th>
                         <th style="width:60px; text-align: center">Tanggal</th>
@@ -171,7 +181,7 @@
                         <th style="text-align: center; width: 40px">Jumlah</th>
                         @if($gudang =='false')  <th style="text-align: center; width: 40px">Harga</th> @endif
                     </tr>
-    
+                    </thead>
             @php 
             
           
@@ -180,7 +190,7 @@
             1; @endphp
          
               
-              
+              <tbody>
                     @foreach($m1 as $da)
                     <tr>
                        <td style="text-align: center">{{$no}}</td>
@@ -227,14 +237,15 @@
                     </tr>
                     @endisset
                     @endif
-                
+                    </tbody>
             </table>
         @endisset
 
 
         @isset($k2)
             <h6>Barang Revisi</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px; margin-bottom: 80px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px; margin-bottom: 20px" >
+            <thead>
             <tr>
             <th style="text-align: center">No</th>
                         <th style="width:80px; text-align: center">Kode Produk</th>
@@ -244,11 +255,12 @@
                         <th>Keterangan</th>
                         <th style="text-align: center">A. Gudang</th>
                     </tr>
+                    </thead>
     
             @php  $no = 1@endphp
          
               
-              
+                <tbody>
                     @foreach($k2 as $da)
                     <tr>
                        <td style="text-align: center">{{$no}}</td>
@@ -264,15 +276,17 @@
               
 
                     @endforeach
-                
+                    </tbody>
             </table>
         @endisset
 
         
         @isset($k1)
             <h6>Barang Terjual</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 10px; margin: 5px;margin-bottom: 80px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 10px; margin: 5px;margin-bottom: 20px" >
+            <thead>
             <tr>
+                
                         <th style="text-align: center">No</th>
                         <th style="text-align: center; width: 70px">Tanggal</th>
                         <th>Nama Pelanggan</th>
@@ -283,7 +297,7 @@
                       
                         <th>Jumlah</th>
                     </tr>
-    
+                    </thead>
             @php  
             $jumlah=0;
             
@@ -292,7 +306,7 @@
             $no = 1@endphp
          
 
-              
+                <tbody>
                     @foreach($k1 as $da)
                     <tr>
                        <td style="text-align: center">{{$no}}</td>
@@ -351,14 +365,15 @@
                     </tr>
                     @endisset
                     @endif
-                
+                    </tbody>
             </table>
         @endisset
 
         
         @isset($suplier)
             <h6>Barang Retur ke Supplier</h6>
-            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 80px" >
+            <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 20px" >
+            <thead>
             <tr>
                         <th style="text-align: center">No</th>
                         <th style="text-align: center">Kode Produk</th>
@@ -368,11 +383,12 @@
                         <th>Keterangan</th>
                         <th style="text-align: center">Admin Gudang</th>
                     </tr>
+                    </thead>
     
             @php  $no = 1@endphp
          
               
-              
+                <tbody>
                     @foreach($suplier as $da)
                     <tr>
                        <td style="text-align: center">{{$no}}</td>
@@ -387,12 +403,13 @@
               
 
                     @endforeach
-                
+                    </tbody>
             </table>
         @endisset
         <br>
         <br>
         <br>
+        @if($gudang == "false")
         <h6>Barang Nota Besar</h6>
         <table class="table-data" style="width:180mm !important; margin-top: 5px; margin: 5px;margin-bottom: 80px" >
         <thead>
@@ -471,7 +488,7 @@
             </tr>
         </tfoot>
     </table>
- 
+    @endif
  
 </body>
 

@@ -208,7 +208,10 @@ class DetailStokController extends Controller
 
         $keluar1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status","keluar")->where("status2","!=","retur")->where("status2","!=","transaksi")
+        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")
+        ->where("status","keluar")
+        ->where("status2","!=","retur")->where("status2","!=","transaksi")
+        ->where("keterangan","not LIKE","%transaksi%")
         ->select("*","detail_stok.created_at as tgl");
         $keluar1trans = DB::table("detail_transaksi")->join('transaksi','transaksi.kode_trans','=','detail_transaksi.kode_trans')->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
