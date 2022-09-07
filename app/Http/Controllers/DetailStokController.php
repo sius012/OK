@@ -194,7 +194,7 @@ class DetailStokController extends Controller
 
         
 
-           //Pemanggilan Jin Nota besar
+           //Pemanggilan  Nota besar
            $nb = new CetakNotaBesarController();
      
            $notabesar = $nb->getNotaBesar("day","dwm");
@@ -219,6 +219,7 @@ class DetailStokController extends Controller
 
         $masuk1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
+        ->where("keterangan","not LIKE","%transaksi%")
         ->where("status","masuk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status2","!=","retur")->where("status2","!=","transaksi")
         ->select("*","detail_stok.created_at as tgl");
         ;

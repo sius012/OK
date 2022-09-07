@@ -7,8 +7,8 @@ use Maatwebsite\Excel\Concerns\FromView;
 
 class TransaksiExport implements FromView
 {
-    public $data;
-    public $untukadmin = true;
+    public $data; //$datefrom 
+    public $untukadmin = true; //$dateto
 
     public function __construct($data,$has){
         $this->data = $data;

@@ -325,13 +325,13 @@ $subtotal = 0;
                     @if($data[0]->status == "belum lunas")
                     <tr>
                         <td>Kurang Bayar</td>
-                        <td align="right">{{number_format(Tools::doDisc(1,$data[0]->subtotal,$data[0]->diskon,$data[0]->prefix) - $data[0]->bayar,0,'.','.') }}</td>
+                       <td align="right">{{number_format($data[0]->subtotal - $data[0]->bayar,0,'.','.') }}</td>
 
                     </tr>
                     @else
                     
 
-                    @if($data[0]->status != "return")
+                    @if($data[0]->status != "return" and $data[0]->bayar -$data[0]->subtotal > 0 )
                     <tr>
                         <td>Kembalian</td>
                         <td align="right">{{number_format($data[0]->bayar -$data[0]->subtotal,0,".",".") }}</td>

@@ -279,6 +279,7 @@ $(document).ready(function(e){
                  
                  if(data["hascb"] == 1){
                     $("#cb").attr("id_cb",data["id_cb"]);
+                    $("#cb").hide();
                  }
               
                  $("#returncont").html(row);
@@ -357,6 +358,11 @@ $(document).ready(function(e){
                 alert(err.responseText);
             }
         });
+     });
+
+     $(".printingcb").click(function(){
+        let idt = $(this).attr("id_trans");
+        cetakcb(idt);
      });
 
 

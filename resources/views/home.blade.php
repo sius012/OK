@@ -145,7 +145,7 @@ $master='home'; @endphp
                         <div class="col">
                             <div class="row">
                                 <span><i class="fa fa-chart-bar mr-2"></i></span>
-                                <span>Pemasukan Cashback</span>
+                                <span>Cashback Nota Kecil</span>
                             </div>
                             <h4>Rp. {{ number_format($daily['hari']['cashback']) }}</h4>
                         </div>
@@ -203,7 +203,7 @@ $master='home'; @endphp
                         <div class="col">
                             <div class="row">
                                 <span><i class="fa fa-chart-bar mr-2"></i></span>
-                                <span>Pemasukan Cashback</span>
+                                <span>Cashback Nota Kecil</span>
                             </div>
                             <h4>Rp. {{ number_format($daily['minggu']['cashback']) }}</h4>
                         </div>
@@ -261,7 +261,7 @@ $master='home'; @endphp
                         <div class="col">
                             <div class="row">
                                 <span><i class="fa fa-chart-bar mr-2"></i></span>
-                                <span>Pemasukan Cashback</span>
+                                <span>Cashback Nota Kecil</span>
                             </div>
                             <h4>Rp. {{ number_format($daily['bulanan']['cashback']) }}</h4>
                         </div>
