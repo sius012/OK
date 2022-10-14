@@ -75,8 +75,8 @@ $master='kasir' @endphp
                 var year = dateObj.getUTCFullYear();
 
                 newdate = year + "-" + month + "-" + day;
-
                 $("#ttd").val(data['nb'][0]['ttd']);
+                $("#telepon").val(data['nb'][0]['telepon']);
                 $("#up").val(data['nb'][0]['up']);
                 $("#us").val(data['nb'][0]['us']);
                 $("#brp").val(data['nb'][0]['brp']);
@@ -151,8 +151,9 @@ $master='kasir' @endphp
                 $(".readonly").attr('readonly', 'readonly');
             }
             , error: function(err) {
-              
-                Swal.fire("error", "", "info");
+              alert("ei");
+             //   Swal.fire("lol", "", "info");
+             alert(err.responseText);
             }
         });
 
@@ -211,6 +212,8 @@ $master='kasir' @endphp
                     <option value="autog">Auto Gate & Auto Garage</option>
                     <option value="upvc">UPVC</option>
                     <option value="omge">OMGE</option>
+                    <option value="jasapasang">Jasa Pasang</option>
+                    <option value="jasaservice">Jasa Service</option>
                 </select>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Tanggal </label>
@@ -223,6 +226,10 @@ $master='kasir' @endphp
                         <div class="form-group">
                             <label for="exampleInputEmail1">Telah diterima dari</label>
                             <input type="text" class="form-control readonly" id="ttd" aria-describedby="emailHelp" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">No. Telepon</label>
+                            <input type="text" class="form-control readonly" id="telepon" aria-describedby="emailHelp" required>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputPassword1">Untuk Proyek</label>

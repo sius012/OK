@@ -112,7 +112,7 @@ class ProdukController extends Controller
         $count = DB::table("new_produks")->where("id_tipe", $id_tipe)->where("id_ct", $id_codetype)->where("id_merek",$id_merek)->count();
 
 
-        $kode_produk = str_pad($id_tipe,2,0,STR_PAD_LEFT).$id_tipe.str_pad($id_codetype,3,0,STR_PAD_LEFT).str_pad($id_merek,3,0,STR_PAD_LEFT).str_pad($count+1,3,0,STR_PAD_LEFT);
+        $kode_produk = str_pad($id_tipe,2,0,STR_PAD_LEFT).str_pad($id_codetype,3,0,STR_PAD_LEFT).str_pad($id_merek,3,0,STR_PAD_LEFT).str_pad($count+1,3,0,STR_PAD_LEFT);
         DB::table('detail_stok')->insert(['id_ag'=>auth()->user()->id,'kode_produk'=>$kode_produk,'jumlah'=>$req->stok,'status'=>'masuk','keterangan'=>'stock awal','created_at'=>date('Y-m-d H:i:s')]);
 
         
@@ -218,6 +218,8 @@ class ProdukController extends Controller
     }
 
     public function printbarcode(Request $req){
+
+$customPaper = array(0,0,1000,500);
         $listdata= [];
 
         $getter = DB::table('new_produks')->where('kode_produk', $req->kode_produk)->join("kode_types","kode_types.id_kodetype","new_produks.id_ct")->join("mereks","mereks.id_merek","new_produks.id_merek")->get()[0];
@@ -226,7 +228,7 @@ class ProdukController extends Controller
             array_push($listdata,$getter);
         }
 
-        $pdf = PDF::loadview('cetakbarcode', ["data" => $listdata]);
+        $pdf = PDF::loadview('cetakbarcode', ["data" => $listdata])->setPaper($customPaper, "potrait");;
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'."cetakbarcode". '.' . 'pdf' ;
             $pdf->save(storage_path("pdf/$fileName"));
@@ -237,6 +239,52 @@ class ProdukController extends Controller
     	return response()->json(["filename" => $base64]); 
         
     }
+
+
+    public function printbarcodepage(Request $req){
+        $produk = DB::table('new_produks')->join('mereks','new_produks.id_merek','mereks.id_merek')->join('tipes','new_produks.id_tipe','tipes.id_tipe')->join('kode_types','new_produks.id_ct','kode_types.id_kodetype')->join('stok','stok.kode_produk','=','new_produks.kode_produk');
+
+        if($req->filled("tipe")){
+            $produk->where('new_produks.id_tipe',$req->tipe);
+        }
+        if($req->filled("kodetipe")){
+            $produk->where('new_produks.id_ct',$req->kodetipe);
+        }
+        if($req->filled("merek")){
+            $produk->where('new_produks.id_merek',$req->merek);
+        }
+        if($req->filled("nama")){
+            $produk->where('new_produks.nama_produk',"LIKE","%".$req->nama."%")->orWhere('new_produks.kode_produk',"LIKE","%".$req->nama."%");
+        }
+        $listdata= [];
+
+        
+        foreach($produk->get() as $produks){
+            for($i=0;$i<$produks->jumlah;$i++){
+                array_push($listdata,$produks);
+            }
+        }
+
+    
+
+        $pdf = PDF::loadview('cetakbarcode', ["data" => $listdata]);
+        $path = public_path('pdf/');
+            $fileName =  date('mdy').'-'."cetakbarcode". '.' . 'pdf' ;
+            $pdf->save(storage_path("pdf/$fileName"));
+        $thepath = storage_path("pdf/$fileName");
+        $storagepath = storage_path("pdf/$fileName");
+        $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+        unlink($thepath);
+    	return json_encode(["filename"=>$base64,"jml"=>count($listdata)]); 
+        
+    }    
+
+
+
+
+
+
+
 
     public function savebuffer(Request $req){
         $datas = 

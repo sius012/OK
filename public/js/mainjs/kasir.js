@@ -1,6 +1,7 @@
 
 
 function formatRupiah(angka, prefix) {
+ 
     var number_string = angka.replace(/[^,\d]/g, '').toString(),
         split = number_string.split(','),
         sisa = split[0].length % 3,
@@ -22,7 +23,11 @@ function formatRupiah(angka, prefix) {
 
 $(document).ready(function () {
    //cek dan load data surat jalan
-  
+   if($("#jenis-transaksi").val()=="suratjalan"){
+         $("#tampil-harga").show();
+   }else{
+        $("#tampil-harga").hide();
+   }
 
     var hasRetur = $("#returid").val().length < 2 ? false : true;
 
@@ -407,9 +412,15 @@ $(document).ready(function () {
             url: $("#jenis-transaksi").val() == 'preorder' ? "/tambahpre" : "/tambahItem",
             success: function (data, response) {
                 if($("#jenis-transaksi").val() == 'normal'){
+                if(data["datadetail"] != "barang habis"){
                        getIdTrans(data['datadetail'][0]['kode_trans'] == undefined ? "null" : data['datadetail'][0]['kode_trans'] );
-
+                }
                 loader(id_trans,id_pre);
+                if(data["datadetail"] == "barang habis"){
+                    $(".alerts").show();
+                    setTimeout(function () {$(".alerts").hide("slow");}, 1000);
+                    $("#stok-indi").text(";"+data["as"]+ " "+ "tersedia");
+                }
             }else{
                
                 getIdPre(data['datadetail'][0]['kode_trans']);
@@ -521,6 +532,9 @@ $(document).ready(function () {
                             jenis_transaksi: $("#jenis-transaksi").val(),
                             fromsj: $("#sj-checker").prop("checked") == true ? 1 : 0,
                             id_sj: $("#sj-id").val(),
+
+                            tampil_harga_sj: $("#tampil-harga input").prop("checked") == true ? 1 : 0,
+                            subtotalafterdiskon: subtotalafterdiskon
                         }
                     },
                     type: "POST",
@@ -539,7 +553,7 @@ $(document).ready(function () {
                         if($("#jenis-transaksi").val() == "normal"){
                             print(id_trans);
                         }else if($("#jenis-transaksi").val() == "suratjalan"){
-                            printsuratjalan(id_trans);
+                            printsuratjalan(id_trans,$("#tampil-harga input").prop("checked") == true ? 1 : 0);
                         }
                         else{
                 
@@ -565,7 +579,7 @@ $(document).ready(function () {
         if($("#jenis-transaksi").val() == "normal"){
             print(id_trans);
         }else if($("#jenis-transaksi").val() == "suratjalan"){
-            printsuratjalan(id_trans);  
+            printsuratjalan(id_trans,$("#tampil-harga input").prop("checked") == true ? 1 : 0);  
            }else{
 
               printpreorder(id_pre);  
@@ -726,7 +740,7 @@ $(document).ready(function () {
     }
 
 
-    function printsuratjalan(ids){
+    function printsuratjalan(ids,tampilharga=null){
       
         $.ajax({
             headers: {
@@ -734,6 +748,7 @@ $(document).ready(function () {
             },
             data: {
                 id_pre: ids,
+                tampil: tampilharga
             },
             type: 'post',
             url: "/cetaksj2",

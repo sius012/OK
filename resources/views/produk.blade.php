@@ -70,7 +70,7 @@ $m = isset($merekkw) ? $merekkw : '';
                 e.stopPropagation();
                 if(!hasClick){
                     $(".fakeselect").remove();
-               
+                
          
                 
                let isi;
@@ -136,7 +136,7 @@ $m = isset($merekkw) ? $merekkw : '';
         <div class="card-body">
             <form action="{{url('/produk')}}" method="get">
                 @csrf
-                <input type="text" name="nama" class="form-control form-control-sm w-25" placeholder="ketik nama atau kode produk">
+                <input type="text" id="" name="nama" class="form-control form-control-sm w-25" placeholder="ketik nama atau kode produk">
                 <br>
                 <h5 class="card-title mb-0">Cari Berdasarkan : </h5>
                 <br>
@@ -168,7 +168,11 @@ $m = isset($merekkw) ? $merekkw : '';
                     </select>
                 </div>
                 </div>
+
+                
                 <button style="margin-left: -20px" class="btn btn-sm btn-primary"><i class="fa fa-search"></i></button>
+
+                <button type="button" class="btn btn-sm btn-secondary" id="barcode-halaman" ><i class="fa fa-barcode"></i> Barcode Halaman</button>
                 <button type="button" class="btn btn-sm mt-1 btn-primary float-right" data-toggle="modal" data-target="#modalproduk"> <i class="fa fa-plus ml-2"></i>
                     Tambah Produk 
                 </button>

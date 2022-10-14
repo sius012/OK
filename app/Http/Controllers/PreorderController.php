@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\config\CetakConfig;
+use App\Http\Controllers\KasirController;
 use Carbon\Carbon;
 use PDF;
 
@@ -51,16 +52,19 @@ class PreorderController extends Controller
         
 }
 
-    public function lunasi($idpre){
-        DB::table("transaksi")->where("kode_trans",$idpre)->update(['bayar'=>DB::raw("subtotal"),"status"=>"lunas"]);
+    public function lunasi(Request $req,$idpre){
+        DB::table("transaksi")->where("kode_trans",$idpre)->update(['bayar'=>DB::raw("subtotal"),"status"=>"lunas","created_at"=>date("Y-m-d H:i:s"),"terakhir_dilunasi"=>date("Y-m-d H:i:s")]);
         $detail =  DB::table("detail_transaksi")->where("kode_trans",$idpre)->get();
 
         //updater
         DB::table("detail_transaksi")->where("kode_trans",$idpre)->update(["status"=>"terjual"]);
-
-        $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
-        $no += 1;   
-        $no_nota = date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
+        $no=0;
+        $query = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","suratjalan")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->get();
+        foreach($query as $quer){
+            $no+=1;
+        }
+  
+        $no_nota = date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
         DB::table("transaksi")->where("kode_trans",$idpre)->update(["no_nota"=>$no_nota]);
 
 
@@ -68,14 +72,21 @@ class PreorderController extends Controller
         foreach($detail as $d){
             DB::table("stok")->where('kode_produk',$d->kode_produk)->update(["jumlah"=> DB::raw("jumlah -".$d->jumlah)]);
         }
-        return redirect()->back();
+
+
+        $base64 = KasirController::notakecil($idpre);
+
+        $req->session()->flash("dp",["id_trans"=>$idpre,"no_nota"=>$no_nota]);
+
+
+        return redirect()->route("po");
     }
 
 
     public function tambahpreorder(Request $req){
         $data = $req->input('data');
-
-     
+      
+   
     
         //get data produk
         $produk = DB::table("new_produks")->where("kode_produk",$data["kode_produk"])->first();
@@ -123,12 +134,17 @@ class PreorderController extends Controller
         $judulopsi = $req->input('judulopsi');
         $ketopsi = $req->input('ketopsi');
         $formdata = $req->input('formData');
+        $jenisnb = $req->jenisnota;
         $tanggal = $req->tanggal;
         
 
         $tanggal2 = $req->jt;
 
+        $inisialnota = $req->jenisnota == "jasapasang" ? "JP" : "NB";
 
+        if($req->jenisnota == "jasaservice"){
+            $inisialnota = "JS";
+        }
 
         $id;
         $id2 = "";
@@ -138,17 +154,19 @@ class PreorderController extends Controller
             $id = $req->session()->get('id_nb');
             DB::table('nota_besar')->where('id_transaksi', $id)->update($req->input('formData'));
         }else{
-            $counter = DB::table('nota_besar')->count();
-            $counter = $counter+1;
-            $no = date("ymd").str_pad($counter+1,3,0,STR_PAD_LEFT);
+            $counter = DB::table('nota_besar')->whereDate('created_at', Carbon::today())->groupBy("no_nota")->get();
+            $no = $inisialnota. date("ymd").str_pad(count($counter)+1,4,0,STR_PAD_LEFT);
             $counting = DB::table('nota_besar')->where("no_nota",$no)->count();
 
                     
 
             
-            $id = DB::table('nota_besar')->insertGetId(array_merge($req->input('formData'),['no_nota' => $no, 'termin' => 1, "status" => "dibayar",'created_at'=>$tanggal, 'jatuh_tempo'=>$tanggal2,]));
-            $id2 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 2, "status" => "ready",'jatuh_tempo'=>$tanggal2]);
-            $id3 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 3,'jatuh_tempo'=>$tanggal2]);
+            $id = DB::table('nota_besar')->insertGetId(array_merge($req->input('formData'),['no_nota' => $no, 'termin' => 1, "status" => "dibayar",'created_at'=>$tanggal, 'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]));
+            if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
+                $id2 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 2, "status" => "ready",'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]);
+                $id3 = DB::table('nota_besar')->insertGetId(['ttd'=> $formdata["ttd"],'up'=> $formdata["up"],'gm'=> $formdata["gm"],'total'=> $formdata["total"],'no_nota' => $no, 'termin' => 3,'jatuh_tempo'=>$tanggal2,"telepon"=>$req->telepon]);
+            }
+         
              
             
           
@@ -169,40 +187,52 @@ class PreorderController extends Controller
                     DB::table('nb_detail')->insert(['id_nb' => $id, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
                 }
             }else{
+                if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
                 DB::table('nb_detail')->insert(['id_nb' => $id, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                }
             }
+            
             
         }
 
-        for($i = 0; $i < count($judulopsi);$i++){
-            if($req->session()->has('id_nb')){
-              
-                $count = DB::table('nb_detail')->where('id_nb', $id2)->where('opsi',$i+1)->count();
-                if($count > 0){
-                    DB::table('nb_detail')->where('id_nb', $id2)->where('opsi',$i+1)->update(['judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+        if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
+            for($i = 0; $i < count($judulopsi);$i++){
+                if($req->session()->has('id_nb')){
+                  
+                    $count = DB::table('nb_detail')->where('id_nb', $id2)->where('opsi',$i+1)->count();
+                    if($count > 0){
+                        DB::table('nb_detail')->where('id_nb', $id2)->where('opsi',$i+1)->update(['judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                    }else{
+                        DB::table('nb_detail')->insert(['id_nb' => $id2, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                    }
                 }else{
+                    if($jenisnb != "jasapasang"){
                     DB::table('nb_detail')->insert(['id_nb' => $id2, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                    }
                 }
-            }else{
-                DB::table('nb_detail')->insert(['id_nb' => $id2, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                
             }
-            
+    
+            for($i = 0; $i < count($judulopsi);$i++){
+                if($req->session()->has('id_nb')){
+                  
+                    $count = DB::table('nb_detail')->where('id_nb', $id3)->where('opsi',$i+1)->count();
+                    if($count > 0){
+                        DB::table('nb_detail')->where('id_nb', $id3)->where('opsi',$i+1)->update(['judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                    }else{
+                        DB::table('nb_detail')->insert(['id_nb' => $id3, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                    }
+                }else{
+                    if($jenisnb != "jasapasang" and $jenisnb != "jasaservice"){
+                    DB::table('nb_detail')->insert(['id_nb' => $id3, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
+                    }
+                }
+                
+            }
+
         }
 
-        for($i = 0; $i < count($judulopsi);$i++){
-            if($req->session()->has('id_nb')){
-              
-                $count = DB::table('nb_detail')->where('id_nb', $id3)->where('opsi',$i+1)->count();
-                if($count > 0){
-                    DB::table('nb_detail')->where('id_nb', $id3)->where('opsi',$i+1)->update(['judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
-                }else{
-                    DB::table('nb_detail')->insert(['id_nb' => $id3, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
-                }
-            }else{
-                DB::table('nb_detail')->insert(['id_nb' => $id3, 'opsi' => $i+1, 'judul' => $judulopsi[$i],'ket' => $ketopsi[$i]]);
-            }
-            
-        }
+       
 
         
 
@@ -305,8 +335,18 @@ class PreorderController extends Controller
         $data = DB::table("nota_besar")->where('id_transaksi', $id_trans)->get();
         $td = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->where("termin","<",$data[0]->termin)->count();
         $opsi = DB::table("nb_detail")->join("nota_besar", "nota_besar.id_transaksi", "=", "nb_detail.id_nb")->where("id_nb", $id_trans)->get();
+
+        $counter = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->count();
+
+        $jenisnota = "notabesar";
+
+        if(strpos($data[0]->no_nota, 'JP') !== false ){
+            $jenisnota = "jasapasang";
+        }else if(strpos($data[0]->no_nota, 'JS') !== false ){
+            $jenisnota = "jasaservice";
+        }
         
-        $pdf = PDF::loadview('nota_besar', ["data" => $data[0],"opsi"=>$opsi, "td" => $td < 1 ? 0 : $td = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->where("termin","<",$data[0]->termin)->sum("us")])
+        $pdf = PDF::loadview('nota_besar', ["jenisnota"=>$jenisnota,"data" => $data[0],"opsi"=>$opsi, "td" => $td < 1 ? 0 : $td = DB::table("nota_besar")->where('no_nota',$data[0]->no_nota)->where("termin","<",$data[0]->termin)->sum("us")])
         ;
         $path = public_path('pdf/');
         $fileName =  date('mdy').'-'.$data[0]->id_transaksi. '.' . "nota_besar".'pdf' ;

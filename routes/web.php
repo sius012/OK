@@ -22,7 +22,8 @@ Route::get('/', function(){
 Auth::routes();
 // Route Untuk Omah Kunci
 
-
+Route::get('/updatercode', 'CodeFixer@updater');
+Route::get('/fixds', 'CodeFixer@fixds');
 
 Route::get('/accountsetting', 'AccountSetting@index');
 Route::post('/accountsetting/update', 'AccountSetting@update')->name('accountupdate');
@@ -31,13 +32,24 @@ Route::get('/redirecting', 'RedirectController@index');
 
 Route::post('/cari', 'KasirController@cari')->name('cari');
 
+Route::get('/codefixer', 'CodeFixer@index');
+
+
+
 Route::middleware(["role:kasir|manager"])->group(function(){
+    Route::post('/laporannb', 'CetakNotaBesarController@index')->name("download_rnb");
     Route::get("/selesaikanpreorder/{idpre}","PreorderController@lunasi");
     Route::post("/cetaksj2","MenuSuratJalan@cetaksj");
     Route::post("/hapussuratjalan2","MenuSuratJalan@hapussj");
     Route::post("/printtandaterima", "TransaksiController@printtt");
 
 
+    Route::get("/itdash",function(){
+        return view("laporan.stok");
+    });
+  //  Route::get("/normalize","ITController@normalizetrans");
+    Route::post("/cetakcashbacknk","TransaksiController@cetakcashbacknk");
+    Route::post("/cashbacknk", "TransaksiController@cashback");
     Route::post("/hapusdraf",'TransaksiController@hapusdraft');
     Route::get("/menusuratjalan","MenuSuratJalan@index");
     Route::post("/getdetailofreturn", 'KasirController@loadreturinfo');
@@ -88,10 +100,11 @@ Route::middleware(["role:kasir|manager"])->group(function(){
     Route::post('/tambahpreorder2', 'KasirController@tambahpreorder');
     Route::post('/cetakpreorder', 'KasirController@cetakpreorder');
     Route::get('/hapusnotabesar/{no_nota}', 'TransaksiPreorder@hapusnotabesar')->name('hapusnotabesar');
-    Route::get('preorderpage', 'RiwayatPre@index');
+    Route::get('preorderpage', 'RiwayatPre@index')->name("po");
     Route::get('/caripreorder', 'RiwayatPre@index')->name('caripreorder');
     Route::get('/hapuspreorder/{id}', 'RiwayatPre@hapus')->name('hapuspre');
-    
+    Route::post('/bayarcbnb','TransaksiPreorder@bayarcbnb');
+    Route::post('/cetakcbnb','TransaksiPreorder@cetakcbnb');
 });
 
 
@@ -102,6 +115,7 @@ Route::middleware(["role:admin gudang|manager"])->group(function(){
     Route::post('/editstok', 'StokController@editstok');
     Route::post('/hapusstok', 'StokController@hapusstok');
     Route::post('/printstoktrack', 'DetailStokController@printstoktrack');
+   
     Route::post('/tambahrs', 'DetailStokController@returnsuplier');
     Route::get('/detailstok', 'DetailStokController@index');
     Route::post('/loaddatadetailstok', 'DetailStokController@loaddatadetailstok');
@@ -109,7 +123,11 @@ Route::middleware(["role:admin gudang|manager"])->group(function(){
   
     Route::post('/loaddatastok', 'StokController@loaddatastok');
     Route::post('/printcurrentstok', 'StokController@printcurrent');
+    Route::post('/printcurrentstokgudang', 'StokController@printcurrentgudang');
     Route::post('/filterdetailstok', 'DetailStokController@loaddatadetailstok');
+
+    Route::post('/retursupplier', 'DetailStokController@tandaterimars');
+    
    
 });
 
@@ -137,6 +155,7 @@ Route::middleware(["role:manager"])->group(function(){
     Route::post('/loaddsm', 'DSMController@loaddatadetailstok');
     Route::post('/verifiying', 'DSMController@verifiying');
     Route::post('/rejecting', 'DSMController@rejecting');
+    Route::post('/printbarcodehalaman', 'ProdukController@printbarcodepage');
     Route::post('/printbarcode', 'ProdukController@printbarcode');
     Route::get('/manajemen_akun', 'AkunController@index')->name('ma');
     Route::post('/updateakun/{id}', 'AkunController@updateakun')->name('updateakun');

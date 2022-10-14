@@ -174,7 +174,8 @@
                                         class="card-text bg-warning p-2 rounded text-center float-right position-absolute">
                                         <i style="width:23px;"
                                             class="fa fa-info mr-2 text-light bg-dark p-1 rounded-circle text-center"></i>Barang
-                                        Tidak Tersedia</p>
+                                        Tidak Tersedia  <b id="stok-indi"></b></p>
+                                    
                                 </div>
                             </div>
                             <div style="border-bottom:1px solid lightgray; x" class="card-body ">
@@ -228,9 +229,14 @@
                             </div>
                             @if($retur_id > 0)
                             <div class="d-inline-flex " id="only-retur">
-                                <label style="padding: 6px; width: 210px; background-color: #06335C" class="rounded text-light mr-1 text-center" >Tlh Dibayar</label>
+                                <label style="padding: 6px; width: 210px; background-color: #06335C" class="rounded text-light mr-1 text-center" >Retur</label>
                                 <input class="form-control bg-light"  type="text" value="" id="ta">
                             </div>
+                            <div class="d-inline-flex " id="only-retur">
+                                <label style="padding: 6px; width: 210px; background-color: #06335C" class="rounded text-light mr-1 text-center" >Nota</label>
+                                 <input id="keterangan-retur" class="form-control bg-light"  type="text" value="" >
+                            </div>
+
                             @endif
                             <div class="d-inline-flex normalt">
                                 <label style="padding: 6px; width: 210px; background-color: #06335C" class="rounded text-light mr-1 text-center" >Total</label>
@@ -295,14 +301,13 @@
                                     <option value="Transfer">Transfer</option>
                                     <option value="Debet">Debet</option>
                                 </select>
-                                @if($retur_id > 0)
-                                <textarea  id="keterangan-retur" class= "form-control mt-3  " rows="10" placeholder="masukan keterangan retur disini.."></textarea> 
-                                @endif
+                                
                             </div>
                         </div>
 
                         <div class="col-4">
                             <div class="wrapper float-right mt-3">
+                                <div class="m-2" id="tampil-harga"><input type="checkbox" class="m-2" id="tampil-harga">Tampil Harga Item</div>
                                 <div class="row">
                                     <button class="btn selesai selesaiindi" id="selesai"><i class="fa fa-check mr-3"></i>Selesai</button>
                                 </div>

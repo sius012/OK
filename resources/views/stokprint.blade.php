@@ -116,29 +116,23 @@
             @foreach($data as $datas)
             @php  $no = 1@endphp
             <p style="margin-bottom:0px;padding:0px"><b>Tipe : {{$datas[0]->nama_tipe}}</b></p>
-            <table class="table-data" style="width:180mm !important; margin-top: 20px; margin: 20px" >
+            <table class="table-data" style="width:200mm !important; margin-top: 20px; margin: 20px" >
               
                     <tr>
-                        <th >No</th>
-                        <th style="width:60px">Kode Produk</th>
-                        <th style="width:170px">Nama Produk</th>
-                        <th >Tipe</th>
-                        <th>Tipe Kode</th>
-                        <th>Merek</th>
+                        <th >CODE TYPE</th>
+                        <th style="width:60px">MERK</th>
+                        <th style="width:170px">NAMA BARANG</th>
+                        <th >JUMLAH</th>
                         @if(auth()->user()->roles[0]['name']=='manager') <th >Harga</th>@endif
-                        <th >Jumlah</th>
                     </tr>
                     @foreach($datas as $da)
                     <tr>
-                       <td >{{$no}}</td>
-                       
-                        <td >{{$da->nama_tipe}}</td>
-                        <td>{{$da->nama_kodetype}}</td>
-                        <td>{{$da->nama_merek}}</td>
-                        <td>{{$da->kode_produk}}</td>
+                    <td>{{$da->nama_kodetype}}</td>
+                        <td >{{$da->nama_merek}}</td>
                         <td>{{$da->nama_produk}}</td>
+                        <td>{{$da->jumlah}}</td>
                         @if(auth()->user()->roles[0]['name']=='manager')<td>{{number_format($da->harga)}}</td>@endif
-                        <td >{{$da->jumlah}} {{$da->satuan}}</td>
+
                     </tr>
                     @php $no++ @endphp
               

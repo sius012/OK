@@ -92,11 +92,12 @@ class KasirController extends Controller
 
         $getbayar =  DB::table('transaksi')->where('kode_trans',$id)->pluck('bayar')->first();
 
-        DB::table('transaksi')->where('kode_trans',$id)->update(['status'=>'lunas','bayar'=>$getbayar+$nominal  ,'terakhir_dilunasi'=>date("Y-m-d h:i:s")]);
+        DB::table('transaksi')->where('kode_trans',$id)->update(['status'=>'lunas','bayar'=>$getbayar+$nominal  ,'terakhir_dilunasi'=>date("Y-m-d H:i:s"),'created_at'=>date("Y-m-d H:i:s")]);
     }
     public function tambahTransaksiDetail(Request $req){
         $data = $req->input('data');
         $id_trans = $data['id_trans'];
+        $jenis_trans = $data["jenis_transaksi"];
       
         $id_kasir = Auth::user()->id;   
 
@@ -104,7 +105,7 @@ class KasirController extends Controller
           //checking stock
         $stock = DB::table('stok')->where('kode_produk',$data['kode_produk'])->sum('jumlah');
         $hasilpengurangan = $stock - $data['jumlah'];
-        if($hasilpengurangan < 0){
+        if($hasilpengurangan < 0 and $jenis_trans == "normal"){
             return json_encode(['datadetail'=>'barang habis','as'=>$stock]);
         }
         
@@ -145,7 +146,7 @@ class KasirController extends Controller
             }else{
                 $no = DB::table('transaksi')->whereDate('transaksi.created_at', Carbon::today())->count();
                 $no += 1;   
-                $id = DB::table('transaksi')->insertGetId(['no_nota' => date("ymd").str_pad($no+1, 3, '0', STR_PAD_LEFT), 'id_kasir' =>$id_kasir]); 
+                $id = DB::table('transaksi')->insertGetId(['no_nota' => date("ymd").str_pad($no, 3, '0', STR_PAD_LEFT), 'id_kasir' =>$id_kasir]); 
                 $id_trans = $id;
             }
 
@@ -204,11 +205,16 @@ class KasirController extends Controller
         $id_transaksi = $data['id_trans'];
         $diantar = $data['antarkah'];
         $metode = $data['via'];
-        $no = DB::table('transaksi')->where("status","!=","draf")->where("status","!=","return")->where("status","!=","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
-        $no += 1;   
-        $no_nota = date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
+        $no = DB::table('transaksi') //ganti pake eloquent
+                ->where("status","!=","draf") // ndak perlu
+                ->where("status","!=","return") // ndak perlu
+                ->where("status","!=","preorder") // ndak perlu
+                ->where("status","!=","suratjalan") // ndak perlu
+                ->whereDate('transaksi.created_at', Carbon::today())->count();
+        $no ++;   
+        $no_nota = date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
         $notab=$data["notab"];
-
+        $id_kasir = Auth::user()->id;   
         $jenistrans = $data["jenis_transaksi"];
 
 
@@ -231,7 +237,7 @@ class KasirController extends Controller
             $subtotal += Tools::doDisc($stoks->jumlah,$stoks->harga_produk,$stoks->potongan,$stoks->prefix);
         }
 
-        $afterdiskon = Tools::doDisc(1,$subtotal,$data['diskon'],$data['prefix']); 
+        $afterdiskon = $req->data["subtotalafterdiskon"]; 
         $status = $data["bayar"] - $afterdiskon >= 0 ? "lunas":"belum lunas";
 
         
@@ -245,18 +251,19 @@ class KasirController extends Controller
             foreach($stok as $produks){
                 $currentstok = DB::table("stok")->where('kode_produk', $produks->kode_produk)->pluck('jumlah')->first();
                 DB::table("stok")->where('kode_produk', $produks->kode_produk)->update(["jumlah" => (int) $currentstok - (int) $produks->jumlah]);
+                DB::table("detail_stok")->insert(['kode_produk'=>$produks->kode_produk,"jumlah"=>$produks->jumlah,"status2"=>"transaksi","status"=>"keluar","id_ag"=>$id_kasir,"keterangan"=>"Transaksi Nota Kecil", "created_at"=>date("Y-m-d H:i:s")]);
             }
         }else if($jenistrans == "suratjalan"){
             $no = DB::table('transaksi')->where("status","!=","draf")->where("status","suratjalan")->whereDate('transaksi.created_at', Carbon::today())->count();
         $no += 1;   
-            $no_nota = "S".date("ymd").str_pad($no,3,0,STR_PAD_LEFT);
+            $no_nota = "SJ".date("ymd").str_pad($no,4,0,STR_PAD_LEFT);
             $status = "suratjalan";
         }
       
 
         
         
-        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,'alamat'=>$alamat,"subtotal" => $afterdiskon, "status" => $status,'prefix'=>$data['prefix'], "diskon" => $data["diskon"],"metode" => $data['via'],"bayar" => $data["bayar"],"antar"=>$diantar, "no_nota"=>$no_nota]);
+        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["created_at"=>date("Y-m-d H:i:s"),"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,'alamat'=>$alamat,"subtotal" => $afterdiskon, "status" => $status,'prefix'=>$data['prefix'], "diskon" => $data["diskon"],"metode" => $data['via'],"bayar" => $data["bayar"],"antar"=>$diantar, "no_nota"=>$no_nota]);
        
         //cek apakah ini transaksi retur
         if($returkah){
@@ -271,7 +278,7 @@ class KasirController extends Controller
 
 
        if($jenistrans == "normal"){
-        DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(['status'=>'terjual']);
+        DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(['status'=>'terjual','created_at'=>date("Y-m-d H:i:s")]);
        }else{
         DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(['status'=>'suratjalan']);
        }
@@ -288,6 +295,9 @@ class KasirController extends Controller
         $subtotal = 0;
         $id_transaksi = $data['id_pre'];
         $metode = $data['via'];
+        $diantar = $data['antarkah'];
+        $prefix = $data["prefix"];
+        $diskon = $data["diskon"];
 
 
         //detail data transaksi
@@ -302,13 +312,13 @@ class KasirController extends Controller
         $newsubtotal = Tools::doDisc(1,$subtotal,$data["diskon"],$data["prefix"]);
 
 
-        $counter = DB::table("transaksi")->where("status","!=","draft")->where("status","preorder")->whereMonth('transaksi.created_at', Carbon::now()->month)->whereYear('transaksi.created_at', Carbon::now()->year)->count();
-        $no_nota = "P".date("ym").str_pad($counter+1,3,0,STR_PAD_LEFT);
+        $counter = DB::table("transaksi")->where("status","!=","draft")->where("status","preorder")->whereDate('transaksi.created_at', Carbon::today())->count();
+        $no_nota = "PO".date("ymd").str_pad($counter+1,4,0,STR_PAD_LEFT);
 
 
         
 
-        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["id_kasir"=>$id_kasir,"metode"=>$metode,"status"=>"preorder","no_nota" => $no_nota,"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,"bayar" => $data["bayar"],"alamat"=>$alamat,"subtotal"=>$newsubtotal]);
+        DB::table('transaksi')->where('kode_trans', $id_transaksi)->update(["id_kasir"=>$id_kasir,"metode"=>$metode,"status"=>"preorder","no_nota" => $no_nota,"nama_pelanggan" => $data['nama_pelanggan'],'telepon' => $telp,"bayar" => $data["bayar"],"alamat"=>$alamat,"subtotal"=>$newsubtotal,"diskon"=>$diskon,"prefix"=>$prefix,"antar"=>$diantar]);
 
         //update status to preorder
         DB::table('detail_transaksi')->where('kode_trans', $id_transaksi)->update(["status"=>"preorder"]);
@@ -374,13 +384,10 @@ class KasirController extends Controller
         $id = $req->id_trans;
         $data = DB::table('transaksi')->join('users', 'users.id', '=', 'transaksi.id_kasir')->where('kode_trans',$id)->get();
         $data2 = DB::table('detail_transaksi')->join('new_produks', 'new_produks.kode_produk','=','detail_transaksi.kode_produk')->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans',$id)->get();
+        $datatrans = DB::table('transaksi')->where('kode_trans',$id)->first();
 
-        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2]);
-        if($data[0]->antar == "ya"){
-            $pdf = PDF::loadview('nota.notakecilkirim', ["data" => $data,"data2"=>$data2]);
-        }else{
-            
-        }
+        
+        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2,"datatrans"=>$datatrans]);
         
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'.$data[0]->kode_trans. '.' . 'pdf' ;
@@ -391,21 +398,36 @@ class KasirController extends Controller
         return response()->json(["filename" => $base64]);
     }
 
+    public static function notakecil($id_trans){
+        $id = $id_trans;
+        $data = DB::table('transaksi')->join('users', 'users.id', '=', 'transaksi.id_kasir')->where('kode_trans',$id)->get();
+        $data2 = DB::table('detail_transaksi')->join('new_produks', 'new_produks.kode_produk','=','detail_transaksi.kode_produk')->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans',$id)->get();
+        $datatrans = DB::table('transaksi')->where('kode_trans',$id)->first();
+
+        
+        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2,"datatrans"=>$datatrans]);
+        
+        $path = public_path('pdf/');
+            $fileName =  date('mdy').'-'.$data[0]->kode_trans. '.' . 'pdf' ;
+            $pdf->save(storage_path("pdf/$fileName"));
+        $storagepath = storage_path("pdf/$fileName");
+        $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+        unlink($storagepath);
+        return $base64;
+    }
+
     public function printnotakecil(Request $req){
         $id = $req->id;
         $data = DB::table('transaksi')->join('users', 'users.id', '=', 'transaksi.id_kasir')->where('kode_trans',$id)->get();
-       
+        $datatrans = DB::table('transaksi')->where('kode_trans',$id)->first();
         $data2 = DB::table('detail_transaksi')->join('new_produks', 'new_produks.kode_produk','=','detail_transaksi.kode_produk')->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")->where('kode_trans',$id)->get();
     
        
         
 
-        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2]);
-         if($data[0]->antar == "ya"){
-            $pdf = PDF::loadview('nota.notakecilkirim', ["data" => $data,"data2"=>$data2]);
-        }else{
-            
-        }
+        $pdf = PDF::loadview('nota.notakecil', ["data" => $data,"data2"=>$data2,"datatrans"=>$datatrans]);
+    
+        
         $path = public_path('pdf/');
             $fileName =  date('mdy').'-'.$data[0]->kode_trans. '.' . 'pdf' ;
             $pdf->save(storage_path("pdf/$fileName"));

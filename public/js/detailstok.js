@@ -210,7 +210,10 @@ $(document).ready(function () {
                         }
                                 </tbody>
                             </table>
-                            <div class='card-footer'>Keterangan: ${rows['keterangan']}</div>
+                            <div class='card-footer'>Keterangan: ${rows['keterangan']} 
+                            <div class='float-right'><a href="#" class="btn-rs" id_rs = ${rows["id_rs"]}><button class="btn btn-primary"><i class="fa fa-print"></i></button></a></div>
+                            </div>
+                            
                         </div>
                         
                        `;
@@ -226,6 +229,26 @@ $(document).ready(function () {
         });
     }
 
+    $(document).on("click", ".btn-rs", function(){
+        $.ajax({
+            
+            headers: {
+                "X-CSRF-TOKEN": $("meta[name='csrf-token'").attr('content')
+            },
+            data: {
+                id: $(this).attr("id_rs")},
+            dataType: "json",
+            url: "/retursupplier",
+            type: "post",
+            success: function (data) {
+                printJS({ printable: data['filename'], type: 'pdf', base64: true });
+              
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
     $(document).click(function () {
         $("#myUL").hide();
     });
@@ -235,8 +258,10 @@ $(document).ready(function () {
     });
 
     $("#cetaksubmitter").submit(function (e) {
+    
         e.preventDefault();
-        alert( $("#produk-select2").val());
+
+
         $.ajax({
             headers: {
                 "X-CSRF-TOKEN": $("meta[name=csrf-token]").attr("content")
@@ -251,6 +276,7 @@ $(document).ready(function () {
                 keluar: $("#keluars").prop("checked") == true ? "true" : "false",
                 masuk: $("#masuks").prop("checked") == true ? "true" : "false",
                 suplier: $("#suplier").prop("checked") == true ? "true" :"false",
+            gudang: $("#ck").prop("checked") == true ? "true" :"false",
 
             },
             dataType: "json",
@@ -477,7 +503,10 @@ function loadfilter(data) {
             }
                     </tbody>
                 </table>
-                <div class='card-footer'>Keterangan: ${rows['keterangan']}</div>
+                
+                <div class='card-footer'>Keterangan: ${rows['keterangan']}
+                <div class='float-right'><a href="#" class="btn-rs" id_rs = ${rows["id_rs"]}><button class="btn btn-primary"><i class="fa fa-print"></i></button></a></div>
+                </div>
             </div>
             
            `;

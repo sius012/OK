@@ -132,6 +132,37 @@ $hastoday = false;
 
    
 </script>
+@if(Session::has("dp"))
+        <script>
+           
+            $(document).ready(function(){
+                var no_nota = "{{Session::get('dp')['no_nota']}}";
+
+            Swal.fire("Data Preorder Telah dipindahkan ke Menu Riwayat Transaksi dengan nomer Nota "+no_nota);
+                $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            url: "/printnotakecilbc",
+            data: {
+                id: "{{Session::get('dp')['id_trans']}}"
+            },
+            type: "post",
+            success: function(response){
+            
+                printJS({printable: response['filename'], type: 'pdf', base64: true});
+            },error: function(err){
+                alert(err.responseText);
+            }
+              });
+            });
+          
+      
+
+
+          
+        </script>
+    @endif
 @stop
 @section('content')
     

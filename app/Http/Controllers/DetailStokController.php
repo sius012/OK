@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Http\Controllers\Tools;
+use App\Http\Controllers\CetakNotaBesarController;
 
 use Auth;
 use PDF;
 use Session;
+
+
 
 
 class DetailStokController extends Controller
@@ -19,7 +22,7 @@ class DetailStokController extends Controller
         $data = DB::table('detail_stok')->join('new_produks', 'new_produks.kode_produk','detail_stok.kode_produk')->join('mereks', 'new_produks.id_merek','mereks.id_merek')->join('users','users.id','=','detail_stok.id_ag')->select('detail_stok.*','new_produks.nama_produk','new_produks.satuan','users.name');
 
 
-        $getsr = DB::table('retursup')->join("users","users.id","=","retursup.id_ag")->orderBy("tanggal","desc")->get();
+        $getsr = DB::table('retursup')->join("users","users.id","=","retursup.id_ag")->orderBy("tanggal","desc")->select("*","retursup.id as id_rs")->get();
         
 
 
@@ -63,6 +66,7 @@ class DetailStokController extends Controller
             }
             
             $get1[$i]["jumlahproduk"]=$produkcount;
+            $get1[$i]["id_rs"]=$gs->id_rs;
             
         }
 
@@ -138,6 +142,7 @@ class DetailStokController extends Controller
         $data = $req->input('data');
         $data2 = $data;
         $data['id_ag'] = Auth::user()->id;
+        $produk = '';
 
         unset($data['by']);
         unset($data['np']);
@@ -185,30 +190,48 @@ class DetailStokController extends Controller
     }
 
     public function printstoktrack(Request $req){
-       
+        $notabesar = [];
+
+        $produk = null;
+
+        
+
+           //Pemanggilan  Nota besar
+           $nb = new CetakNotaBesarController();
+     
+           $notabesar = $nb->getNotaBesar("day","dwm");
 
         $dato = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("users","users.id","=","detail_stok.id_ag");
+        ->join("users","users.id","=","detail_stok.id_ag")->where("status2","!=","retur")->where("status2","!=","transaksi");
         $dato_trans = DB::table("detail_transaksi")->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
         ->where("status","!=","return")->orWhere('status','!=','draft');
 
         $keluar1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status","keluar");
+        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")
+        ->where("status","keluar")
+        ->where("status2","!=","retur")->where("status2","!=","transaksi")
+        ->where("keterangan","not LIKE","%transaksi%")
+        ->select("*","detail_stok.created_at as tgl");
         $keluar1trans = DB::table("detail_transaksi")->join('transaksi','transaksi.kode_trans','=','detail_transaksi.kode_trans')->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
+        ->join("mereks","mereks.id_merek","=","new_produks.id_merek")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek',"kode_types.nama_kodetype","transaksi.subtotal","transaksi.diskon","transaksi.prefix as transfix","transaksi.nama_pelanggan")->where('transaksi.status','!=','draft')->where('transaksi.status','!=','return')->whereIn('transaksi.status',['lunas','belum lunas']);
 
         $masuk1 = DB::table("detail_stok")->join("new_produks","detail_stok.kode_produk","=","new_produks.kode_produk")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->where("status","masuk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag");
+        ->where("keterangan","not LIKE","%transaksi%")
+        ->where("status","masuk")->join("mereks","mereks.id_merek","=","new_produks.id_merek")->join("users","users.id","=","detail_stok.id_ag")->where("status2","!=","retur")->where("status2","!=","transaksi")
+        ->select("*","detail_stok.created_at as tgl");
+        ;
         $masuk1trans = DB::table("detail_transaksi")->join("transaksi","transaksi.kode_trans","=","detail_transaksi.kode_trans")->join("new_produks","detail_transaksi.kode_produk","=","new_produks.kode_produk")
    
         ->join("mereks","mereks.id_merek","=","new_produks.id_merek")
         ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-        ->where("detail_transaksi.status","return")->where("transaksi.status","=","return")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek','kode_types.nama_kodetype');
+        ->where("detail_transaksi.status","return")->where("transaksi.status","=","return")->select('new_produks.nama_produk','new_produks.kode_produk', 'detail_transaksi.*','mereks.nama_merek','kode_types.nama_kodetype',"transaksi.prefix as transfix","transaksi.diskon");
+
+        $cashbacknk = DB::table("transaksi")->where("status","cashback");
 
         $retur = [];
 
@@ -218,13 +241,16 @@ class DetailStokController extends Controller
             $keluar1trans->where('new_produks.kode_produk',$req->produk);
             $masuk1trans->where('new_produks.kode_produk',$req->produk);
             $masuk1->where('new_produks.kode_produk',$req->produk);
+           $produk = $req->produk;
         }
+        
       
 
         $getsr = DB::table('retursup')->join("users","users.id","=","retursup.id_ag");
         
         
         if($req->berdasarkan == "tanggal"){
+            $notabesar = $nb->getNotaBesar(["start"=>$req->tanggal,"end"=>$req->tanggalakhir],"range");
             $date_start = Carbon::parse($req->tanggal)->format('Y-m-d');
             $date_end = Carbon::parse($req->tanggalakhir)->format('Y-m-d');
             $dato->whereBetween(DB::raw('substr(detail_stok.created_at,1,10)'), [$date_start,$date_end]);
@@ -237,9 +263,11 @@ class DetailStokController extends Controller
             $masuk1trans->whereBetween(DB::raw('substr(detail_transaksi.created_at,1,10)'), [$date_start,$date_end]);
 
             $getsr->whereBetween(DB::raw('substr(tanggal,1,10)'), [$date_start,$date_end]);
+            $cashbacknk->whereBetween(DB::raw('substr(created_at,1,10)'), [$date_start,$date_end]);
             
         }else if($req->berdasarkan == "hmb"){
             if($req->hmb == "harian"){
+                $notabesar = $nb->getNotaBesar("day","dwm");
                 $dato->where(DB::raw('substr(detail_stok.created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
                 $dato_trans->where(DB::raw('substr(detail_transaksi.created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
     
@@ -250,7 +278,9 @@ class DetailStokController extends Controller
                 $masuk1trans->where(DB::raw('substr(detail_transaksi.created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
     
                 $getsr->where(DB::raw('substr(tanggal,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
+                $cashbacknk->where(DB::raw('substr(created_at,1,10)'),Carbon::parse($req->tanggal)->format('Y-m-d'));
             }else if($req->hmb == "mingguan"){
+                $notabesar = $nb->getNotaBesar("week","dwm");
                 $dato->whereBetween('detail_stok,created_at', 
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
                 );
@@ -275,7 +305,11 @@ class DetailStokController extends Controller
                 $getsr->whereBetween('tanggal', 
                 [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
               );
-            }else{
+              $cashbacknk->whereBetween('created_at', 
+              [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]
+            );
+       
+                $notabesar = $nb->getNotaBesar("month","dwm");
                 $dato->whereMonth('detail_stok.created_at', Carbon::now()->month);
                 $dato_trans->whereMonth('detail_transaksi.created_at', Carbon::now()->month);
     
@@ -294,16 +328,33 @@ class DetailStokController extends Controller
             $produkcount = 0;
             $listproduk = explode(",",substr($gs->produk,0,-1));
             $listjumlah = explode(",",substr($gs->jumlah,0,-1));
+
+            if($produk!=null){
+                if(in_array($produk, $listproduk)){
+                    foreach($listproduk as $j => $ls){
+                        if($ls == $produk){ 
+                            $dato = DB::table("new_produks")->join("mereks","mereks.id_merek","new_produks.id_merek")
+                            ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
+                            ->where("kode_produk",$ls)->first();
+                            array_push($retur,["tanggal"=>$gs->tanggal,"keterangan"=>$gs->keterangan,"Nama Admin"=>$gs->name,"kode_produk"=>$dato->kode_produk,"nama_produk"=>$dato->nama_produk,"nama_kodetype"=>$dato->nama_kodetype,"nama_merek"=>$dato->nama_merek,"jumlah"=>$listjumlah[$j],"tanggal"=>$gs->tanggal]);   
+                        }
+                       
+                    }
+                }else{
+                    
+                }
+            }else{
+                foreach($listproduk as $j => $ls){
             
-            foreach($listproduk as $j => $ls){
-                $dato = DB::table("new_produks")->join("mereks","mereks.id_merek","new_produks.id_merek")
-                ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
-                ->where("kode_produk",$ls)->first();
-                array_push($retur,["tanggal"=>$gs->tanggal,"keterangan"=>$gs->keterangan,"Nama Admin"=>$gs->name,"kode_produk"=>$dato->kode_produk,"nama_produk"=>$dato->nama_produk,"nama_kodetype"=>$dato->nama_kodetype,"nama_merek"=>$dato->nama_merek,"jumlah"=>$listjumlah[$j],"tanggal"=>$gs->tanggal]);
-
-
-               
+                        $dato = DB::table("new_produks")->join("mereks","mereks.id_merek","new_produks.id_merek")
+                        ->join("kode_types","kode_types.id_kodetype","=","new_produks.id_ct")
+                        ->where("kode_produk",$ls)->first();
+                        array_push($retur,["tanggal"=>$gs->tanggal,"keterangan"=>$gs->keterangan,"Nama Admin"=>$gs->name,"kode_produk"=>$dato->kode_produk,"nama_produk"=>$dato->nama_produk,"nama_kodetype"=>$dato->nama_kodetype,"nama_merek"=>$dato->nama_merek,"jumlah"=>$listjumlah[$j],"tanggal"=>$gs->tanggal]);   
+                   
+                }
             }
+            
+            
             
             
         }
@@ -311,9 +362,14 @@ class DetailStokController extends Controller
         $myArr = [];
 
         $listpotongan = [];
+        $listpotonganR = [];
         
         foreach($keluar1trans->get() as $ks){
-            $listpotongan[$ks->kode_trans] = $ks->prefix == "rupiah" ? $ks->potongan : $ks->subtotal -  Tools::doDisc(1,$ks->subtotal,$ks->diskon,$ks->prefix);
+            $listpotongan[$ks->kode_trans] = $ks->transfix == "rupiah" ? $ks->diskon : $ks->subtotal -  Tools::doDisc(1,$ks->subtotal,$ks->diskon,$ks->transfix);
+        }
+
+        foreach($masuk1trans->get() as $ks){
+            $listpotonganR[$ks->kode_trans] = $ks->transfix == "rupiah" ? $ks->diskon : $ks->subtotal -  Tools::doDisc(1,$ks->subtotal,$ks->diskon,$ks->transfix);
         }
 
         if($req->keluar == "true"){
@@ -324,14 +380,17 @@ class DetailStokController extends Controller
         }
         if($req->masuk == "true"){
             $myArr["m1"] = $masuk1trans->get();
+            $myArr["m1potongan"] = array_sum($listpotonganR);
             $myArr["m2"] = $masuk1->get();
         }
         if($req->suplier == "true"){
             $myArr["suplier"] = $retur;
         }
 
-        $myArr['tanggal'] = $req->berdasarkan == 'tanggal' ? date("d M Y",strtotime($req->tanggal))." - ".date("d M Y",strtotime($req->tanggal2)) : "Hari Minggu dan Bulan";
-        
+        $myArr['tanggal'] = $req->berdasarkan == 'tanggal' ? date("d M Y",strtotime($req->tanggal))." - ".date("d M Y",strtotime($req->tanggalakhir)) : "Hari Minggu dan Bulan";
+        $myArr['gudang'] = $req->gudang;
+        $myArr['barangNB'] = $notabesar;
+        $myArr['cashbacknk'] = $cashbacknk->sum("subtotal");
         
        
         $pdf = PDF::loadview('trackstokprint', $myArr);
@@ -400,11 +459,41 @@ class DetailStokController extends Controller
 
 
 
+    public function tandaterimars(Request $req){
+        $id = $req->id;
+        $data = DB::table("retursup")->find($id);
 
+        $nsdata = [];
 
+        $produkArray = explode(",", rtrim($data->produk,","));
+        $produkCountArray = explode(",", rtrim($data->jumlah,","));
+        $nsdata["tanggal"] = $data->tanggal;
+        $nsdata["keterangan"] = $data->keterangan;
 
+        foreach($produkArray as $i => $produks){
+            $nsdata["content"][$i]["no"] = $i+1;
 
+            //get produk data name
+            $produkdata = DB::table('new_produks')->join("kode_types","kode_types.id_kodetype","new_produks.id_ct")->join('mereks', 'new_produks.id_merek','mereks.id_merek')->where("kode_produk", $produks)->first();
 
+            $nsdata["content"][$i]["no"] = $i+1;
+            $nsdata["content"][$i]["nama_produk"] = $produkdata->nama_kodetype." ".$produkdata->nama_merek." ".$produkdata->nama_produk;
+            $nsdata["content"][$i]["jumlah"] = $produkCountArray[$i];
+            $nsdata["content"][$i]["satuan"] = $produkdata->satuan;
+        }
+
+     //   dd($nsdata);
+
+     $pdf = PDF::loadview('laporan.retursupplier', ["data2"=>$nsdata]);
+     $path = public_path('pdf/');
+     $fileName =  date('mdy').'-'."Tanda terima retur suplier". '.' . 'pdf' ;
+     $pdf->save(storage_path("pdf/$fileName"));
+     $storagepath = storage_path("pdf/$fileName");
+     $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+     unlink(storage_path("pdf/$fileName"));
+
+     return json_encode(["filename"=>$base64]);
+    }
 
 
 

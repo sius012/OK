@@ -1,5 +1,3 @@
-
-
 $(document).ready(function(e){
     $("#infomodal").modal("show");
 
@@ -248,13 +246,27 @@ $(document).ready(function(e){
                  $("#tp").text("No. Telp : "+dato[0]['telepon']);
                  $("#almt").text("Alamat : "+dato[0]['alamat']);
                  $("#id_trans").val(dato[0]['kode_trans']);
+                 $("#cb").show();
+                 $("#id_cb").val(data["no_nota"]);
+
+             
+
                  if(    data["hasretur"] > 0 || dato[0]["status_trans"] == "return"){
+                 
                      $("#re-button").attr('disabled','disabled');
                      $("#buyagain-button").show();
+                     $("#cont-disc-retur").hide();
+                     $("#cb").hide();
+                     $("#cb").removeAttr("id_trans");
                      $("#buyagain-parser").attr("href","/kasir?id_retur="+dato[0]['kode_trans']);
                  }else{
+                    
+                    $("#cont-disc-retur").show();
                     $("#buyagain-button").hide();
+                 
+                    $("#re-button").removeAttr('disabled');
                  }
+
 
                  //cek apakah nota ini pembelian baru setelah retur
                  if(dato[0]["keterangan_retur"]!=null){
@@ -262,6 +274,12 @@ $(document).ready(function(e){
                     $("#keterangan-retur").text("Keterangan Retur : "+dato[0]["keterangan_retur"]);
                     $("#keterangan-retur").show();
                     $("#nominal-telah-bayar").show();
+                 }
+
+                 
+                 if(data["hascb"] == 1){
+                    $("#cb").attr("id_cb",data["id_cb"]);
+                    $("#cb").hide();
                  }
               
                  $("#returncont").html(row);
@@ -312,8 +330,61 @@ $(document).ready(function(e){
        
      });
 
+    
      
-      
+     $("#cb").click(function(){
+
+        $(".modalcb").modal("show");
+    
+     });
+
+
+     $("#tombolbayarcb").click(function(){
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            url: "/cashbacknk",
+            data: {
+                no_nota: $("#id_cb").val(),
+                nominal : $("#nominal-cashback").val().replace(/[._]/g, '')
+            },
+            type: "post",
+            dataType: "json",
+            success: function(data){
+                window.location = "/transaksi";
+                
+            },error: function(err){
+                alert(err.responseText);
+            }
+        });
+     });
+
+     $(".printingcb").click(function(){
+        let idt = $(this).attr("id_trans");
+        cetakcb(idt);
+     });
+
+
+     function cetakcb(id){
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token]").attr('content')
+            },
+            url: "/cetakcashbacknk",
+            data: {
+                id_trans: id
+            },
+            type: "post",
+            dataType: "json",
+            success: function(data){
+                printJS({printable: data['file'], type: 'pdf', base64: true});
+                
+            },error: function(err){
+                alert(err.responseText);
+            }
+        });
+     }
   
 
 });

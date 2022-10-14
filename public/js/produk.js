@@ -1,10 +1,48 @@
 
 
 
+
+
 $(document).ready(function(){  
  
     $(".cetak-barcode").click(function(e){
        $("#cetaker").attr('kode_produk', $(this).attr('kode_produk'));
+    });
+
+
+    $("#barcode-halaman").click(function(){
+        Swal.showLoading();
+        $.ajax({
+            headers: {
+                "X-CSRF-TOKEN" : $("meta[name=csrf-token").attr('content')
+            },
+            data: {
+                tipe: $("#tipe").val(),
+                kodetipe :$("#kodetype").val(),
+                merek: $("#merek").val(),
+                nama: $("#nama").val(),
+            },
+            url: "/printbarcodehalaman",
+            type: "post",
+            dataType: "json",
+            success: function(data){
+                Swal.hideLoading();
+               
+                if(data["jml"] <= 0){
+                    Swal.fire("Stok barang masih kosong");
+                }else if(data["jml"]>20){
+                    console.log(data);
+                    printJS({printable: data['filename'], type: 'pdf', base64: true});
+                }   else{
+                    printJS({printable: data['filename'], type: 'pdf', base64: true});
+                }
+            },
+            error: function(err){
+                Swal.hideLoading();
+                Swal.fire("Proses Pencetakan Barcode Gagal, Barcode terlalu banyak");
+                console.log(`error : ${err.responseText}`);
+            }
+        });
     });
 
     $("#redirector").click(function(e){
@@ -403,9 +441,8 @@ $(document).ready(function(){
         $("#submitterkategori").attr('action','/tambahkategori');
     });
 
-  
+    $(".form-control").select2();
 
     
 });
 
-$(".form-control").select2();

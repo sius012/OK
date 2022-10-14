@@ -66,6 +66,9 @@ $m = isset($merekr) ? $merekr : "";
                 <br>
                 <div class="wrappers d-inline-flex mt-3">
                 <div class="form-group d-inline-flex">
+                <input type="text" id="nama" name="nama" class="form-control form-control-sm mr-2" placeholder="ketik nama atau kode produk">
+                </div>
+                <div class="form-group d-inline-flex">
                     <select name="tipe" id="tipe" class="form-control dynamic w-50 form-control-sm mr-5" data-dependent = "state">
                         <option value="">TIPE</option>
                         @foreach($tipe as $tipes)
@@ -103,8 +106,11 @@ $m = isset($merekr) ? $merekr : "";
             </div>
 </form>
 
- @if(Auth::user()->roles[0]['name'] != 'kasir')<button type="button m-3" class="btn btn-primary"  id="generatestok" ><i class="fas fa-upload mr-2"></i>Produk ke Stok</button>
-<a class="btn btn-primary float-right" href="#" id="stokprint"><i class="fa fa-print mr-2"></i>Print</a>
+ @if(Auth::user()->roles[0]['name'] == 'manager')<button type="button m-3" class="btn btn-primary"  id="generatestok" ><i class="fas fa-upload mr-2"></i>Produk ke Stok</button>
+<a class="btn btn-primary float-right m-2" href="#" id="stokprint"><i class="fa fa-print mr-2"></i>Print</a>
+@endif
+@if(Auth::user()->roles[0]['name'] == 'manager' or  Auth::user()->roles[0]['name'] == 'admingudang')
+<a class="btn btn-secondary float-right m-2" href="#" id="stokprintg"><i class="fa fa-print mr-2"></i>Print untuk Gudang</a>
 @endif
 <div>
 

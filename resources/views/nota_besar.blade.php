@@ -40,6 +40,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
             height: 0px;
             padding: 1px;
             word-wrap: break-word;
+
         }
 
         td h4,h5{
@@ -154,27 +155,39 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
 
 <body>
     <div class="container-wrapper">
-        <table style="margin-top: 0px;">
+        <table style="margin-top: 30px;">
             <tr>
-                <td>
-                    <div class="address" style="width:120px">
+                <td  colspan=2>
+                    <div class="address" style="width:300px">
                         <img style="height:25px;" src="{{ public_path('assets/logo.svg') }}" alt="">
-                        <p class="brand-address">Jl. Agus Salim D no.10  Telp/Fax 085712423453 / (024) 3554929  
+                        <p class="brand-address">Jl. Agus Salim D no.10  
+                            <br>Telp/Fax 085712423453 / (024)3554929  <br>
                             Semarang </p>
                     </div>
                 </td>
        
-                <td colspan=2 align="right" style="width:10px" valign="top">
+                <td colspan=3 align="right" style="width:10px" valign="top">
                     <h4 class="">Semarang,
                         {{ date("d-M-Y", strtotime($data->created_at))}}</h4>
                 </td>
             </tr>
             <tr>
-                <td align="center" id="bigtitle" colspan="3">
+                <td align="center" id="bigtitle" colspan="4">
                     <div class="big-title">
+                        @if($jenisnota == "notabesar")
                         <h2 class="title" style="text-decoration: underline;">
                             {{ $data->termin != 3 ? "TANDA TERIMA" : "NOTA" }}
                         </h2>
+                        @elseif($jenisnota == "jasapasang")
+                        <h2 class="title" style="text-decoration: underline;">
+                            {{"JASA PASANG"}}
+                        </h2>
+                        @else
+                        <h2 class="title" style="text-decoration: underline;">
+                            {{"JASA SERVICE"}}
+                        </h2>
+                        
+                        @endif
                         <h5 class="no-nota">NO.{{ $data->no_nota }}</h5>
                     </div>
                 </td>
@@ -184,14 +197,22 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td style="width:200px" valign="top">
                     <h4>Telah terima dari</h4>
                 </td>
-                <td colspan="2"> {{ $data->ttd }}</td>
-              
+                <td colspan="3"> {{ $data->ttd }}</td>
+                
+            </tr>
+            <tr>
+                <td style="width:200px" valign="top">
+                    <h4>Telepon</h4>
+                </td>
+
+                <td colspan="3"> {{ $data->telepon }}</td>
+                
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Untuk Proyek</h4>
                 </td>
-                <td colspan="2"> {{ $data->up }}</td>
+                <td colspan="3"> {{ $data->up }}</td>
               
             </tr>
             @if($td != 0)
@@ -200,7 +221,7 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <td valign="top">
                         <h4>Pembayaran Sebelumnya</h4>
                     </td>
-                    <td colspan="2">Rp. {{ number_format($td,0,',','.') }}</td>
+                    <td colspan="3">Rp. {{ number_format($td,0,',','.') }}</td>
                  
                 </tr>
             @endif
@@ -208,27 +229,27 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                 <td style="" valign="top">
                     <h4>Uang Sejumlah</h4>
                 </td>
-                <td colspan="2" style="padding-bottom: 10px;"> Rp. {{ number_format($data->us,0,',','.') }}</td>
+                <td colspan="3" > Rp. {{ number_format($data->us,0,',','.') }}</td>
     
             </tr>
             <tr>
                 <td valign="top">
                     <h4>Berupa</h4>
                 </td>
-                <td colspan="2"> {{ $data->brp }}</td>
+                <td colspan="3"> {{ $data->brp }}</td>
             
             <tr>
                 <td valign="top">
                     <h4>Guna Membayar</h4>
                 </td>
-                <td colspan="2"> {{ $data->gm }}</td>
+                <td colspan="3"> {{ $data->gm }}</td>
              
             </tr>
             <tr>
                 <td style="padding-bottom: 5px;" valign="top">
                     <h4>Total</h4>
                 </td>
-                <td colspan="2" style="padding-bottom: 5px;"> Rp. {{ number_format($data->total,0,',','.') }}</td>
+                <td colspan="3"> Rp. {{ number_format($data->total,0,',','.') }}</td>
         
             </tr>
             <tr>
@@ -240,7 +261,8 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <td valign="top">
                         <h4>{{ $opsis->judul }}</h4>
                     </td>
-                    <td colspan="2"> {{ $opsis->ket }}</td>
+                    
+                    <td colspan="3"> {{ $opsis->ket }}</td>
 
 
                 </tr>
@@ -251,14 +273,15 @@ src: url("{{storage_path('/fonts/Consolas-Font/CONSOLAB.ttf')}}");
                     <td valign="top">
                         <h4>NB</h4>
                     </td>
-                    <td colspan="2"> {{ $data->kunci }}</td>
+        
+                    <td colspan="3"> {{ $data->kunci }}</td>
                    
 
                 </tr>
 
             @endif
                 <tr align="center">
-                <td colspan="3" style="padding-top:25px; padding-bottom:30px">
+                <td colspan="4" style="padding-top:25px; padding-bottom:30px">
                     <h4 class="ttd-header">Mengetahui,</h4>
 
                 </td>

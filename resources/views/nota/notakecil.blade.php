@@ -241,7 +241,7 @@ $subtotal = 0;
                 </tr>
                 <tr>
                    <td>YTH. {{$data[0]->nama_pelanggan}}</td>
-                   <td style="width: 100px !important; font-size: 8.5pt" width ='10000' align="right" width="300">{{date("d-m-Y h:i:s")}}</td>
+                   <td style="width: 100px !important; font-size: 8.5pt" width ='10000' align="right" width="300">{{date("d-m-Y h:i:s", strtotime($datatrans->created_at))}}</td>
                   
                 </tr>
                 <tr>
@@ -284,15 +284,14 @@ $subtotal = 0;
                 </table>
         
                 <table class="table">
-                    @if($data[0]->diskon > 0)
-                    @if($data[0]->status != "return")
+        
+               
                     <tr>
                         <td>Subtotal</td>
                         <td align="right">{{number_format($subtotal,0,".",".")}}</td>
 
                     </tr>
-                    @endif
-                    @endif
+                    
                     
                     @if($data[0]->diskon > 0)
                     <tr>
@@ -303,20 +302,20 @@ $subtotal = 0;
                     @endif
                     @if($data[0]->keterangan_retur != null)
                     <tr>
-                        <td>PEMBAYARAN SEBELUMNYA</td>
+                        <td style=""><p style="margin:0px; width: 170px;">RETUR({{$data[0]->keterangan_retur}})</p></td>
                         <td align="right" valign="top">{{number_format($data[0]->tlh_bayar,0,".",".")}}</td>
                     </tr>
                     @endif
                    
 
-                    @if($data[0]->status != "return")
+            
                     <tr>
                         <td>Grand Total</td>
-                        <td align="right">{{number_format(Tools::doDisc(1,$subtotal,$data[0]->diskon,$data[0]->prefix,0,".",".") - $data[0]->tlh_bayar,0,".",".") }}</td>
+                        <td align="right">{{number_format($data[0]->subtotal) }}</td>
 
                     </tr>
 
-
+                    @if($data[0]->status != "return")
                     <tr>
                         <td>Dibayar</td>
                         <td align="right">{{number_format($data[0]->bayar,0,".",".") }}</td>
@@ -326,13 +325,13 @@ $subtotal = 0;
                     @if($data[0]->status == "belum lunas")
                     <tr>
                         <td>Kurang Bayar</td>
-                        <td align="right">{{number_format(Tools::doDisc(1,$data[0]->subtotal,$data[0]->diskon,$data[0]->prefix) - $data[0]->bayar,0,'.','.') }}</td>
+                       <td align="right">{{number_format($data[0]->subtotal - $data[0]->bayar,0,'.','.') }}</td>
 
                     </tr>
                     @else
                     
 
-                    @if($data[0]->status != "return")
+                    @if($data[0]->status != "return" and $data[0]->bayar -$data[0]->subtotal > 0 )
                     <tr>
                         <td>Kembalian</td>
                         <td align="right">{{number_format($data[0]->bayar -$data[0]->subtotal,0,".",".") }}</td>
@@ -347,10 +346,7 @@ $subtotal = 0;
                 
                 <hr style="margin:0;">
                 
-                @if($data[0]->keterangan_retur!=null)
-              
-              <p style="margin:3px;">{{$data[0]->keterangan_retur}}</p>
-              @endif
+
                 @if($data[0]->status != 'return')
               
                 <p style="margin:3px;">* Barang yang sudah dibeli <br> tidak dapat ditukar<br><br>

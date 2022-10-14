@@ -11,6 +11,10 @@ use function GuzzleHttp\json_encode;
 use App\Http\Controllers\Tools;
 use PDF;
 
+use Carbon\Carbon;
+use Auth;
+
+use Illuminate\Support\Facades\Storage;
 class transaksiController extends Controller
 {
     
@@ -56,8 +60,12 @@ class transaksiController extends Controller
     public function index(Request $req){
         $data = [];
       
+      $dateS = Carbon::now()->startOfMonth()->subMonth(3);
+      $dateE = Carbon::now()->startOfMonth(); 
+      $dateN = Carbon::now();
+
         
-        $get = DB::table("transaksi")->where("status","!=","preorder")->where("status","!=","suratjalan");
+        $get = DB::table("transaksi")->whereBetween('created_at',[$dateS,$dateN])->where("status","!=","preorder")->where("status","!=","suratjalan");
             
         if($req->filled('no_nota')){
             $get->where('no_nota',$req->no_nota)->orWhere('nama_pelanggan',"LIKE","%".$req->no_nota."%");
@@ -90,7 +98,7 @@ class transaksiController extends Controller
             
            
         }
-    //  dd($data);
+    //dd($data);
 
         return view("transaksi", compact('data'));
 
@@ -100,12 +108,43 @@ class transaksiController extends Controller
     public function tampilreturn(Request $req){
         $id=$req->id_trans;
         $no_nota =  DB::table("transaksi")->where("kode_trans",$id)->pluck("no_nota")->first();
-        $hasretur = DB::table("transaksi")->where("keterangan",$no_nota)->count();
-        $datatrans = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->select("transaksi.*","transaksi.status as status_trans","detail_transaksi.*","new_produks.*","mereks.*","kode_types.*")->get();
-     
-        return json_encode(["datatrans"=>$datatrans,"hasretur"=>$hasretur]);
+        $hasretur = DB::table("transaksi")->where("keterangan",$no_nota)->where("status","!=","cashback")->count();
+        $checker = DB::table("transaksi")->where("status","cashback")->where("keterangan",$no_nota)->count() > 0 ? 1 : 0;
+        $id_cb = DB::table("transaksi")->where("status","cashback")->where("keterangan",$no_nota)->pluck("kode_trans")->first();
+        $datatrans = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->select("transaksi.*","transaksi.status as status_trans","detail_transaksi.*","new_produks.*","mereks.*","kode_types.*","transaksi.tlh_bayar")->get();
+        $jml = DB::table('transaksi')->join('detail_transaksi','detail_transaksi.kode_trans','=','transaksi.kode_trans')->join('new_produks','detail_transaksi.kode_produk','=','new_produks.kode_produk')->join('mereks','mereks.id_merek','=','new_produks.id_merek')->join('kode_types','kode_types.id_kodetype','=','new_produks.id_ct')->where('transaksi.kode_trans', $id)->count();
+        return json_encode(["datatrans"=>$datatrans,"hasretur"=>$hasretur, "jml"=>$jml, "hascb"=>$checker,"no_nota"=>$no_nota,"id_cb"=>$id_cb]);
 
         
+    }
+
+    public function cashback(Request $req){
+        $id_kasir = Auth::user()->id;   
+        $no_nota = $req->no_nota;
+        $nominal_cb = $req->nominal;
+
+        $data = DB::table("transaksi")->where("no_nota",$no_nota)->first();
+
+        $id = DB::table("transaksi")->insertGetId(["no_nota"=>"CB".$no_nota,"nama_pelanggan"=>$data->nama_pelanggan,"telepon"=>$data->telepon,"alamat"=>$data->alamat,"id_kasir"=>$id_kasir,"subtotal"=>$nominal_cb,"status"=>"cashback","keterangan" =>$no_nota]);
+
+        return json_encode(["id"=>$id]);
+
+    }
+
+    public function cetakcashbacknk(Request $req){
+        $id = $req->id_trans;
+
+        $data = DB::table("transaksi")->where("kode_trans",$id)->first();
+
+        $pdf = PDF::loadview('cashbacknk', ["data" => $data]);
+        
+        $path = public_path('pdf/');
+            $fileName =  date('mdy').'-'.$data->no_nota. '.' . 'pdf' . "cbnk" ;
+            $pdf->save(storage_path("pdf/$fileName"));
+        $storagepath = storage_path("pdf/$fileName");
+        $base64 = chunk_split(base64_encode(file_get_contents($storagepath)));
+        unlink($storagepath);
+        return json_encode(["file"=>$base64]);
     }
 
 
@@ -114,6 +153,7 @@ class transaksiController extends Controller
         $cicilandata = [];
         $trans =  DB::table("detail_transaksi")->join('produk', 'produk.kode_produk', '=', 'detail_transaksi.kode_produk')->join('kategori', 'produk.id_kategori', '=', 'kategori.id_kategori')->where("kode_trans", $id)->get();
         $detail = DB::table("transaksi")->where("kode_trans", $id)->get();
+       
         $cicilan = DB::table("cicilan")->where("kode_transaksi", $id)->get();
         foreach($cicilan as $cicilans){
             $row = [];
@@ -129,7 +169,7 @@ class transaksiController extends Controller
         }
 
 
-        return json_encode(["trans" => $trans, "detail" => $detail, 'cicilan'=>$cicilandata]);
+        return json_encode(["trans" => $trans, "detail" => $detail, 'cicilan'=>$cicilandata, ]);
     }
 
     public function hapus($id){
@@ -162,26 +202,51 @@ class transaksiController extends Controller
             $has = 1;
         }
 
-        $datas = DB::table("transaksi")->where("status","!=","draf")->whereBetween(DB::raw('substr(created_at,1,10)'),[$tglstart,$tglend])->get();
-
+        $datas = DB::table("transaksi")->where("status","!=","draf")->where("status","!=","preorder")->where("status","!=","suratjalan")->whereBetween(DB::raw('substr(created_at,1,10)'),[$tglstart,$tglend]);
+        $jmltrans =  $datas->count();
         $data = [];
+        $excel = 0;
+        if($req->input('excel')){
+            $excel = 1;
+        }
 
-        foreach($datas as $i => $dts){
+        foreach($datas->get() as $i => $dts){
           
-            $quer = DB::table('detail_transaksi')
-                                ->join('transaksi',"transaksi.kode_trans","=","detail_transaksi.kode_trans")
-                                ->join('new_produks', 'detail_transaksi.kode_produk', '=', 'new_produks.kode_produk')
-                                ->join('kode_types','kode_types.id_kodetype','new_produks.id_ct')
-                                ->join('mereks','mereks.id_merek','new_produks.id_merek')
-                                ->where('transaksi.kode_trans', $dts->kode_trans)->where('transaksi.status','!=','return');
+            $quer = DB::table('transaksi')
+                                ->rightJoin('detail_transaksi',"transaksi.kode_trans","=","detail_transaksi.kode_trans")
+                                ->rightJoin('new_produks', 'detail_transaksi.kode_produk', '=', 'new_produks.kode_produk')
+                                ->rightJoin('kode_types','kode_types.id_kodetype','new_produks.id_ct')
+                                ->rightJoin('mereks','mereks.id_merek','new_produks.id_merek')
+                                ->where('transaksi.kode_trans', $dts->kode_trans)->where("transaksi.status","!=","preorder")->where("transaksi.status","!=","suratjalan")
+                                ->select("transaksi.*","mereks.*","kode_types.*","new_produks.*","detail_transaksi.*","transaksi.created_at as tanggal_trans;");
             $data[$i] = $quer->get()->toArray();
         
             $data[$i]['jmltrans'] = $quer->count();
             $data[$i]['datas'] = $dts;
-            $data[$i]['potongan'] = $dts->prefix == "rupiah" ? $dts->diskon : ($dts->subtotal / ((100-$dts->diskon)/100))-$dts->subtotal;
+            $data[$i]['potongan rupiah'] = 0;
+            $data[$i]['potongan retur'] = $dts->tlh_bayar;
+            $data[$i]["cashback"] = $dts->status == "cashback" ? $dts->subtotal  : 0;
+            if($dts->prefix != "rupiah" and $dts->status != "cashback" and $dts->diskon > 0 and $dts->subtotal >0){
+                $oriPrice = $dts->subtotal / ((100 - $dts->diskon)/100);
+                $data[$i]['potongan rupiah'] = $oriPrice - $dts->subtotal;
+                
+            }else{
+                $data[$i]['potongan rupiah'] = $dts->diskon;
+            }
         }
        
+        if($excel == 0){
+            $pdf = PDF::loadview('laporan.transaksi', ["datas" => $data,"has"=>$has,'start'=>$tglstart,'end'=>$tglend]);
+        $path = public_path('pdf/Laporan Nota Kecil');
+            $fileName =  date('mdy').'-'."Laporan Nota Kecil". '.' . 'pdf' ;
 
-      return Excel::download(new TransaksiExport($data,$has),  "Transaksi NK"." - Data Transaksi ".$tglstart." - ".$tglend.".xls");
+        $storagepath = storage_path("pdf/$fileName");
+        $pdf->setPaper("a4","potrait");
+        return $pdf->download($fileName);
+        }else{
+             return Excel::download(new TransaksiExport($data,$has),"Laporan Nota Kecil.xls");
+        }
+        
+
     }
 }
