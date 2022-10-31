@@ -62,6 +62,7 @@ $dateE = Carbon::now()->startOfMonth();
 
             return view("transaksipreorder", ['data'=>$data,'page'=>'kasir', 'info' => $data_detail,'opsi' => $opsi,"hascashback"=>$hascashback, "nota_cb"=>$nota_cb,"no_nota"=>$no_nota]);
         }else{
+       // dd(['data'=>$data,'page'=>'kasir']);
           return view("transaksipreorder", ['data'=>$data,'page'=>'kasir']);
         }
         

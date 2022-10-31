@@ -119,6 +119,10 @@ $m = isset($merekkw) ? $merekkw : '';
             selectJos("#tipe");
             selectJos("#kodetype");
             selectJos("#merek");
+            selectJos("#tipe-produk");
+            selectJos("#tipekode-produk");
+            selectJos("#merek-produk");
+            
             $(".btclose").click(function(){
                 window.location = "/produk";
                
@@ -145,7 +149,8 @@ $m = isset($merekkw) ? $merekkw : '';
                 <div class="form-group d-inline-flex">
                     
                     <select  name="tipe" id="tipe" class="form-control dynamic form-control-sm mr-1 w-75"  data-dependent = "state">
-                        <option value="">Tipe</option>
+                        <option value="">T
+                            ipe</option>
                         @foreach($tipe as $tipes)
                             <option @if($tp == $tipes->id_tipe) selected @endif value = "{{$tipes->id_tipe}}">{{$tipes->nama_tipe}}</option>
                         @endforeach

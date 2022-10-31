@@ -310,7 +310,7 @@
                     @foreach($k1 as $da)
                     <tr>
                        <td style="text-align: center">{{$no}}</td>
-                       <td style="text-align: center">{{date("d-M-Y",strtotime($da->created_at))}}</td>
+                       <td style="text-align: center">{{date("d-M-Y",strtotime($da->tgl_trans))}}</td>
                        <td>{{$da->nama_pelanggan}}</td>
                        <td style="text-align: center">{{$da->kode_produk}}</td>
                         <td >{{$da->nama_kodetype." ".$da->nama_merek." ".$da->nama_produk}}</td>

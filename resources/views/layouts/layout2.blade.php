@@ -78,6 +78,12 @@
                         }else{
                             $("#sj-indi").hide()
                         }
+
+                        if(data["counter_rp"] > 0){
+                            $("#rp-indi").text(data["counter_rp"]);
+                        }else{
+                            $("#rp-indi").hide()
+                        }
                       
                         
                        
@@ -254,7 +260,7 @@
               </li>
               <li class=" nav-item">
                                         <a href="{{url('/preorderpage')}}" class="nav-link {{$whoactive=='preorderpage' ? 'active' : ''}}"" >
-                  <p>Riwayat Preorder</p>
+                  <p>Riwayat Preorder</p><span class="mr-2 badge badge-danger" id="rp-indi"></span>
                 </a>
               </li>
 

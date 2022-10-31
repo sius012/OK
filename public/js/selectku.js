@@ -1,5 +1,6 @@
 
 function selectJos(namaelemet){
+
     let hasClick = false;
     $(namaelemet).wrap('<div class="faker"></div>');
     $(document).on('click', function(){
@@ -42,6 +43,7 @@ function selectJos(namaelemet){
     });
 
     $(document).on("keyup",".inputdrop",function(e){
+        alert("dsasd");
         $(e.target).val($(e.target).val().toUpperCase());
         let value = $(e.target).val();
         $(e.target).parent().parent().children("li").children(".scroled").children(".fo").filter(function() {

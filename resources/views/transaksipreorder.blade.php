@@ -155,6 +155,25 @@ $master='kasir' @endphp
         </div>
         
         @foreach($data as $datas)
+        @php
+            $now = \Carbon\Carbon::createFromFormat("m/d/Y", date("m/d/Y"));
+            $plus = null;
+            $jatuhtempo = false;
+            $status = "";
+
+            if(isset($datas[0][1]) and $datas["jatuh_tempo"] != null){
+              $now = \Carbon\Carbon::createFromFormat("m/d/Y", date("m/d/Y"));
+            $plus = \Carbon\Carbon::createFromFormat("m/d/Y", date("m/d/Y",strtotime($datas["jatuh_tempo"])))->addDays(14);
+
+              if($now->gte($plus) == 1 and ($datas[0][1]->status == "ready" or $datas[0][1]->status == "menunggu")){
+              $jatuhtempo = true;
+                
+               }else if($datas[0][1]->status == "dibayar" ){
+                $status = "Lunas";
+               }
+            }
+           
+        @endphp
         @if(\Carbon\Carbon::parse($datas['created_at'])->isToday() == 1 and $hastoday == false)
 <h5 class="font-weight-bold ml-2 mb-2">Hari Ini</h5>
 @php $hastoday=true @endphp
@@ -167,7 +186,7 @@ $master='kasir' @endphp
              <div class="card datatrans p-2"  id_trans="{{$datas['no_nota']}}">
                 <div class="card-header p-0 mt-0">
                     <div class="wrapperzz p-1 mb-4 mt-0 m-1">
-                      <h6 style="font-size: 0.85rem; font-weight: bold;" class="card-title float-right mr-2">{{strtotime(date("d-m-Y")) < strtotime(date("d-m-Y", strtotime($datas['min3jatuhtempo']))) ? date("d-M-Y", strtotime($datas["created_at"])) : "Telah mendekati jatuh tempo"}} </h6>
+                      <h6 style="font-size: 0.85rem; font-weight: bold;" class="card-title float-right mr-2">{{$jatuhtempo ? "sudah mendekati jatuh tempo" : $status}} </h6>
                       <h6 style="font-size: 0.85rem; font-weight: bold;" class="card-title">@if($datas["status"] == "cashback")(Cashback)@endif No Nota :  {{$datas["no_nota"]}}</h6>
                     </div>
                 </div>

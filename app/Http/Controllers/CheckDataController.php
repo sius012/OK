@@ -16,16 +16,17 @@ class CheckDataController extends Controller
 
         //cek jumlah surat jalan
         $counter_sj = DB::table("transaksi")->where("status","suratjalan")->count();
+        $counter_rp = DB::table("transaksi")->where("status","preorder")->count();
 
         foreach($data as $datas){
             $now = Carbon::createFromFormat("m/d/Y", date("m/d/Y"));
-            $min3 = Carbon::createFromFormat("m/d/Y", date("m/d/Y",strtotime($datas->jatuh_tempo)))->addDays(-3);
-            if($now->gte($min3) and $datas->status == "menunggu" and $datas->jatuh_tempo == "null" or  $datas->status == "ready"){
+            $min3 = Carbon::createFromFormat("m/d/Y", date("m/d/Y",strtotime($datas->jatuh_tempo)))->addDays(14);
+            if($now->gte($min3)  and $datas->jatuh_tempo != null and  $datas->status == "ready"){
                 array_push($data2, $datas);
             }
         }   
 
-        return json_encode(["data2" => $data2,"counter_sj"=>$counter_sj]);
+        return json_encode(["data2" => $data2,"counter_sj"=>$counter_sj, "counter_rp"=>$counter_rp]);
     }
 
     public function experiment(){
